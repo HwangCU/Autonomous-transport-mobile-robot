@@ -5,7 +5,11 @@ import json
 import ssl
 from websockets.asyncio.server import serve
 from django.core.exceptions import ValidationError
-from asgiref.sync import sync_to_async  # 추가
+from asgiref.sync import sync_to_async
+from datetime import datetime, timedelta
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import make_password
+
 
 # Django 환경 설정
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../c103")))
@@ -16,13 +20,24 @@ import django
 django.setup()
 
 from users.models import User
-from django.contrib.auth.hashers import make_password
 
 # TLS 설정
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 ssl_context.load_cert_chain(
     certfile="../Websocket/cert.pem", keyfile="../Websocket/key.pem"
 )
+
+
+@sync_to_async
+def authenticate_user(username, password):
+    """사용자 인증"""
+    try:
+        user = User.objects.get(username=username)
+        if check_password(password, user.password):
+            return user
+        return None
+    except User.DoesNotExist:
+        return None
 
 
 @sync_to_async
@@ -66,6 +81,29 @@ async def handle_registration(data):
         return {"status": "error", "message": f"Internal server error: {e}"}
 
 
+async def handle_login(data):
+    """로그인 처리"""
+    try:
+        username = data.get("user_name")
+        password = data.get("password")
+
+        # 필드 확인
+        if not username or not password:
+            return {"status": "error", "message": "Username and password are required"}
+
+        # 사용자 인증
+        user = await authenticate_user(username, password)
+        if user:
+            return {
+                "status": "success",
+                "message": "Login successful",
+            }
+        else:
+            return {"status": "error", "message": "Invalid username or password"}
+    except Exception as e:
+        return {"status": "error", "message": f"Internal server error: {e}"}
+
+
 async def handler(websocket):
     while True:
         try:
@@ -75,11 +113,13 @@ async def handler(websocket):
 
             if data.get("action") == "register":
                 response = await handle_registration(data)
-                await websocket.send(json.dumps(response))
+            elif data.get("action") == "login":
+                response = await handle_login(data)
             else:
-                await websocket.send(
-                    json.dumps({"status": "error", "message": "Invalid action"})
-                )
+                response = {"status": "error", "message": "Invalid action"}
+
+            # 응답 전송
+            await websocket.send(json.dumps(response))
         except Exception as e:
             await websocket.send(
                 json.dumps({"status": "error", "message": f"Server error: {e}"})
