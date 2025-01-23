@@ -16,10 +16,12 @@ import django
 django.setup()
 
 # websockets
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
+
 from websockets.asyncio.server import serve
 
 from server_login import handle_login
-from BE.Websocket.ㅣㅁ시server_register import handle_registration
+from Websocket.server_register import handle_registration
 
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 ssl_context.load_cert_chain(
