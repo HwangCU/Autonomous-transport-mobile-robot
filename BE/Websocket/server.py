@@ -3,6 +3,8 @@ import sys
 import asyncio
 import json
 import ssl
+import base64
+import jwt
 from websockets.asyncio.server import serve
 from django.core.exceptions import ValidationError
 from asgiref.sync import sync_to_async
@@ -20,6 +22,22 @@ import django
 django.setup()
 
 from users.models import User
+
+
+def load_jwt_key(file_path: str) -> bytes:
+    """
+    Base64로 인코딩된 키 파일(jwt_key.pem)을 읽어
+    실제 랜덤 바이트(bytes)로 디코딩하여 반환.
+    """
+    with open(file_path, "r") as f:
+        base64_key = f.read().strip()
+    secret_bytes = base64.b64decode(base64_key)
+    return secret_bytes
+
+
+SECRET_KEY = load_jwt_key("./jwt_key.pem")
+ACCESS_TOKEN_EXPIRATION = 15  # Access token 만료 시간 (분)
+REFRESH_TOKEN_EXPIRATION = 7  # Refresh token 만료 시간 (일)
 
 # TLS 설정
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
@@ -81,10 +99,32 @@ async def handle_registration(data):
         return {"status": "error", "message": f"Internal server error: {e}"}
 
 
+def generate_tokens(user):
+    """JWT 토큰 생성"""
+    now = datetime.utcnow()
+
+    # Access token
+    access_token_payload = {
+        "user_id": user.id,
+        "username": user.username,
+        "exp": now + timedelta(minutes=ACCESS_TOKEN_EXPIRATION),
+    }
+    access_token = jwt.encode(access_token_payload, SECRET_KEY, algorithm="HS256")
+
+    # Refresh token
+    refresh_token_payload = {
+        "user_id": user.id,
+        "exp": now + timedelta(days=REFRESH_TOKEN_EXPIRATION),
+    }
+    refresh_token = jwt.encode(refresh_token_payload, SECRET_KEY, algorithm="HS256")
+
+    return access_token, refresh_token
+
+
 async def handle_login(data):
     """로그인 처리"""
     try:
-        username = data.get("user_name")
+        username = data.get("username")
         password = data.get("password")
 
         # 필드 확인
@@ -94,9 +134,12 @@ async def handle_login(data):
         # 사용자 인증
         user = await authenticate_user(username, password)
         if user:
+            access_token, refresh_token = generate_tokens(user)
             return {
                 "status": "success",
                 "message": "Login successful",
+                "access_token": access_token,
+                "refresh_token": refresh_token,
             }
         else:
             return {"status": "error", "message": "Invalid username or password"}
