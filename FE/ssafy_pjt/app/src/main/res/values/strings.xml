@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ssafy_pjt</string>
+    <string name="login_title">For your light way</string>
+    <string name="login">로그인</string>
+    <string name="signUp">회원가입</string>
+    <string name="kaakaoLogin">카카오 로그인</string>
+    <string name="googleLogin">구글 로그인</string>
+</resources>
