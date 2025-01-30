@@ -37,7 +37,14 @@ val Typography = Typography(
 
 val loginTitle = TextStyle(
     fontSize = 32.sp,
-    fontWeight = FontWeight.Normal,
+    fontWeight = FontWeight.Bold,
     fontFamily = FontFamily.Default,
     lineHeight = 24.sp,
+)
+
+val signupTitle = TextStyle(
+    fontSize = 32.sp,
+    fontWeight = FontWeight.Bold,
+    fontFamily = FontFamily.Default,
+    lineHeight = 48.sp
 )

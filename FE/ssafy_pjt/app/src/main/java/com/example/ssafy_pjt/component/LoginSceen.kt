@@ -26,6 +26,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import androidx.privacysandbox.tools.core.model.Type
 import com.example.ssafy_pjt.R
 import com.example.ssafy_pjt.ui.theme.loginTitle
@@ -33,9 +36,12 @@ import com.example.ssafy_pjt.ui.theme.my_blue
 import com.example.ssafy_pjt.ui.theme.my_yellow
 
 @Composable
-fun LoginSceen(modifier: Modifier=Modifier){
+fun LoginSceen(
+    modifier: Modifier=Modifier,
+    navController: NavController
+){
     fun OnSignupclicked(){
-        
+        navController.navigate("Signup")
     }
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -68,7 +74,9 @@ fun LoginSceen(modifier: Modifier=Modifier){
                 modifier = modifier.height(45.dp)
                     .padding(start=25.dp)
                     .fillMaxWidth(0.8f),
-                onClick = {},
+                onClick = {
+                    navController.navigate("accountLogin")
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = my_yellow,
                     contentColor = colorResource(R.color.white)
