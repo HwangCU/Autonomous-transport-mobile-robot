@@ -1,5 +1,6 @@
 package com.example.ssafy_pjt
 
+import DeliverySceen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,7 +12,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.ssafy_pjt.component.AccountLoginSceen
+import com.example.ssafy_pjt.component.HomeScreen
 import com.example.ssafy_pjt.component.LoginSceen
+import com.example.ssafy_pjt.component.SignupSceen
 import com.example.ssafy_pjt.ui.theme.Ssafy_pjtTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +27,42 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Ssafy_pjtTheme {
-                LoginSceen(modifier = Modifier)
+                val navController = rememberNavController()
+                NavHost(
+                    navController = navController,
+                    startDestination = "login"
+                ){
+                    composable("login") {
+                        LoginSceen(
+                            modifier = Modifier,
+                            navController = navController
+                            )
+                    }
+                    composable("signup") {
+                        SignupSceen(
+                            modifier = Modifier,
+                            navController = navController
+                        )
+                    }
+                    composable("AccountLogin") {
+                        AccountLoginSceen(
+                            modifier = Modifier,
+                            navController = navController
+                        )
+                    }
+                    composable("HomeSceen") {
+                        HomeScreen(
+                            modifier = Modifier,
+                            navController = navController
+                        )
+                    }
+                    composable("DeliverySceen") {
+                        DeliverySceen(
+                            modifier = Modifier,
+                            navController = navController
+                        )
+                    }
+                }
             }
         }
     }
