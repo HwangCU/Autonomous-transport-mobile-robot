@@ -59,7 +59,7 @@ fun SignupSceen(
             modifier = modifier
                 .padding(top = 137.dp)
                 .fillMaxWidth()
-                .padding(paddingValues),
+                    .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
