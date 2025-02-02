@@ -26,6 +26,7 @@ import com.example.ssafy_pjt.ui.theme.Ssafy_pjtTheme
 class MainActivity : ComponentActivity() {
 
     private val kakaoAuthViewModel: KakaoAuthViewModel by viewModels()
+    private val GoogleLoginViewModel: GoogleLoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +42,8 @@ class MainActivity : ComponentActivity() {
                         LoginSceen(
                             viewModel = kakaoAuthViewModel,
                             modifier = Modifier,
-                            navController = navController
+                            navController = navController,
+                            googleViewModel= GoogleLoginViewModel,
                             )
                     }
                     composable("signup") {
