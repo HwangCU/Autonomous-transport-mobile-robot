@@ -30,6 +30,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.privacysandbox.tools.core.model.Type
+import com.example.ssafy_pjt.KakaoAuthViewModel
 import com.example.ssafy_pjt.R
 import com.example.ssafy_pjt.ui.theme.loginTitle
 import com.example.ssafy_pjt.ui.theme.my_blue
@@ -37,6 +38,7 @@ import com.example.ssafy_pjt.ui.theme.my_yellow
 
 @Composable
 fun LoginSceen(
+    viewModel: KakaoAuthViewModel,
     modifier: Modifier=Modifier,
     navController: NavController
 ){
@@ -49,7 +51,9 @@ fun LoginSceen(
     ) { innnerpading->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier.padding(start=20.dp)
+            modifier = modifier
+                .padding(start=20.dp)
+                .padding(innnerpading)
             ) {
             Image(
                 painter = painterResource(R.drawable.star_filled),
@@ -90,7 +94,7 @@ fun LoginSceen(
                     .padding(start=25.dp, top=10.dp)
                     .fillMaxWidth(0.8f),
                 onClick = {
-                    navController.navigate("kakaoLogin")
+                    viewModel.handleKakaoLogin()
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.yellow),

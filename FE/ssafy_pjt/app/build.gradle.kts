@@ -24,7 +24,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"${properties.getProperty("kakao_native_app_key")}\"")
-        resValue("String","kakao_oauth_host","\"${properties.getProperty("kakao_oauth_host")}\"")
+        resValue("string","kakao_oauth_host","kakao${properties.getProperty("kakao_native_app_key")}")
     }
 
     buildTypes {
