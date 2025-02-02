@@ -32,8 +32,7 @@ fun DeliverySceen(
 
     Scaffold(
         bottomBar = { CustomAppBar(navController, setDeliveryMode) }
-    ) { paddingValues ->
-        Column(
+    ) { paddingValues ->Column(
             modifier = modifier.padding(paddingValues).fillMaxSize()
         ) {
             Text(text = "배달 모드")

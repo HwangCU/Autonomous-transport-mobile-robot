@@ -17,6 +17,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.ssafy_pjt.component.AccountLoginSceen
 import com.example.ssafy_pjt.component.HomeScreen
+import com.example.ssafy_pjt.component.KakaoLoginScreen
+import com.example.ssafy_pjt.component.KakaoLoginScreen
 import com.example.ssafy_pjt.component.LoginSceen
 import com.example.ssafy_pjt.component.SignupSceen
 import com.example.ssafy_pjt.ui.theme.Ssafy_pjtTheme
@@ -37,6 +39,12 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier,
                             navController = navController
                             )
+                    }
+                    composable("kakaoLogin") {
+                        KakaoLoginScreen(
+                            navController = navController,
+                            modifier = Modifier
+                        )
                     }
                     composable("signup") {
                         SignupSceen(
