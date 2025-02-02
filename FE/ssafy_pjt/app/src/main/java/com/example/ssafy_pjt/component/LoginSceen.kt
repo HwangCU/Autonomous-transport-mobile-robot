@@ -89,7 +89,9 @@ fun LoginSceen(
                 modifier = modifier.height(45.dp)
                     .padding(start=25.dp, top=10.dp)
                     .fillMaxWidth(0.8f),
-                onClick = {},
+                onClick = {
+                    navController.navigate("kakaoLogin")
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.yellow),
                     contentColor = colorResource(R.color.black)
