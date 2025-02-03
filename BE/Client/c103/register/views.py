@@ -26,6 +26,7 @@ def register_view(request):
     username = data.get("username")
     password = data.get("password")
     email = data.get("email")
+    address = data.get("address")
     if not username or not password or not email:
         return JsonResponse(
             {
@@ -41,6 +42,7 @@ def register_view(request):
         "username": username,
         "password": password,
         "email": email,
+        "address": address,
     }
 
     async def send_register():
