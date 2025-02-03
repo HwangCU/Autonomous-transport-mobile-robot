@@ -1,6 +1,8 @@
 package com.example.ssafy_pjt.component
 
+import android.util.Log
 import android.widget.EditText
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,6 +43,7 @@ import com.example.ssafy_pjt.ui.theme.my_yellow
 import com.example.ssafy_pjt.ui.theme.signupTitle
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ssafy_pjt.ViewModel.SignupViewModel
 
@@ -60,13 +63,19 @@ fun SignupSceen(
 
     // LiveData를 State로 변환
     val signupResult by viewModel.signupResult.observeAsState()
+    val context = LocalContext.current
 
     // signupResult 변화 감지
     LaunchedEffect(signupResult) {
-        when (signupResult) {
-            "회원가입 성공" -> {
-                navController.navigate("login") {
-                    popUpTo("signup") { inclusive = true }
+        signupResult?.let { result->
+            when(result){
+                "User registered successfully" -> {
+                    Toast.makeText(context,"회원가입이 완료되었습니다", Toast.LENGTH_SHORT).show()
+                    setCheckUser(false)
+                    navController.navigate("AccountLogin")
+                }
+                else -> {
+                    Toast.makeText(context,"${result}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -169,10 +178,7 @@ fun SignupSceen(
                             Button(
                                 onClick = {
                                     if (userPassword == userPasswordAgain) {
-                                        if (viewModel.validateInputs()) {
-                                            viewModel.signup()
                                             setCheckUser(true)
-                                        }
                                     }
                                 },
                                 colors = ButtonDefaults.buttonColors(my_yellow),
@@ -191,6 +197,8 @@ fun SignupSceen(
                                             colors = ButtonDefaults.buttonColors(my_blue),
                                             onClick = {
                                                 viewModel.signup()
+                                                Log.d("TAG","${signupResult}")
+
                                             }
                                         ) {
                                             Text(text = stringResource(R.string.signUp))

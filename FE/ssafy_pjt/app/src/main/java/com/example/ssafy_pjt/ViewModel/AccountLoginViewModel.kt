@@ -12,8 +12,8 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class AccountLoginViewModel: ViewModel() {
-    private var _userEmail = MutableLiveData("")
-    val userEmail: LiveData<String> get() = _userEmail
+    private var _userName = MutableLiveData("")
+    val userName: LiveData<String> get() = _userName
 
     private var _userPassword = MutableLiveData("")
     val userPassword: LiveData<String> get() = _userPassword
@@ -21,23 +21,26 @@ class AccountLoginViewModel: ViewModel() {
     private val _loginResult = MutableLiveData<String>()
     val loginResult: LiveData<String> get() = _loginResult
 
-    fun setUserEmail(email: String){
-        _userEmail.value = email
+    fun setUserName(userName: String){
+        _userName.value = userName
     }
     fun setUserPassword(password: String) {
         _userPassword.value = password
     }
 
     fun login(){
-        val email = _userEmail.value ?: ""
+        val username = _userName.value ?: ""
         val password = _userPassword.value ?: ""
-        val request = LoginRequest(email,password)
+        Log.d("TAG",username)
+        Log.d("TAG",password)
+        val request = LoginRequest(username,password)
 
         RetrofitClient.instance.login(request).enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.isSuccessful) {
                     val body = response.body()
-                    if (body?.action == "ok"){
+                    Log.d("TAG","${body}")
+                    if (body?.status == "success"){
                         _loginResult.value = "로그인 성공"
                         Log.d("TAG","success")
                     } else {

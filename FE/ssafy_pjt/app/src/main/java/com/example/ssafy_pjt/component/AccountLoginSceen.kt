@@ -1,6 +1,7 @@
 package com.example.ssafy_pjt.component
 
 import android.accounts.Account
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,12 +23,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -46,12 +50,25 @@ fun AccountLoginSceen(
     navController: NavController,
     viewModel: AccountLoginViewModel
 ){
-    var userEmail by remember { mutableStateOf(viewModel.userEmail.value ?: "") }
+    var userName by remember { mutableStateOf(viewModel.userName.value ?: "") }
     var userPassword by remember { mutableStateOf(viewModel.userPassword.value ?: "") }
     var (autoLogin,setAutoLogin) = remember { mutableStateOf(false) }
     var (checkUser,setCheckUser) = remember { mutableStateOf(false) }
     fun autoUserLogin(){
         setAutoLogin(true)
+    }
+    val loginResult by viewModel.loginResult.observeAsState()
+    val context = LocalContext.current
+    LaunchedEffect(loginResult) {
+        when(loginResult){
+            "로그인 성공" -> {
+                Toast.makeText(context,"로그인에 성공하셨습니다",Toast.LENGTH_SHORT).show()
+                navController.navigate("HomeSceen")
+            }
+            else -> {
+                Toast.makeText(context,"아이디 또는 비밀번호를 확인해 주세요",Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     Scaffold(
@@ -96,10 +113,10 @@ fun AccountLoginSceen(
                             modifier = modifier.padding(top = 30.dp)
                         )
                         TextField(
-                            value = userEmail,
-                            onValueChange = { newEmail->
-                                userEmail = newEmail
-                                viewModel.setUserEmail(newEmail)
+                            value = userName,
+                            onValueChange = { newName->
+                                userName = newName
+                                viewModel.setUserName(newName)
                             },
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -147,41 +164,13 @@ fun AccountLoginSceen(
                         ){
                             Button(
                                 onClick = {
-                                    /*viewModel.login()*/
-                                    navController.navigate("HomeSceen")
+                                    viewModel.login()
                                 },
                                 colors = ButtonDefaults.buttonColors(my_yellow),
                             ) {
                                 Text(
                                     text= stringResource(R.string.login),
                                     color = colorResource(R.color.black)
-                                )
-                            }
-                            if (checkUser){
-                                AlertDialog(
-                                    title = { Text(text= stringResource(R.string.infoCheck)) },
-                                    text = { Text(text= stringResource(R.string.infoCheckDetail)) },
-                                    confirmButton = {
-                                        Button(
-                                            colors = ButtonDefaults.buttonColors(my_blue),
-                                            onClick = { }
-                                        ) {
-                                            Text(text = stringResource(R.string.signUp))
-                                        }
-                                    },
-                                    dismissButton = {
-                                        Button(
-                                            colors = ButtonDefaults.buttonColors(my_blue),
-                                            onClick = {
-                                                setCheckUser(false)
-                                            }
-                                        ) {
-                                            Text(text= stringResource(R.string.cancle))
-                                        }
-                                    },
-                                    onDismissRequest = {
-                                        setCheckUser(false)
-                                    },
                                 )
                             }
                         }
