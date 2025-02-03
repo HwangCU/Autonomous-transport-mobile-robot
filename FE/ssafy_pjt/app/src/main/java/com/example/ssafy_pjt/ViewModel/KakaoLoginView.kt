@@ -1,11 +1,9 @@
-package com.example.ssafy_pjt
+package com.example.ssafy_pjt.ViewModel
 
 import android.app.Application
 import android.content.ContentValues.TAG
 import android.util.Log
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause

@@ -1,6 +1,7 @@
-package com.example.ssafy_pjt
+package com.example.ssafy_pjt.network
 
 import android.app.Application
+import com.example.ssafy_pjt.BuildConfig
 import com.kakao.sdk.common.KakaoSdk
 
 class MyApplication : Application(
