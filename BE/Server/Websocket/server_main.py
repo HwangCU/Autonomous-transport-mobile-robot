@@ -22,7 +22,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
 from websockets.asyncio.server import serve
 from Websocket.server_login import handle_login
 from Websocket.server_register import handle_registration
-from Websocket.server_protect import handle_protected_action
 from Websocket.server_mod_change import handle_mod_change, get_user_by_id  # 추가
 
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
@@ -84,8 +83,6 @@ async def handler(websocket):
 
                 if action == "mod_change":
                     response = await handle_mod_change(data, user)
-                elif action == "protected_action":
-                    response = await handle_protected_action(data, user)
             elif action == "register":
                 response = await handle_registration(data)
             elif action == "login":
