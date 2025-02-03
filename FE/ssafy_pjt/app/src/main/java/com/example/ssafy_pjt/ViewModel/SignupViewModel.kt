@@ -55,11 +55,11 @@ class SignupViewModel : ViewModel() {
                         _signupResult.value = "회원가입 성공"
                         Log.d("SignupViewModel", "회원가입 성공")
                     } else {
-                        _signupResult.value = "회원가입 실패: ${body?.message}"
+                        _signupResult.value = "${body?.message}"
                         Log.d("SignupViewModel", "회원가입 실패: ${body?.message}")
                     }
                 } else {
-                    _signupResult.value = "서버 오류: ${response.code()}"
+                    _signupResult.value = "${response.code()}"
                     Log.d("SignupViewModel", "서버 오류: ${response.errorBody()?.string()}")
                 }
             }

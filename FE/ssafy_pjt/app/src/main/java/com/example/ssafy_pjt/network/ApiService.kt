@@ -5,14 +5,15 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 data class LoginRequest(
-    val email: String,
+    val username: String,
     val password : String
 )
 
 data class LoginResponse(
-    val action: String,
+    val status:String,
     val message: String,
-    val token : String?
+    val access_token:String?,
+    val refresh_token : String?
 )
 
 data class SignupRequest (
@@ -27,9 +28,9 @@ data class SignupResponse(
 )
 
 interface ApiService{
-    @POST("/accounts/login/")
+    @POST("/api/login/")
     fun login(@Body request: LoginRequest): Call<LoginResponse>
-    @POST("/accounts/signup/")
+    @POST("/api/register/")
     fun signup(@Body request: SignupRequest): Call<SignupResponse>
 }
 

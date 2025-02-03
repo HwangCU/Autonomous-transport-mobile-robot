@@ -26,6 +26,7 @@ android {
         buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"${properties.getProperty("kakao_native_app_key")}\"")
         resValue("string","kakao_oauth_host","kakao${properties.getProperty("kakao_native_app_key")}")
         buildConfigField("String", "GOOGLE_OAUTH_CLIENT_ID", "\"${properties.getProperty("GOOGLE_OAUTH_CLIENT_ID")}\"")
+//        buildConfigField("string","SK_app_key","\"${properties.getProperty("SK_app_key")}\"")
     }
 
     buildTypes {
