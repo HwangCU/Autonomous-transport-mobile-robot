@@ -12,7 +12,6 @@ def create_user(data):
     user = User.objects.create(
         username=data["username"],
         password=make_password(data["password"]),  # bcrypt 해싱
-        name=data["name"],
         email=data["email"],
     )
     user.save()
@@ -27,7 +26,7 @@ def check_user_exists(field, value):
 async def handle_registration(data):
     """회원가입 처리"""
     try:
-        required_fields = {"username", "password", "name", "email"}
+        required_fields = {"username", "password", "email"}
         if not required_fields.issubset(data.keys()):
             return {"status": "error", "message": "Missing required fields"}
 

@@ -25,13 +25,12 @@ def register_view(request):
 
     username = data.get("username")
     password = data.get("password")
-    name = data.get("name")
     email = data.get("email")
-    if not username or not password or not name or not email:
+    if not username or not password or not email:
         return JsonResponse(
             {
                 "status": "error",
-                "message": f"Not enough user informations. {username} {password} {name} {email}",
+                "message": f"Not enough user informations. {username} {password} {email}",
             },
             status=400,
         )
@@ -41,7 +40,6 @@ def register_view(request):
         "action": "register",
         "username": username,
         "password": password,
-        "name": name,
         "email": email,
     }
 
