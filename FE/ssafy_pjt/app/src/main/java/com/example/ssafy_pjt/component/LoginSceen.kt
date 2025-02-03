@@ -25,10 +25,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.activity.compose.rememberLauncherForActivityResult
-import com.example.ssafy_pjt.ApiState
-import com.example.ssafy_pjt.GoogleApiContract
-import com.example.ssafy_pjt.GoogleLoginViewModel
-import com.example.ssafy_pjt.KakaoAuthViewModel
+import com.example.ssafy_pjt.ViewModel.ApiState
+import com.example.ssafy_pjt.network.GoogleApiContract
+import com.example.ssafy_pjt.ViewModel.GoogleLoginViewModel
+import com.example.ssafy_pjt.ViewModel.KakaoAuthViewModel
 import com.example.ssafy_pjt.R
 import com.example.ssafy_pjt.ui.theme.loginTitle
 import com.example.ssafy_pjt.ui.theme.my_blue

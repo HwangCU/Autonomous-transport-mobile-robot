@@ -11,6 +11,9 @@ composeBom = "2024.04.01"
 toolsCore = "1.0.0-alpha10"
 navigationCompose = "2.8.5"
 playServicesLocation = "21.3.0"
+navigationRuntimeAndroid = "2.9.0-alpha05"
+navigationRuntimeKtx = "2.8.6"
+runtimeLivedata = "1.7.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -30,6 +33,10 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-tools-core = { group = "androidx.privacysandbox.tools", name = "tools-core", version.ref = "toolsCore" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+androidx-navigation-runtime-android = { group = "androidx.navigation", name = "navigation-runtime-android", version.ref = "navigationRuntimeAndroid" }
+androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
+androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

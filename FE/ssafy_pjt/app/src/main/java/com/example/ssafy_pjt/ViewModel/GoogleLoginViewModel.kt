@@ -1,4 +1,4 @@
-package com.example.ssafy_pjt
+package com.example.ssafy_pjt.ViewModel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

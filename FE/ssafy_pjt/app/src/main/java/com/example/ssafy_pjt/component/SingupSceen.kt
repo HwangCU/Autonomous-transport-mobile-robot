@@ -32,12 +32,17 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.ssafy_pjt.R
 import com.example.ssafy_pjt.ui.theme.my_blue
 import com.example.ssafy_pjt.ui.theme.my_white
 import com.example.ssafy_pjt.ui.theme.my_yellow
 import com.example.ssafy_pjt.ui.theme.signupTitle
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.ssafy_pjt.ViewModel.SignupViewModel
 
 
 @Composable
@@ -45,11 +50,27 @@ fun SignupSceen(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
+    val viewModel: SignupViewModel = viewModel()  // ViewModel 초기화
+
     var userName by remember { mutableStateOf("") }
     var userEmail by remember { mutableStateOf("") }
     var userPassword by remember { mutableStateOf("") }
     var userPasswordAgain by remember { mutableStateOf("") }
     var (checkUser,setCheckUser) = remember { mutableStateOf(false) }
+
+    // LiveData를 State로 변환
+    val signupResult by viewModel.signupResult.observeAsState()
+
+    // signupResult 변화 감지
+    LaunchedEffect(signupResult) {
+        when (signupResult) {
+            "회원가입 성공" -> {
+                navController.navigate("login") {
+                    popUpTo("signup") { inclusive = true }
+                }
+            }
+        }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -59,7 +80,7 @@ fun SignupSceen(
             modifier = modifier
                 .padding(top = 137.dp)
                 .fillMaxWidth()
-                    .padding(paddingValues),
+                .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -82,8 +103,8 @@ fun SignupSceen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp),  // 여백 추가
-                        verticalArrangement = Arrangement.Center,  // 세로 중앙 정렬
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.Center,
                     ) {
                         // 사용자 이름 입력란
                         Text(
@@ -92,7 +113,10 @@ fun SignupSceen(
                         )
                         TextField(
                             value = userName,
-                            onValueChange = { userName = it },
+                            onValueChange = {
+                                userName = it
+                                viewModel.setUsername(it)
+                            },
                             modifier = Modifier.fillMaxWidth()
                         )
                         // 사용자 이메일 입력란
@@ -103,7 +127,10 @@ fun SignupSceen(
                         )
                         TextField(
                             value = userEmail,
-                            onValueChange = { userEmail = it },
+                            onValueChange = {
+                                userEmail = it
+                                viewModel.setUserEmail(it)
+                            },
                             modifier = Modifier.fillMaxWidth()
                         )
                         // 비밀번호 입력란
@@ -114,7 +141,10 @@ fun SignupSceen(
                         )
                         TextField(
                             value = userPassword,
-                            onValueChange = { userPassword = it },
+                            onValueChange = {
+                                userPassword = it
+                                viewModel.setUserPassword(it)
+                            },
                             modifier = Modifier.fillMaxWidth(),
                             visualTransformation = PasswordVisualTransformation()
                         )
@@ -137,22 +167,31 @@ fun SignupSceen(
                             contentAlignment = Alignment.Center,
                         ){
                             Button(
-                                onClick = {setCheckUser(true)},
+                                onClick = {
+                                    if (userPassword == userPasswordAgain) {
+                                        if (viewModel.validateInputs()) {
+                                            viewModel.signup()
+                                            setCheckUser(true)
+                                        }
+                                    }
+                                },
                                 colors = ButtonDefaults.buttonColors(my_yellow),
                             ) {
                                 Text(
-                                    text= stringResource(R.string.signUp),
+                                    text = stringResource(R.string.signUp),
                                     color = colorResource(R.color.black)
                                 )
                             }
-                            if (checkUser){
+                            if (checkUser) {
                                 AlertDialog(
-                                    title = { Text(text=stringResource(R.string.infoCheck)) },
-                                    text = { Text(text= stringResource(R.string.infoCheckDetail)) },
+                                    title = { Text(text = stringResource(R.string.infoCheck)) },
+                                    text = { Text(text = stringResource(R.string.infoCheckDetail)) },
                                     confirmButton = {
                                         Button(
                                             colors = ButtonDefaults.buttonColors(my_blue),
-                                            onClick = {}
+                                            onClick = {
+                                                viewModel.signup()
+                                            }
                                         ) {
                                             Text(text = stringResource(R.string.signUp))
                                         }
@@ -164,7 +203,7 @@ fun SignupSceen(
                                                 setCheckUser(false)
                                             }
                                         ) {
-                                            Text(text= stringResource(R.string.cancle))
+                                            Text(text = stringResource(R.string.cancle))
                                         }
                                     },
                                     onDismissRequest = {
@@ -177,7 +216,7 @@ fun SignupSceen(
                 }
             }
             Text(
-                text= stringResource(R.string.back),
+                text = stringResource(R.string.back),
                 color = my_blue,
                 modifier = modifier
                     .padding(top = 10.dp)
