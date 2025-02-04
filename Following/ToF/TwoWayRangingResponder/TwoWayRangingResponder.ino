@@ -166,6 +166,35 @@ void receiver() {
     DW1000Ng::startReceive();
 }
 
+//float Q = 0.001; //프로세스 노이즈 공분산
+//float R = 0.1; // 측정 노이즈 공분산
+//float X = 0; // 추정 거리 값
+//float P = 1, K = 0; // 공분산과 칼만 게인
+
+//float kalman(double distance){
+//  P = P + Q;
+//  K = P / (P + R);
+//  X = X + K * (distance - X);
+//  P = (1 - K) * P;
+//  String test ="[["; 
+//  test += "P: "; test += P; test += ", K: "; test += K;
+//  test += ", X: "; test += X; 
+//  test += "]]";
+//  Serial.println(test);
+//  return X;
+//}
+
+float A = 1, H = 1, Q = 0, R = 4, x = 14, P =6;
+
+float kalman(double distance){
+  float xp = A * x;
+  float pp = A * P * A + Q;
+  float K = pp * H / (H * pp * H + R);
+  x = xp + K*(distance - H * xp);
+  P = pp - K * H * pp;
+  return x;
+}
+
 void loop() {
     int32_t curMillis = millis();
     if (!sentAck && !receivedAck) {
@@ -229,14 +258,19 @@ void loop() {
 //                  mySerial.println(txString);
 //                  Serial.print("DISTANCE SENT!!!");
 //                }
-                  
-                  
+
+                String kalmanTest = "{Origin: "; kalmanTest += distance;
+                float kal = kalman(distance);
+                kalmanTest += ", Kalman: "; kalmanTest += kal; kalmanTest += "}";
+                Serial.println(kalmanTest);
                   // send to raspberry pi
+//                String txString = "{TM: "; txString += 
                 String txString = "";
                 txString += distance;
+                
                 MySerial.println(txString);  // Raspberry Pi로 데이터 전송
-                Serial.println("Sent data to Raspberry Pi");  // 시리얼 모니터 확인용
-
+                Serial.print("Sent data to Raspberry Pi");  // 시리얼 모니터 확인용
+                Serial.println(distance);
 
                   
                 //Serial.print("FP power is [dBm]: "); Serial.print(DW1000Ng::getFirstPathPower());
