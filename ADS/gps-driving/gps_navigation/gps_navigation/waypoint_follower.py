@@ -7,8 +7,8 @@ from custom_interfaces.msg import AckermannDrive
 import numpy as np
 import csv
 import math
-from .utils.coordinate_utils import CoordinateConverter
-from .controllers.pure_pursuit import PurePursuit
+from gps_navigation.utils.coordinate_utils import CoordinateConverter
+from gps_navigation.controllers.pure_pursuit import PurePursuit
 
 class WaypointFollower(Node):
    def __init__(self):
