@@ -17,10 +17,7 @@ setup(
         (os.path.join('share', package_name, 'config'),
            glob('config/*.csv')),
     ],
-    install_requires=[
-        'setuptools',
-        'custom_interfaces',
-        ],
+    install_requires=['setuptools'],
     zip_safe=True,
     maintainer='c103',
     maintainer_email='c103@todo.todo',

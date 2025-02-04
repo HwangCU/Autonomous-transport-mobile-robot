@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'gps_imu_publisher'
+package_name = 'road_API'
 
 setup(
     name=package_name,
@@ -11,7 +11,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
     ],
-    install_requires=['setuptools'],
+    install_requires=['setuptools', 'python-dotenv'],
     zip_safe=True,
     maintainer='c103',
     maintainer_email='c103@todo.todo',
@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'gps_imu_publisher_node = gps_imu_publisher.gps_imu_publisher_node:main',
+            'map_node = road_API.map_node:main',
         ],
     },
 )
