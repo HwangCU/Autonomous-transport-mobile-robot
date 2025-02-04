@@ -14,6 +14,7 @@ class GoogleLoginViewModel : ViewModel() {
 
     fun handleGoogleSignInResult(task: Task<GoogleSignInAccount>?) {
         _loginApiState.value = ApiState.Loading
+        Log.d("TAG","${task}")
         if (task == null) {
             _loginApiState.value = ApiState.Error("Google 로그인 실패")
             return
@@ -21,14 +22,14 @@ class GoogleLoginViewModel : ViewModel() {
         try {
             val account = task.getResult(ApiException::class.java)
             account?.let {
-                Log.d("LoginViewModel", "Google sign in success: ${account.id}")
+                Log.d("TAG", "Google sign in success: ${account.id}")
                 // 여기서 서버에 토큰을 전송하는 등의 추가 처리
                 _loginApiState.value = ApiState.Success("Google 로그인 성공")
             } ?: run {
                 _loginApiState.value = ApiState.Error("Google 로그인 실패")
             }
         } catch (e: ApiException) {
-            Log.e("LoginViewModel", "Google sign in failed: ${e.statusCode}")
+            Log.e("TAG", "Google sign in failed: ${e.statusCode}")
             _loginApiState.value = ApiState.Error("Google 로그인 실패")
         }
     }

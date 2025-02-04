@@ -1,6 +1,8 @@
 package com.example.ssafy_pjt.component
 
+import android.app.Activity
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,11 +27,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import com.example.ssafy_pjt.ViewModel.ApiState
-import com.example.ssafy_pjt.network.GoogleApiContract
 import com.example.ssafy_pjt.ViewModel.GoogleLoginViewModel
 import com.example.ssafy_pjt.ViewModel.KakaoAuthViewModel
 import com.example.ssafy_pjt.R
+import com.example.ssafy_pjt.network.GoogleApiContract
 import com.example.ssafy_pjt.ui.theme.loginTitle
 import com.example.ssafy_pjt.ui.theme.my_blue
 import com.example.ssafy_pjt.ui.theme.my_yellow
@@ -42,21 +49,36 @@ fun LoginSceen(
     navController: NavController
 ) {
     val loginApiState by googleViewModel.loginApiState.collectAsState()
+    val KakaoLoginResult by viewModel.kakaologinResult.observeAsState()
+    val context = LocalContext.current
     val authResultLauncher = rememberLauncherForActivityResult(
         contract = GoogleApiContract()
     ) { task ->
         googleViewModel.handleGoogleSignInResult(task)
     }
 
+
+    LaunchedEffect(KakaoLoginResult) {
+        when(KakaoLoginResult){
+            "로그인 성공" -> {
+                Toast.makeText(context,"로그인에 성공하셨습니다", Toast.LENGTH_SHORT).show()
+                navController.navigate("HomeSceen")
+            } else -> {
+            Toast.makeText(context,KakaoLoginResult, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     LaunchedEffect(loginApiState) {
         when (loginApiState) {
             is ApiState.Success -> {
                 // 로그인 성공 시 처리 (예: 메인 화면으로 이동)
+                Log.d("TAG","success")
                 navController.navigate("main")
             }
             is ApiState.Error -> {
                 // 에러 처리
-                Log.e("LoginScreen", "Google login error: ${(loginApiState as ApiState.Error).message}")
+                Log.e("TAG", "Google login error: ${(loginApiState as ApiState.Error).message}")
             }
             else -> {}
         }
@@ -133,7 +155,7 @@ fun LoginSceen(
                     .padding(start = 25.dp, top = 10.dp)
                     .fillMaxWidth(0.8f),
                 onClick = {
-                    authResultLauncher.launch(1) 
+                    authResultLauncher.launch(1)
                           },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.white),
