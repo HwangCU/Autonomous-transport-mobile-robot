@@ -23,6 +23,7 @@ from websockets.asyncio.server import serve
 from Websocket.server_login import handle_login
 from Websocket.server_register import handle_registration
 from Websocket.server_mod_change import handle_mod_change, get_user_by_id  # 추가
+from Websocket.server_robot import handle_robot_registration
 
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 ssl_context.load_cert_chain(
@@ -66,7 +67,7 @@ async def handler(websocket):
 
             action = data.get("action")
 
-            if action in ["mod_change", "protected_action"]:
+            if action in ["mod_change", "protected_action", "register_robot"]:
                 token = data.get("access_token")
                 if not token:
                     response = {
@@ -83,6 +84,8 @@ async def handler(websocket):
 
                 if action == "mod_change":
                     response = await handle_mod_change(data, user)
+                elif action == "register_robot":
+                    response = await handle_robot_registration(data, user)
             elif action == "register":
                 response = await handle_registration(data)
             elif action == "login":
