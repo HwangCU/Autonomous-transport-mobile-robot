@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "login",
     "client",
     "register",
+    "kakaologin",
+    "robot",
 ]
 
 MIDDLEWARE = [

@@ -8,6 +8,7 @@ import ssl
 from datetime import datetime, timedelta
 import jwt
 import base64
+from asgiref.sync import sync_to_async
 
 # Django 환경 설정
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../c103")))
@@ -16,13 +17,25 @@ import django
 
 django.setup()
 
+from users.models import User
+
+
+@sync_to_async
+def get_user_by_id(user_id):
+    """User ID로 사용자 검색"""
+    try:
+        return User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return None
+
+
 # websockets
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
 
 from websockets.asyncio.server import serve
 from Websocket.server_login import handle_login
 from Websocket.server_register import handle_registration
-from Websocket.server_mod_change import handle_mod_change, get_user_by_id  # 추가
+from Websocket.server_mod_change import handle_mod_change  # 추가
 from Websocket.server_robot import handle_robot_registration
 
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
@@ -67,7 +80,7 @@ async def handler(websocket):
 
             action = data.get("action")
 
-            if action in ["mod_change", "protected_action", "register_robot"]:
+            if action in ["mod_change", "protected_action", "regist_robot"]:
                 token = data.get("access_token")
                 if not token:
                     response = {
@@ -84,7 +97,7 @@ async def handler(websocket):
 
                 if action == "mod_change":
                     response = await handle_mod_change(data, user)
-                elif action == "register_robot":
+                elif action == "regist_robot":
                     response = await handle_robot_registration(data, user)
             elif action == "register":
                 response = await handle_registration(data)
