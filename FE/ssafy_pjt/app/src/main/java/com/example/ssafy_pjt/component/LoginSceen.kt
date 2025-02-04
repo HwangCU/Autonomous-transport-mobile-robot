@@ -74,7 +74,7 @@ fun LoginSceen(
             is ApiState.Success -> {
                 // 로그인 성공 시 처리 (예: 메인 화면으로 이동)
                 Log.d("TAG","success")
-                navController.navigate("main")
+                navController.navigate("HomeSceen")
             }
             is ApiState.Error -> {
                 // 에러 처리

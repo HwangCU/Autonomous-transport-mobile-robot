@@ -19,14 +19,12 @@ class GoogleApiContract : ActivityResultContract<Int, Task<GoogleSignInAccount>?
             .build()
 
         val intent = GoogleSignIn.getClient(context, gso)
-        Log.d("TAG", "gso: $gso ")
-
-        Log.d("TAG", "intent:  $intent")
         return intent.signInIntent
     }
 
     override fun parseResult(resultCode: Int, intent: Intent?): Task<GoogleSignInAccount>? {
         Log.d("TAG", "resultCode: $resultCode ")
+        Log.d("TAG", "BuildConfig.GOOGLE_OAUTH_CLIENT_ID : ${BuildConfig.GOOGLE_OAUTH_CLIENT_ID}")
         intent?.extras?.keySet()?.forEach { key ->
             Log.d("TAG", "Key: $key, Value: ${intent.extras?.get(key)}")
         }
