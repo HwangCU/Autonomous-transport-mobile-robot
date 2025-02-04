@@ -2,6 +2,7 @@ package com.example.ssafy_pjt
 
 import DeliverySceen
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,6 +19,7 @@ import com.example.ssafy_pjt.component.HomeScreen
 import com.example.ssafy_pjt.component.LoginSceen
 import com.example.ssafy_pjt.component.SignupSceen
 import com.example.ssafy_pjt.ui.theme.Ssafy_pjtTheme
+import com.kakao.sdk.common.util.Utility
 
 class MainActivity : ComponentActivity() {
 

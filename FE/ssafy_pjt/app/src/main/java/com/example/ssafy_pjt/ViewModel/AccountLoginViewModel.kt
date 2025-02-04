@@ -31,8 +31,6 @@ class AccountLoginViewModel: ViewModel() {
     fun login(){
         val username = _userName.value ?: ""
         val password = _userPassword.value ?: ""
-        Log.d("TAG",username)
-        Log.d("TAG",password)
         val request = LoginRequest(username,password)
 
         RetrofitClient.instance.login(request).enqueue(object : Callback<LoginResponse> {
