@@ -1,71 +1,12 @@
-/*
- * MIT License
- * 
- * Copyright (c) 2018 Michele Biondi, Andrea Salvatori
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
-*/
-
-/*
- * Copyright (c) 2015 by Thomas Trojer <thomas@trojer.net>
- * Decawave DW1000 library for arduino.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @file RangingAnchor.ino
- * Use this to test two-way ranging functionality with two
- * DW1000Ng:: This is the anchor component's code which computes range after
- * exchanging some messages. Addressing and frame filtering is currently done
- * in a custom way, as no MAC features are implemented yet.
- *
- * Complements the "RangingTag" example sketch.
- *
- * @todo
- *  - weighted average of ranging results based on signal quality
- *  - use enum instead of define
- *  - move strings to flash (less RAM consumption)
- */
-
 #include <DW1000Ng.hpp>
 #include <DW1000NgUtils.hpp>
 #include <DW1000NgRanging.hpp>
 
-/*
-// connection pins
-const uint8_t PIN_RST = 9; // reset pin
-const uint8_t PIN_IRQ = 2; // irq pin
-const uint8_t PIN_SS = SS; // spi select pin
-*/
-
 const uint8_t PIN_SCK = 18;  //Clock 데이터
 const uint8_t PIN_MOSI = 23; //Master Out Salve In
 const uint8_t PIN_MISO = 19; //Master In Slave Out
+//const uint8_t PIN_MOSI = 27; //Master Out Salve In
+//const uint8_t PIN_MISO = 26; //Master In Slave Out
 const uint8_t PIN_SS = 4;  // ss||cs Slave(Chip) Select 여러 슬레이브 중 하나 선택 
 const uint8_t PIN_RST = 15; // Reset
 const uint8_t PIN_IRQ = 17;  // Interrupt Request 
@@ -77,6 +18,12 @@ const uint8_t PIN_IRQ = 17;  // Interrupt Request
 #define RANGE 2
 #define RANGE_REPORT 3
 #define RANGE_FAILED 255
+
+#define RX_PIN 26
+#define TX_PIN 27
+
+HardwareSerial MySerial(1);
+
 // message flow state
 volatile byte expectedMsgId = POLL;
 // message sent/received state
@@ -129,6 +76,7 @@ interrupt_configuration_t DEFAULT_INTERRUPT_CONFIG = {
     true
 };
 
+
 void setup() {
     // DEBUG monitoring
     Serial.begin(115200);
@@ -165,6 +113,9 @@ void setup() {
     noteActivity();
     // for first time ranging frequency computation
     rangingCountPeriod = millis();
+
+    MySerial.begin(9600,SERIAL_8N1, RX_PIN, TX_PIN);
+
 }
 
 void noteActivity() {
@@ -213,6 +164,35 @@ void receiver() {
     DW1000Ng::forceTRxOff();
     // so we don't need to restart the receiver manually
     DW1000Ng::startReceive();
+}
+
+//float Q = 0.001; //프로세스 노이즈 공분산
+//float R = 0.1; // 측정 노이즈 공분산
+//float X = 0; // 추정 거리 값
+//float P = 1, K = 0; // 공분산과 칼만 게인
+
+//float kalman(double distance){
+//  P = P + Q;
+//  K = P / (P + R);
+//  X = X + K * (distance - X);
+//  P = (1 - K) * P;
+//  String test ="[["; 
+//  test += "P: "; test += P; test += ", K: "; test += K;
+//  test += ", X: "; test += X; 
+//  test += "]]";
+//  Serial.println(test);
+//  return X;
+//}
+
+float A = 1, H = 1, Q = 0, R = 4, x = 14, P =6;
+
+float kalman(double distance){
+  float xp = A * x;
+  float pp = A * P * A + Q;
+  float K = pp * H / (H * pp * H + R);
+  x = xp + K*(distance - H * xp);
+  P = pp - K * H * pp;
+  return x;
 }
 
 void loop() {
@@ -272,6 +252,27 @@ void loop() {
                 rangeString += "\t RX power: "; rangeString += DW1000Ng::getReceivePower(); rangeString += " dBm";
                 rangeString += "\t Sampling: "; rangeString += samplingRate; rangeString += " Hz";
                 Serial.println(rangeString);
+//                if(mySerial.available() > 0){ //Serial통신
+//                  String txString = "";
+//                  txString += distance;
+//                  mySerial.println(txString);
+//                  Serial.print("DISTANCE SENT!!!");
+//                }
+
+                String kalmanTest = "{Origin: "; kalmanTest += distance;
+                float kal = kalman(distance);
+                kalmanTest += ", Kalman: "; kalmanTest += kal; kalmanTest += "}";
+                Serial.println(kalmanTest);
+                  // send to raspberry pi
+//                String txString = "{TM: "; txString += 
+                String txString = "";
+                txString += distance;
+                
+                MySerial.println(txString);  // Raspberry Pi로 데이터 전송
+                Serial.print("Sent data to Raspberry Pi");  // 시리얼 모니터 확인용
+                Serial.println(distance);
+
+                  
                 //Serial.print("FP power is [dBm]: "); Serial.print(DW1000Ng::getFirstPathPower());
                 //Serial.print("RX power is [dBm]: "); Serial.println(DW1000Ng::getReceivePower());
                 //Serial.print("Receive quality: "); Serial.println(DW1000Ng::getReceiveQuality());
