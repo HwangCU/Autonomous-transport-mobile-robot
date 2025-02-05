@@ -13,9 +13,17 @@
     <string name="infoCheck">정보 확인</string>
     <string name="infoCheckDetail">위와 같은 정보로 회원가입을 진행하시겠습니까?</string>
     <string name="cancle">취소</string>
+    <string name="ok">확인</string>
     <string name="execution">실행</string>
     <string name="signup">가입</string>
     <string name="autoLogin">자동 로그인</string>
+    <string name="robotRegistration">서비스 이용을 위해\n 로봇을 등록해주세요</string>
+    <string name="homeRegistration">서비스 이용을 위해\n 집 주소를 등록해주세요</string>
+    <string name="homeSearchTitle">주소 검색</string>
+    <string name="homeSearch">집 주소지를 검색해주세요</string>
+    <string name="addressTtiel">주소</string>
+    <string name="roadName">도로명 주소</string>
+    <string name="detailName">상세 주소</string>
     <string name="deliveryMode">배달 모드 실행</string>
     <string name="deliveryModeContent">배달 모드를 실행하시겠습니까</string>
 </resources>

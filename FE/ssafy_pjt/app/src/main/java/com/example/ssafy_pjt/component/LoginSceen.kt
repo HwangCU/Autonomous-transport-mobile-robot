@@ -142,7 +142,7 @@ fun LoginSceen(
                     .padding(start = 25.dp, top = 10.dp)
                     .fillMaxWidth(0.8f),
                 onClick = {
-                    viewModel.handleKakaoLogin()
+                    viewModel.snsLogin()
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.yellow),

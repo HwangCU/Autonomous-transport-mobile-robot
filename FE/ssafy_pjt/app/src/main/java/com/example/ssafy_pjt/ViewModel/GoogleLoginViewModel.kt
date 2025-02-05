@@ -31,7 +31,7 @@ class GoogleLoginViewModel : ViewModel() {
                 Log.d("TAG", "account.id: ${account.id}")
                 Log.d("TAG", "account.email: ${account.email}")
                 // 여기서 서버에 토큰을 전송하는 등의 추가 처리
-                snsLogin(
+                googleLogin(
                     account.id?.toLongOrNull() ?: -1L,
                     account.email ?: "none"
                 )
@@ -45,12 +45,12 @@ class GoogleLoginViewModel : ViewModel() {
         }
     }
 
-    fun snsLogin(
+    fun googleLogin(
         id: Long,
         email:String
     ){
         val result = SnsLoginRequest(userNumber = id, username = email, userLoginResource = "google")
-        RetrofitClient.instance.kakaoLogin(result).enqueue(object : Callback<SnsLoginResponse> {
+        RetrofitClient.instance.snsLogin(result).enqueue(object : Callback<SnsLoginResponse> {
             override fun onResponse(call: Call<SnsLoginResponse>, response: Response<SnsLoginResponse>) {
                 if (response.isSuccessful) {
                     val body = response.body()
