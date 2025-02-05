@@ -3,12 +3,10 @@
 #include <DW1000NgRanging.hpp>
 #include <DW1000NgRTLS.hpp>
 
-#define PASS 10
-
 // connection pins
 const uint8_t PIN_SCK = 18;  //Clock 데이터
 const uint8_t PIN_MOSI = 23; //Master Out Salve In
-const uint8_t PIN_MISO = 19; //Maister In Slave Out
+const uint8_t PIN_MISO = 19; //Master In Slave Out
 const uint8_t PIN_SS = 4;  // ss||cs Slave(Chip) Select 여러 슬레이브 중 하나 선택 
 const uint8_t PIN_RST = 15; // Reset
 const uint8_t PIN_IRQ = 17;  // Interrupt Request 
@@ -46,30 +44,6 @@ frame_filtering_configuration_t ANCHOR_FRAME_FILTER_CONFIG = {
     false,
     false
 };
-
-float A = 1, H = 1, Q = 0, R = 4, x = 0.3, P =6;
-int passed_time = 0;
-bool first = true;
-
-float kalman(double distance){
-  if(first){
-    first = false;
-  }
-  else if (abs(distance - x) > 1 && passed_time < PASS){
-    passed_time += 1;
-    return x;
-  }
-  if(passed_time == PASS){
-    passed_time = 0;
-  }
-    
-  float xp = A * x;
-  float pp = A * P * A + Q;
-  float K = pp * H / (H * pp * H + R);
-  x = xp + K*(distance - H * xp);
-  P = pp - K * H * pp;
-  return x;
-}
 
 void setup() {
     // DEBUG monitoring
@@ -126,11 +100,6 @@ void loop() {
         if(result.success) {
             delay(2); // Tweak based on your hardware
             range_self = result.range;
-            Serial.print("origin: ");
-            Serial.println(range_self);
-            range_self = kalman(range_self);
-            Serial.print("kalman: ");
-            Serial.println(range_self);
             transmitRangeReport();
 
             String rangeString = "Range: "; rangeString += range_self; rangeString += " m";
