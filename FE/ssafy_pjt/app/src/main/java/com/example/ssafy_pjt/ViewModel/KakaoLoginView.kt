@@ -26,7 +26,7 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
     val kakaologinResult: LiveData<String> get() = _kakaologinResult
 
 
-    fun handleKakaoLogin() {
+    fun snsLogin() {
         // 로그인 조합 예제
         // 카카오계정으로 로그인 공통 callback 구성
         // 카카오톡으로 로그인 할 수 없어 카카오계정으로 로그인할 경우 사용됨
@@ -89,7 +89,7 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
         email:String
     ){
         val result = SnsLoginRequest(userNumber = id, username = email, userLoginResource = "kakao")
-        RetrofitClient.instance.kakaoLogin(result).enqueue(object : Callback<SnsLoginResponse> {
+        RetrofitClient.instance.snsLogin(result).enqueue(object : Callback<SnsLoginResponse> {
             override fun onResponse(call: Call<SnsLoginResponse>, response: Response<SnsLoginResponse>) {
                 if (response.isSuccessful) {
                     val body = response.body()

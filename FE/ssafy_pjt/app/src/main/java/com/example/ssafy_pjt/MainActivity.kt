@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,7 +16,9 @@ import com.example.ssafy_pjt.ViewModel.AccountLoginViewModel
 import com.example.ssafy_pjt.ViewModel.GoogleLoginViewModel
 import com.example.ssafy_pjt.ViewModel.KakaoAuthViewModel
 import com.example.ssafy_pjt.component.AccountLoginSceen
+import com.example.ssafy_pjt.component.HomeRefistrationScreen
 import com.example.ssafy_pjt.component.HomeScreen
+import com.example.ssafy_pjt.component.HomeSearchScreen
 import com.example.ssafy_pjt.component.LoginSceen
 import com.example.ssafy_pjt.component.SignupSceen
 import com.example.ssafy_pjt.ui.theme.Ssafy_pjtTheme
@@ -35,7 +38,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = "login"
+                    startDestination = "homeRegisration"
                 ){
                     composable("login") {
                         LoginSceen(
@@ -66,6 +69,18 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("DeliverySceen") {
                         DeliverySceen(
+                            modifier = Modifier,
+                            navController = navController
+                        )
+                    }
+                    composable("homeRegisration") {
+                        HomeRefistrationScreen(
+                            modifier= Modifier,
+                            navController = navController
+                        )
+                    }
+                    composable("homeSearch") {
+                        HomeSearchScreen(
                             modifier = Modifier,
                             navController = navController
                         )

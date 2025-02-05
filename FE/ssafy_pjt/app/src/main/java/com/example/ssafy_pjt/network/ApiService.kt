@@ -40,6 +40,14 @@ data class SnsLoginResponse(
     val refresh_token : String?
 )
 
+data class adressRequest(
+    val address:String
+)
+
+data class adressResponse(
+    val status: String,
+    val road_addresses: List<String>
+)
 
 
 interface ApiService{
@@ -48,6 +56,8 @@ interface ApiService{
     @POST("/api/register/")
     fun signup(@Body request: SignupRequest): Call<SignupResponse>
     @POST("/api/sns_login")
-    fun kakaoLogin(@Body request: SnsLoginRequest): Call<SnsLoginResponse>
+    fun snsLogin(@Body request: SnsLoginRequest): Call<SnsLoginResponse>
+    @POST("/api/getadress")
+    fun adress(@Body request: adressRequest): Call<adressResponse>
 }
 
