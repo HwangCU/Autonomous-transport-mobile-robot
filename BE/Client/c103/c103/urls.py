@@ -6,6 +6,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("login.urls")),  # FE는 /api/login/으로 호출
     path("api/", include("register.urls")),
-    path("api/", include("kakaologin.urls")),
     path("api/", include("robot.urls")),
 ]
