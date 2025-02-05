@@ -38,6 +38,7 @@ from Websocket.server_register import handle_registration
 from Websocket.server_mod_change import handle_mod_change  # 추가
 from Websocket.server_robot import handle_robot_registration
 from Websocket.server_address import handle_address_update
+from Websocket.server_sociallogin import handle_sociallogin
 
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 ssl_context.load_cert_chain(
@@ -106,6 +107,8 @@ async def handler(websocket):
                 response = await handle_login(data)
             elif action == "address_regist":
                 response = await handle_address_update(data)
+            elif action == "social_login":
+                response = await handle_sociallogin(data)
             else:
                 response = {"status": "error", "message": "Invalid action"}
 
