@@ -7,4 +7,5 @@ urlpatterns = [
     path("api/", include("login.urls")),  # FE는 /api/login/으로 호출
     path("api/", include("register.urls")),
     path("api/", include("robot.urls")),
+    path("api/", include("address.urls")),
 ]

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "client",
     "register",
     "robot",
+    "address",
 ]
 
 MIDDLEWARE = [
