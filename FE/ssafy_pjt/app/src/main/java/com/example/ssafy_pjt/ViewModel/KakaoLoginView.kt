@@ -6,10 +6,10 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.ssafy_pjt.network.KakaoLoginRequest
-import com.example.ssafy_pjt.network.KakaoLoginResponse
 import com.example.ssafy_pjt.network.LoginResponse
 import com.example.ssafy_pjt.network.RetrofitClient
+import com.example.ssafy_pjt.network.SnsLoginRequest
+import com.example.ssafy_pjt.network.SnsLoginResponse
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
@@ -76,7 +76,7 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
                         "\n이메일: ${user.kakaoAccount?.email}" +
                         "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
                         "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
-                KakaoLogin(
+                snsLogin(
                     user.id ?: -1L,
                     user.kakaoAccount?.email ?: "none"
                 )
@@ -84,13 +84,13 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    fun KakaoLogin(
+    fun snsLogin(
         id: Long,
         email:String
     ){
-        val result = KakaoLoginRequest(userNumber = id, username = email)
-        RetrofitClient.instance.kakaoLogin(result).enqueue(object : Callback<KakaoLoginResponse> {
-            override fun onResponse(call: Call<KakaoLoginResponse>, response: Response<KakaoLoginResponse>) {
+        val result = SnsLoginRequest(userNumber = id, username = email, userLoginResource = "kakao")
+        RetrofitClient.instance.kakaoLogin(result).enqueue(object : Callback<SnsLoginResponse> {
+            override fun onResponse(call: Call<SnsLoginResponse>, response: Response<SnsLoginResponse>) {
                 if (response.isSuccessful) {
                     val body = response.body()
                     Log.d("TAG","${body}")
@@ -107,7 +107,7 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
                 }
             }
 
-            override fun onFailure(call: Call<KakaoLoginResponse>, t: Throwable) {
+            override fun onFailure(call: Call<SnsLoginResponse>, t: Throwable) {
                 Log.d("TAG","network")
                 _kakaologinResult.value="네트워크 오류"
             }

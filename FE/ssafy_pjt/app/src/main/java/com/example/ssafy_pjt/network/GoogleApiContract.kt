@@ -15,6 +15,7 @@ class GoogleApiContract : ActivityResultContract<Int, Task<GoogleSignInAccount>?
     override fun createIntent(context: Context, input: Int): Intent {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(BuildConfig.GOOGLE_OAUTH_CLIENT_ID)
+            .requestEmail()
             .requestId()
             .build()
 
@@ -23,11 +24,6 @@ class GoogleApiContract : ActivityResultContract<Int, Task<GoogleSignInAccount>?
     }
 
     override fun parseResult(resultCode: Int, intent: Intent?): Task<GoogleSignInAccount>? {
-        Log.d("TAG", "resultCode: $resultCode ")
-        Log.d("TAG", "BuildConfig.GOOGLE_OAUTH_CLIENT_ID : ${BuildConfig.GOOGLE_OAUTH_CLIENT_ID}")
-        intent?.extras?.keySet()?.forEach { key ->
-            Log.d("TAG", "Key: $key, Value: ${intent.extras?.get(key)}")
-        }
         return when (resultCode) {
             Activity.RESULT_OK -> {
                 GoogleSignIn.getSignedInAccountFromIntent(intent)

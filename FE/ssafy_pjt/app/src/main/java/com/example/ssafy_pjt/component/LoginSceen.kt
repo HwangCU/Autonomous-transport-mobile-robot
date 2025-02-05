@@ -48,7 +48,7 @@ fun LoginSceen(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
-    val loginApiState by googleViewModel.loginApiState.collectAsState()
+    val googleloginApiState by googleViewModel.loginApiState.collectAsState()
     val KakaoLoginResult by viewModel.kakaologinResult.observeAsState()
     val context = LocalContext.current
     val authResultLauncher = rememberLauncherForActivityResult(
@@ -69,16 +69,18 @@ fun LoginSceen(
         }
     }
 
-    LaunchedEffect(loginApiState) {
-        when (loginApiState) {
+    LaunchedEffect(googleloginApiState) {
+        when (googleloginApiState) {
             is ApiState.Success -> {
                 // 로그인 성공 시 처리 (예: 메인 화면으로 이동)
+                Toast.makeText(context,"로그인에 성공하셨습니다", Toast.LENGTH_SHORT).show()
                 Log.d("TAG","success")
-                navController.navigate("HomeSceen")
+                /*navController.navigate("HomeSceen")*/
             }
             is ApiState.Error -> {
                 // 에러 처리
-                Log.e("TAG", "Google login error: ${(loginApiState as ApiState.Error).message}")
+                Toast.makeText(context,"${(googleloginApiState as ApiState.Error).message}", Toast.LENGTH_SHORT).show()
+                Log.e("TAG", "Google login error: ${(googleloginApiState as ApiState.Error).message}")
             }
             else -> {}
         }
