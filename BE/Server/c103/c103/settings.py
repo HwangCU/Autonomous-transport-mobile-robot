@@ -124,3 +124,10 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",  # ✅ bcrypt 사용
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",  # ✅ PBKDF2 사용 (백업용)
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",  # ✅ PBKDF2(SHA1) 사용 가능
+    "django.contrib.auth.hashers.Argon2PasswordHasher",  # ✅ Argon2 사용 가능
+]
