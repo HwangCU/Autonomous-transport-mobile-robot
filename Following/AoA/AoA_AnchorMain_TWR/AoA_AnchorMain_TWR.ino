@@ -5,6 +5,7 @@
 #include <cmath>
 
 #define ANTENNA_DIST 0.3 // distance between antenna main and b (cm)
+#define PASS 10
 
 typedef struct Position {
     double x;
@@ -104,69 +105,45 @@ void setup() {
     Serial.print("Device mode: "); Serial.println(msg);    
 }
 
-void calcDistanceAngle(double &distance, double&angle){
-    double TM, TB, MB;
+float A = 1, H = 1, Q = 0, R = 4, x = 0.3, P =6;
+int passed_time = 0;
+bool first = true;
+
+float kalman(double distance){
+  if(first){
+    first = false;
+  }
+  else if (abs(distance - x) > 1 && passed_time < PASS){
+    passed_time += 1;
+    return x;
+  }
+  if(passed_time == PASS){
+    passed_time = 0;
+  }
     
-    TM = range_self;
-    TB = range_B;
-    MB = ANTENNA_DIST;
-
- 
-    String tmtbmb;
-    tmtbmb = "[TM, TB, MB] = ";
-    tmtbmb += TM; tmtbmb += ", ";
-    tmtbmb += TB; tmtbmb += ", ";
-    tmtbmb += MB;
-    Serial.println(tmtbmb);
-
-    Serial.println("--------------------------");
-
-    double B, M;
-    //M = acos((pow(TM,2) + pow(MB,2) - pow(TB,2)) / (2 * MB * TM)); //angle radian
-    //M = acos((MB*MB + TM*TM - TB*TB) / (2 * MB * TM));
-    
-    double ms = MB*MB + TM*TM -TB*TB;
-     
-    double mm = 2  * MB * TM;
-    //Serial.print("mm: "); Serial.println(mm);
-    //Serial.print("ms/mm: "); Serial.println(ms/mm);
-
-    M = acos(ms/mm);
-//    Serial.print("M: "); Serial.println(M);
-    
-    distance = sqrt(pow(TM*sin(M),2) + pow(MB/2 - TM*cos(M), 2));
-
-
-    ms =pow(distance,2) + (1/4) * pow(MB,2) - pow(TM,2);
-    mm = (MB * distance);
-    Serial.print("ms: "); Serial.println(ms);  
-    Serial.print("mm: "); Serial.println(mm);
-    Serial.print("ms/mm: "); Serial.println(ms/mm);  
-    Serial.print("mm/ms: "); Serial.println(mm/ms);  
-
-    double test = acos(ms/mm);
-    Serial.print("arc_test: "); Serial.println(test);
-
-    angle = ms/mm;
-//    angle = acos((pow(distance,2) + (1/4) * pow(MB,2) - pow(TM,2) / (MB * distance)));
-    angle = angle * (180 / PI);
-
-    /*
-    
-    angle = acos((pow(distance,2) + (1/4) * pow(MB,2) - pow(TM,2) / (MB * distance)));
-    angle = angle * 180 / PI;
-
-
-    String MDA = "[M, distancem angle]";
-    MDA += M; MDA += ", ";
-    MDA += distance; MDA += ", ";
-    MDA += angle;
-    Serial.println(MDA);
-
-    */
-    delay(2000);
-
+  float xp = A * x;
+  float pp = A * P * A + Q;
+  float K = pp * H / (H * pp * H + R);
+  x = xp + K*(distance - H * xp);
+  P = pp - K * H * pp;
+  return x;
 }
+
+void calcDistanceAngle(double &distance, double&angle){
+    double a, b, c;
+    
+    a = ANTENNA_DIST; // BC, a, BC
+    b = range_self; // AC, b, TM
+    c = range_B; // AB, c, TB
+
+    distance = sqrt((2*pow(b,2) + 2*pow(c,2) - pow(a,2)) / 4);
+
+    angle = acos((pow(distance,2) + pow(a/2,2) - pow(b,2)) / (2 * distance *(a/2)));
+
+    angle = angle * (180/PI);
+    
+}
+
 
 void loop() {
     if(DW1000NgRTLS::receiveFrame()){
@@ -182,6 +159,8 @@ void loop() {
             RangeAcceptResult result = DW1000NgRTLS::anchorRangeAccept(NextActivity::RANGING_CONFIRM, next_anchor);
             if(!result.success) return;
             range_self = result.range;
+            range_self = kalman(range_self); // kalman 필터 적용
+
 
             String rangeString = "Range: "; rangeString += range_self; rangeString += " m";
             rangeString += "\t RX power: "; rangeString += DW1000Ng::getReceivePower(); rangeString += " dBm";
@@ -196,7 +175,7 @@ void loop() {
                 range_B = range;
                 
                 double distance, angle;
-
+    
                 calcDistanceAngle(distance, angle);
 
                 String fin_data;
