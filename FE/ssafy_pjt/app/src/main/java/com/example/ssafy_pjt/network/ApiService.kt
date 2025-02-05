@@ -27,24 +27,27 @@ data class SignupResponse(
     val message: String
 )
 
-data class KakaoLoginRequest(
+data class SnsLoginRequest(
     val username: String,
-    val userNumber: Long
+    val userNumber: Long,
+    val userLoginResource: String
 )
 
-data class KakaoLoginResponse(
+data class SnsLoginResponse(
     val status:String,
     val message: String,
     val access_token:String?,
     val refresh_token : String?
 )
 
+
+
 interface ApiService{
     @POST("/api/login/")
     fun login(@Body request: LoginRequest): Call<LoginResponse>
     @POST("/api/register/")
     fun signup(@Body request: SignupRequest): Call<SignupResponse>
-    @POST("/api/kakao_login")
-    fun kakaoLogin(@Body request: KakaoLoginRequest): Call<KakaoLoginResponse>
+    @POST("/api/sns_login")
+    fun kakaoLogin(@Body request: SnsLoginRequest): Call<SnsLoginResponse>
 }
 
