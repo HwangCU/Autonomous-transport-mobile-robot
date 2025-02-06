@@ -52,7 +52,7 @@ def register_view(request):
         ssl_context.verify_mode = ssl.CERT_NONE
 
         # WebSocket 서버 URL (실제 환경에 맞게 수정)
-        ws_url = "wss://localhost:8001"
+        ws_url = "wss://192.168.100.40:8001"
         async with connect(ws_url, ssl=ssl_context) as websocket:
             await websocket.send(json.dumps(payload))
             response = await websocket.recv()
