@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-lkcx@gal%p!=%lq*l=*ohdwe5u!l94lpzbc2p9z7rmo-p38dny
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["10.0.0.2", "localhost", "192.168.100.40"]
 
 
 # Application definition
@@ -131,3 +131,12 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",  # ✅ PBKDF2(SHA1) 사용 가능
     "django.contrib.auth.hashers.Argon2PasswordHasher",  # ✅ Argon2 사용 가능
 ]
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "wkdgjwodnd26@gmail.com"  # Gmail 주소
+EMAIL_HOST_PASSWORD = "hyvg ysym jddm lmqy"  # Gmail 앱 비밀번호
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
