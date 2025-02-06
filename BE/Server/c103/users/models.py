@@ -6,6 +6,7 @@ class User(models.Model):
     password = models.CharField(max_length=255)  # bcrypt 해시 저장
     email = models.EmailField(unique=True)
     address = models.CharField(max_length=255, null=True, blank=True, default=None)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username
