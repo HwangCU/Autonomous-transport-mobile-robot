@@ -7,10 +7,18 @@
 #define ANTENNA_DIST 0.3 // distance between antenna main and b (cm)
 #define PASS 10
 
+//UART pin 설정
+#define TX_PIN 26
+#define RX_PIN 27
+
 typedef struct Position {
     double x;
     double y;
 } Position;
+
+// UART
+HardwareSerial MySerial(1);
+
 
 // connection pins
 const uint8_t PIN_SCK = 18;  //Clock 데이터
@@ -102,7 +110,9 @@ void setup() {
     DW1000Ng::getPrintableNetworkIdAndShortAddress(msg);
     Serial.print("Network ID & Device Address: "); Serial.println(msg);
     DW1000Ng::getPrintableDeviceMode(msg);
-    Serial.print("Device mode: "); Serial.println(msg);    
+    Serial.print("Device mode: "); Serial.println(msg);  
+
+    MySerial.begin(9600,SERIAL_8N1, RX_PIN, TX_PIN);
 }
 
 float A = 1, H = 1, Q = 0, R = 4, x = 0.3, P =6;
@@ -191,6 +201,24 @@ void loop() {
                 dist_angle += "\n[Angle] angle: ";
                 dist_angle += angle;
                 Serial.println(dist_angle);
+            
+
+//                //dictionary 형식
+//                String uart_data = "{ distance: "; uart_data += distance;
+//                uart_data += ", angle: "; uart_data += angle;
+//                uart_data += "}";
+
+                // 단순한 형식
+                String uart_data;
+                uart_data += distance; uart_data += " ";
+                uart_data += angle;
+               
+                MySerial.println(uart_data);
+                String uart_text;
+                uart_text += "Data sent to Jetson Orin Nano: ";
+                uart_text += uart_data;
+                uart_text += angle;
+                Serial.println(uart_text);
 
             } 
 
