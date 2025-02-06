@@ -75,6 +75,7 @@ async def handle_login(data):
             if not robot_exists:
                 return {
                     "status": "success",
+                    "username": username,
                     "message": "Login successful. Please register your robot.",
                     "require_robot": True,
                     "access_token": access_token,
@@ -83,6 +84,7 @@ async def handle_login(data):
             else:
                 return {
                     "status": "success",
+                    "username": username,
                     "message": "Login successful.",
                     "require_robot": False,
                     "access_token": access_token,

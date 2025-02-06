@@ -71,6 +71,7 @@ def put_address(request):
 
     username = data.get("username")
     address = data.get("address")
+    access_token = data.get("access_token")
     if not address:
         return JsonResponse(
             {
@@ -85,6 +86,7 @@ def put_address(request):
         "action": "address_regist",
         "username": username,
         "address": address,
+        "access_token": access_token,
     }
 
     async def send_address():

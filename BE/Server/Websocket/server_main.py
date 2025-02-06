@@ -59,19 +59,28 @@ SECRET_KEY = load_jwt_key("./jwt_key.pem")
 
 
 async def verify_access_token(token):
-    """Access Token 검증"""
+    """JWT Access Token 검증"""
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])  # JWT 디코딩
+        print("\n\n 페이로드 \n\n", payload, "\n\n")
         user_id = payload.get("user_id")
+
         if not user_id:
-            return None
+            return {"status": "error", "message": "Invalid token structure"}
 
         user = await get_user_by_id(user_id)
-        return user
+
+        if user is None:
+            return {"status": "error", "message": "User not found"}
+
+        return user  # 정상적인 경우, User 객체 반환
+
     except jwt.ExpiredSignatureError:
         return {"status": "error", "message": "Access token has expired"}
     except jwt.InvalidTokenError:
         return {"status": "error", "message": "Invalid access token"}
+    except Exception as e:
+        return {"status": "error", "message": f"Token verification failed: {e}"}
 
 
 async def handler(websocket):
@@ -82,7 +91,12 @@ async def handler(websocket):
 
             action = data.get("action")
 
-            if action in ["mod_change", "protected_action", "regist_robot"]:
+            if action in [
+                "mod_change",
+                "protected_action",
+                "regist_robot",
+                "address_regist",
+            ]:
                 token = data.get("access_token")
                 if not token:
                     response = {
@@ -101,12 +115,12 @@ async def handler(websocket):
                     response = await handle_mod_change(data, user)
                 elif action == "regist_robot":
                     response = await handle_robot_registration(data, user)
+                elif action == "address_regist":
+                    response = await handle_address_update(data)
             elif action == "register":
                 response = await handle_registration(data)
             elif action == "login":
                 response = await handle_login(data)
-            elif action == "address_regist":
-                response = await handle_address_update(data)
             elif action == "social_login":
                 response = await handle_sociallogin(data)
             else:
