@@ -30,5 +30,4 @@ async def handle_robot_registration(data, user):
     return {
         "status": "success",
         "message": "Robot registered successfully",
-        "robot_id": robot.id,
     }
