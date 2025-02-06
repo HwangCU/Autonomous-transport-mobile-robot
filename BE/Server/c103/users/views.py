@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from users.models import User
 from c103.utils import verify_email_token
@@ -12,20 +12,24 @@ def activate_user(email):
         user = User.objects.get(email=email)
         user.is_active = True
         user.save()
-        return {"status": "success", "message": "Email verified successfully"}
+        return {"status": "success"}
     except User.DoesNotExist:
-        return {"status": "error", "message": "User not found"}
+        return {"status": "error"}
 
 
 @csrf_exempt
 async def verify_email(request, token):
-    """이메일 인증 처리"""
-    print("\n\n이메일 인증 처리 수행\n\n")
+    """이메일 인증 처리 및 HTML 반환"""
+    print("이메일 인증 처리 수행\n\n")
     email = verify_email_token(token)
+
     if email:
         response = await activate_user(email)
-        return JsonResponse(response)
-    else:
-        return JsonResponse(
-            {"status": "error", "message": "Invalid or expired token"}, status=400
-        )
+        if response["status"] == "success":
+            return render(
+                request, "verify_email/success.html"
+            )  # ✅ 성공 시 success.html 반환
+        else:
+            return {"status": "error"}  # ✅ 실패 시 error.html 반환
+
+    return {"status": "error"}  # ✅ 인증 실패 시 error.html 반환
