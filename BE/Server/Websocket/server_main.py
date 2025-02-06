@@ -121,8 +121,8 @@ async def handler(websocket):
 
 
 async def main():
-    async with serve(handler, "0.0.0.0", 8001, ssl=ssl_context):
-        print("Secure WebSocket server running on wss://0.0.0.0:8001")
+    async with serve(handler, "192.168.100.40", 8001, ssl=ssl_context):
+        print("Secure WebSocket server running on wss://192.168.100.40:8001")
         await asyncio.Future()
 
 
