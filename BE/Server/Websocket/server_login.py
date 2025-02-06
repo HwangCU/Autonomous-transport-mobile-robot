@@ -74,9 +74,9 @@ async def handle_login(data):
             print(robot_exists)
             if not robot_exists:
                 return {
-                    "status": "require_robot",
+                    "status": "success",
                     "message": "Login successful. Please register your robot.",
-                    "require_robot": True,  # 클라이언트에게 로봇 등록 필요 신호
+                    "require_robot": True,
                     "access_token": access_token,
                     "refresh_token": refresh_token,
                 }
@@ -84,6 +84,7 @@ async def handle_login(data):
                 return {
                     "status": "success",
                     "message": "Login successful.",
+                    "require_robot": False,
                     "access_token": access_token,
                     "refresh_token": refresh_token,
                 }
