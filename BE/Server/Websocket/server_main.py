@@ -33,12 +33,11 @@ def get_user_by_id(user_id):
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
 
 from websockets.asyncio.server import serve
-from Websocket.server_login import handle_login
+from Websocket.server_login import handle_login, handle_social_login
 from Websocket.server_register import handle_registration
 from Websocket.server_mod_change import handle_mod_change  # 추가
 from Websocket.server_robot import handle_robot_registration
 from Websocket.server_address import handle_address_update
-from Websocket.server_sociallogin import handle_sociallogin
 
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 ssl_context.load_cert_chain(
@@ -121,8 +120,9 @@ async def handler(websocket):
                 response = await handle_registration(data)
             elif action == "login":
                 response = await handle_login(data)
-            elif action == "social_login":
-                response = await handle_sociallogin(data)
+            elif action == "sns_login":
+                response = await handle_social_login(data)
+                print(response)
             else:
                 response = {"status": "error", "message": "Invalid action"}
 
