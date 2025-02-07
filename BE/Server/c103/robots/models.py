@@ -7,4 +7,4 @@ class Robot(models.Model):
     robot_id = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.robot_id} - {self.user.username}"
+        return f"{self.robot_id} - {self.user.email}"

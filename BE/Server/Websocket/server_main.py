@@ -40,9 +40,10 @@ from Websocket.server_robot import handle_robot_registration
 from Websocket.server_address import handle_address_update
 
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-ssl_context.load_cert_chain(
-    certfile="../Websocket/cert.pem", keyfile="../Websocket/key.pem"
-)
+# ssl_context.load_cert_chain(
+#     certfile="../Websocket/cert.pem", keyfile="../Websocket/key.pem"
+# )
+ssl_context.load_cert_chain(certfile="./cert.pem", keyfile="./key.pem")
 
 # JWT 비밀키 로드
 
@@ -115,7 +116,7 @@ async def handler(websocket):
                 elif action == "regist_robot":
                     response = await handle_robot_registration(data, user)
                 elif action == "address_regist":
-                    response = await handle_address_update(data)
+                    response = await handle_address_update(data, user)
             elif action == "register":
                 response = await handle_registration(data)
             elif action == "login":
