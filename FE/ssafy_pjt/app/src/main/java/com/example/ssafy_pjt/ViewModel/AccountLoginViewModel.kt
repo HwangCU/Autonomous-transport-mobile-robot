@@ -17,8 +17,8 @@ class AccountLoginViewModel (
     private val userViewModel: UserViewModel
 ): ViewModel() {
 
-    private var _userName = MutableLiveData("")
-    val userName: LiveData<String> get() = _userName
+    private var _email = MutableLiveData("")
+    val email: LiveData<String> get() = _email
 
     private var _userPassword = MutableLiveData("")
     val userPassword: LiveData<String> get() = _userPassword
@@ -26,17 +26,17 @@ class AccountLoginViewModel (
     private val _loginResult = MutableLiveData<String>()
     val loginResult: LiveData<String> get() = _loginResult
 
-    fun setUserName(userName: String){
-        _userName.value = userName
+    fun setEmail(email: String){
+        _email.value = email
     }
     fun setUserPassword(password: String) {
         _userPassword.value = password
     }
 
     fun login(){
-        val username = _userName.value ?: ""
+        val email = _email.value ?: ""
         val password = _userPassword.value ?: ""
-        val request = LoginRequest(username,password)
+        val request = LoginRequest(email,password)
 
         RetrofitClient.instance.login(request).enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
@@ -45,7 +45,7 @@ class AccountLoginViewModel (
                     Log.d("TAG","${body}")
                     if (body?.status == "success"){
                         if (body.require_robot){
-                            userViewModel.setAccessToken(accessToken = body.access_token ?: "", username= body.username)
+                            userViewModel.setAccessToken(accessToken = body.access_token ?: "", email= body.email)
                             _loginResult.value = "로봇이 필요합니다"
                         } else {
                         _loginResult.value = "로그인 성공"

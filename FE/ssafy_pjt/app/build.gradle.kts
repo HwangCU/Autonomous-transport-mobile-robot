@@ -26,7 +26,7 @@ android {
         buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"${properties.getProperty("kakao_native_app_key")}\"")
         resValue("string","kakao_oauth_host","kakao${properties.getProperty("kakao_native_app_key")}")
         buildConfigField("String", "GOOGLE_OAUTH_CLIENT_ID", "\"${properties.getProperty("GOOGLE_OAUTH_CLIENT_ID")}\"")
-//        buildConfigField("string","SK_app_key","\"${properties.getProperty("SK_app_key")}\"")
+        buildConfigField("String","SK_app_key","\"${properties.getProperty("SK_app_key")}\"")
     }
 
     buildTypes {
@@ -52,6 +52,9 @@ android {
 }
 
 dependencies {
+    // tmap 라이브러리
+    implementation(files("libs/vsm-tmap-sdk-v2-android-1.7.23.aar"))
+    implementation(files("libs/tmap-sdk-1.8.aar"))
 
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.0") // 통신
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

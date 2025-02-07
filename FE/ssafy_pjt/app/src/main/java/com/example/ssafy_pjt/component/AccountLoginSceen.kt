@@ -51,7 +51,7 @@ fun AccountLoginSceen(
     navController: NavController,
     viewModel: AccountLoginViewModel
 ){
-    var userName by remember { mutableStateOf(viewModel.userName.value ?: "") }
+    var email by remember { mutableStateOf(viewModel.email.value ?: "") }
     var userPassword by remember { mutableStateOf(viewModel.userPassword.value ?: "") }
     var (autoLogin,setAutoLogin) = remember { mutableStateOf(false) }
     var (checkUser,setCheckUser) = remember { mutableStateOf(false) }
@@ -121,10 +121,10 @@ fun AccountLoginSceen(
                             modifier = modifier.padding(top = 30.dp)
                         )
                         TextField(
-                            value = userName,
+                            value = email,
                             onValueChange = { newName->
-                                userName = newName
-                                viewModel.setUserName(newName)
+                                email = newName
+                                viewModel.setEmail(newName)
                             },
                             modifier = Modifier.fillMaxWidth()
                         )
