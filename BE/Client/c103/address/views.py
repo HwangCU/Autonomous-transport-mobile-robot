@@ -69,7 +69,7 @@ def put_address(request):
     except json.JSONDecodeError:
         return JsonResponse({"status": "error", "message": "Invalid JSON."}, status=400)
 
-    username = data.get("username")
+    email = data.get("email")
     address = data.get("address")
     access_token = data.get("access_token")
     if not address:
@@ -84,7 +84,7 @@ def put_address(request):
     # WebSocket 서버에 전송할 패킷 구성
     payload = {
         "action": "address_regist",
-        "username": username,
+        "email": email,
         "address": address,
         "access_token": access_token,
     }

@@ -9,8 +9,9 @@ from websockets import connect  # pip install websockets
 
 @csrf_exempt
 def login_view(request):
+    print("login debug: ", request)
     """
-    FE에서 JSON 형식으로 username, password를 POST로 전송하면,
+    FE에서 JSON 형식으로 email, password를 POST로 전송하면,
     WebSocket 서버에 login 패킷을 전송한 후 그 결과를 반환합니다.
     """
     if request.method != "POST":
@@ -20,21 +21,22 @@ def login_view(request):
 
     try:
         data = json.loads(request.body)
+        print(data)
     except json.JSONDecodeError:
         return JsonResponse({"status": "error", "message": "Invalid JSON."}, status=400)
 
-    username = data.get("username")
+    email = data.get("email")
     password = data.get("password")
-    if not username or not password:
+    if not email or not password:
         return JsonResponse(
-            {"status": "error", "message": "Username and password are required."},
+            {"status": "error", "message": "email and password are required."},
             status=400,
         )
 
     # WebSocket 서버에 전송할 패킷 구성
     payload = {
         "action": "login",
-        "username": username,
+        "email": email,
         "password": password,
     }
 
@@ -61,11 +63,12 @@ def login_view(request):
 
 
 @csrf_exempt
-def sociallogin_view(request):
+def sns_login_view(request):
     """
-    FE에서 JSON 형식으로 username, password를 POST로 전송하면,
+    FE에서 JSON 형식으로 email, password를 POST로 전송하면,
     WebSocket 서버에 login 패킷을 전송한 후 그 결과를 반환합니다.
     """
+    print("\n", request, "\n")
     if request.method != "POST":
         return JsonResponse(
             {"status": "error", "message": "Only POST method allowed."}, status=405
@@ -76,21 +79,28 @@ def sociallogin_view(request):
     except json.JSONDecodeError:
         return JsonResponse({"status": "error", "message": "Invalid JSON."}, status=400)
 
-    username = data.get("username")
-    address = data.get("address")
-    social = data.get("social")
-    if not username or not address or not social:
+    email = data.get("email")
+    usernum = data.get("usernum")
+    userloginresource = data.get("userloginresource")
+    token = data.get("token")
+
+    print(email, usernum, userloginresource, token)
+    if not email or not usernum or not userloginresource or not token:
         return JsonResponse(
-            {"status": "error", "message": "Username and password are required."},
+            {
+                "status": "error",
+                "message": f"not enough information. {email} {usernum} {userloginresource} {token}.",
+            },
             status=400,
         )
 
     # WebSocket 서버에 전송할 패킷 구성
     payload = {
-        "action": "sociallogin",
-        "username": username,
-        "address": address,
-        "social": social,
+        "action": "sns_login",
+        "email": email,
+        "usernum": usernum,
+        "userloginresource": userloginresource,
+        "token": token,
     }
 
     async def send_login():

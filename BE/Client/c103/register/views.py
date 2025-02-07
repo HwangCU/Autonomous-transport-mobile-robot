@@ -10,7 +10,7 @@ from websockets import connect  # pip install websockets
 @csrf_exempt
 def register_view(request):
     """
-    FE에서 JSON 형식으로 username, password를 POST로 전송하면,
+    FE에서 JSON 형식으로 email, password를 POST로 전송하면,
     WebSocket 서버에 login 패킷을 전송한 후 그 결과를 반환합니다.
     """
     if request.method != "POST":
@@ -26,7 +26,6 @@ def register_view(request):
     username = data.get("username")
     password = data.get("password")
     email = data.get("email")
-    address = data.get("address")
     if not username or not password or not email:
         return JsonResponse(
             {
@@ -42,7 +41,6 @@ def register_view(request):
         "username": username,
         "password": password,
         "email": email,
-        "address": address,
     }
 
     async def send_register():

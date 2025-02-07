@@ -33,7 +33,7 @@ class LocalUser(models.Model):
     password = models.CharField(max_length=255)  # bcrypt 해시 저장
 
     def __str__(self):
-        return self.username
+        return self.email
 
 
 class KakaoUser(models.Model):
@@ -46,7 +46,7 @@ class KakaoUser(models.Model):
     usernum = models.IntegerField(unique=True)  # 카카오의 고유 유저 ID
 
     def __str__(self):
-        return f"{self.username} (Kakao)"
+        return f"{self.email} (Kakao)"
 
 
 class GoogleUser(models.Model):
@@ -59,4 +59,4 @@ class GoogleUser(models.Model):
     usernum = models.IntegerField(unique=True)  # 구글의 고유 유저 ID
 
     def __str__(self):
-        return f"{self.username} (Google)"
+        return f"{self.email} (Google)"

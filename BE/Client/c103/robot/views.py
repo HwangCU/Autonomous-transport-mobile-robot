@@ -10,7 +10,7 @@ from websockets import connect  # pip install websockets
 @csrf_exempt
 def robot_regist(request):
     """
-    FE에서 JSON 형식으로 username, password를 POST로 전송하면,
+    FE에서 JSON 형식으로 email, password를 POST로 전송하면,
     WebSocket 서버에 login 패킷을 전송한 후 그 결과를 반환합니다.
     """
     if request.method != "POST":
@@ -23,7 +23,7 @@ def robot_regist(request):
     except json.JSONDecodeError:
         return JsonResponse({"status": "error", "message": "Invalid JSON."}, status=400)
 
-    username = data.get("username")
+    email = data.get("email")
     access_token = data.get("access_token")
     robot_id = data.get("robot_id")
 
@@ -39,7 +39,7 @@ def robot_regist(request):
     # WebSocket 서버에 전송할 패킷 구성
     payload = {
         "action": "regist_robot",
-        "username": username,
+        "email": email,
         "access_token": access_token,
         "robot_id": robot_id,
     }

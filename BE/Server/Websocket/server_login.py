@@ -4,7 +4,7 @@ import jwt
 from datetime import datetime, timedelta
 from asgiref.sync import sync_to_async
 from django.contrib.auth.hashers import check_password
-from users.models import User, KakaoUser, GoogleUser
+from users.models import User, LocalUser, KakaoUser, GoogleUser
 from robots.models import Robot  # 로봇 모델 임포트
 from google.oauth2 import id_token
 from google.auth.transport import requests
@@ -27,11 +27,12 @@ REFRESH_TOKEN_EXPIRATION = 7  # 일
 
 
 @sync_to_async
-def authenticate_user(username, password):
+def authenticate_user(email, password):
     try:
-        user = User.objects.get(username=username)
-        if check_password(password, user.password):
-            return user
+        user = User.objects.get(email=email)
+        user_pass = LocalUser.objects.get(id=user.id)
+        if check_password(password, user_pass.password):
+            return user.id
         return None
     except User.DoesNotExist:
         return None
@@ -41,13 +42,13 @@ def generate_tokens(user):
     now = datetime.utcnow()
 
     access_token_payload = {
-        "user_id": user.id,
+        "user_id": user,
         "exp": now + timedelta(minutes=ACCESS_TOKEN_EXPIRATION),
     }
     access_token = jwt.encode(access_token_payload, SECRET_KEY, algorithm="HS256")
 
     refresh_token_payload = {
-        "user_id": user.id,
+        "user_id": user,
         "exp": now + timedelta(days=REFRESH_TOKEN_EXPIRATION),
     }
     refresh_token = jwt.encode(refresh_token_payload, SECRET_KEY, algorithm="HS256")
@@ -56,19 +57,19 @@ def generate_tokens(user):
 
 
 @sync_to_async
-def check_robot_registered(user):
-    return Robot.objects.filter(user=user).exists()
+def check_robot_registered(user_id):
+    return Robot.objects.filter(user_id=user_id).exists()
 
 
 async def handle_login(data):
     try:
-        username = data.get("username")
+        email = data.get("email")
         password = data.get("password")
 
-        if not username or not password:
-            return {"status": "error", "message": "Username and password are required"}
+        if not email or not password:
+            return {"status": "error", "message": "email and password are required"}
 
-        user = await authenticate_user(username, password)
+        user = await authenticate_user(email, password)
         if user:
             access_token, refresh_token = generate_tokens(user)
 
@@ -78,7 +79,7 @@ async def handle_login(data):
             if not robot_exists:
                 return {
                     "status": "success",
-                    "username": username,
+                    "email": email,
                     "message": "Login successful. Please register your robot.",
                     "require_robot": True,
                     "access_token": access_token,
@@ -87,14 +88,14 @@ async def handle_login(data):
             else:
                 return {
                     "status": "success",
-                    "username": username,
+                    "email": email,
                     "message": "Login successful.",
                     "require_robot": False,
                     "access_token": access_token,
                     "refresh_token": refresh_token,
                 }
         else:
-            return {"status": "error", "message": "Invalid username or password"}
+            return {"status": "error", "message": "Invalid email or password"}
 
     except Exception as e:
         return {"status": "error", "message": f"Internal server error: {e}"}
@@ -118,14 +119,14 @@ def handle_social_login(data):
         if verification["status"] == "success":
             user_info = verification["user_info"]
             email = user_info.get("kakao_account", {}).get("email")
-            username = (
+            email = (
                 user_info.get("kakao_account", {}).get("profile", {}).get("nickname")
             )
             usernum = user_info.get("id")
             key = user_info.get("key")
             if userloginresource == "kakao":
                 user, created = User.objects.get_or_create(
-                    username=username,
+                    email=email,
                     defaults={
                         "loginsource": "kakao",
                         "email": email,
@@ -138,7 +139,7 @@ def handle_social_login(data):
             elif userloginresource == "google":
                 key = user_info.get("key")
                 user, created = User.objects.get_or_create(
-                    username=username,
+                    email=email,
                     defaults={
                         "loginsource": "google",
                         "email": email,
@@ -149,11 +150,11 @@ def handle_social_login(data):
                     user=user, usernum=usernum, key=key
                 )
 
-            access_token, refresh_token = generate_tokens(user)
+            access_token, refresh_token = generate_tokens(user.id)
 
             return {
                 "status": "success",
-                "username": username,
+                "email": email,
                 "usernum": usernum,
                 "message": "Login successful.",
                 "require_robot": created,

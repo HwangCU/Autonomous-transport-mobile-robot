@@ -52,7 +52,7 @@
   ```json
   {
     "action": "register",
-    "username": "example_user",
+    "email": "example_user",
     "password": "secure_password",
     "name": "홍길동",
     "email": "hong@example.com"
@@ -69,7 +69,7 @@
   ```json
   {
     "status": "error",
-    "message": "Username already exists"
+    "message": "email already exists"
   }
   ```
 
@@ -80,7 +80,7 @@
   ```json
   {
     "action": "login",
-    "username": "example_user",
+    "email": "example_user",
     "password": "secure_password"
   }
   ```
@@ -97,7 +97,7 @@
   ```json
   {
     "status": "error",
-    "message": "Invalid username or password"
+    "message": "Invalid email or password"
   }
   ```
 
@@ -122,7 +122,7 @@ async def test_register():
     async with websockets.connect(uri, ssl=ssl_context) as websocket:
         register_data = {
             "action": "register",
-            "username": "testuser",
+            "email": "testuser",
             "password": "testpass",
             "name": "Tester",
             "email": "test@example.com"
@@ -140,7 +140,7 @@ async def test_login():
     async with websockets.connect(uri, ssl=ssl_context) as websocket:
         login_data = {
             "action": "login",
-            "username": "testuser",
+            "email": "testuser",
             "password": "testpass"
         }
         await websocket.send(json.dumps(login_data))
