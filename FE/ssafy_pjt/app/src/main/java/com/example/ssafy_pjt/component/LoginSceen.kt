@@ -64,7 +64,11 @@ fun LoginSceen(
             "로그인 성공" -> {
                 Toast.makeText(context,"로그인에 성공하셨습니다", Toast.LENGTH_SHORT).show()
                 navController.navigate("HomeSceen")
-            } else -> {
+            }
+            "로봇 등록이 필요합니다" -> {
+                navController.navigate("RobotRegistration")
+            }
+            else -> {
             Toast.makeText(context,KakaoLoginResult, Toast.LENGTH_SHORT).show()
             }
         }
@@ -72,13 +76,16 @@ fun LoginSceen(
 
     LaunchedEffect(googleloginApiState) {
         when (googleloginApiState) {
-            is ApiState.Success -> {
+            "Google 로그인 성공" -> {
                 // 로그인 성공 시 처리 (예: 메인 화면으로 이동)
                 Toast.makeText(context,"로그인에 성공하셨습니다", Toast.LENGTH_SHORT).show()
                 Log.d("TAG","success")
-                /*navController.navigate("HomeSceen")*/
+                navController.navigate("HomeSceen")
             }
-            is ApiState.Error -> {
+            "로봇 등록이 필요합니다" ->{
+                navController.navigate("homeRegisration")
+            }
+            "Google 로그인 실패" -> {
                 // 에러 처리
                 Toast.makeText(context,"${(googleloginApiState as ApiState.Error).message}", Toast.LENGTH_SHORT).show()
                 Log.e("TAG", "Google login error: ${(googleloginApiState as ApiState.Error).message}")

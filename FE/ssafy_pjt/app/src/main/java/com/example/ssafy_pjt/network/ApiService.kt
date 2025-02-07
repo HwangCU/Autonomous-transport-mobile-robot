@@ -6,12 +6,12 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 data class LoginRequest(
-    val username: String,
+    val email: String,
     val password : String
 )
 
 data class LoginResponse(
-    val username: String,
+    val email: String,
     val status:String,
     val message: String,
     val access_token:String?,
@@ -32,19 +32,22 @@ data class SignupResponse(
 
 data class SnsLoginRequest(
     val token: String,
-    val username: String,
-    val userNumber: Long,
-    val userLoginResource: String
+    val email: String,
+    val usernum: Long,
+    val userloginresource: String
 )
 
 data class SnsLoginResponse(
+    val email: String,
     val status:String,
     val message: String,
     val access_token:String?,
-    val refresh_token : String?
+    val refresh_token : String?,
+    val require_robot: Boolean
 )
 
 data class adressRequest(
+    val email: String,
     val address:String
 )
 
@@ -55,7 +58,7 @@ data class adressResponse(
 
 data class updateAddressRequest (
     val access_token:String,
-    val username:String,
+    val email:String,
     val address: String
 )
 
@@ -65,7 +68,7 @@ data class updateAddressResponse (
 )
 
 data class robotRegistRequest (
-    val username: String,
+    val email: String,
     val access_token: String?,
     val robot_id: String
 )

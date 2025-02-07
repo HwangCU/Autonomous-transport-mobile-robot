@@ -9,14 +9,14 @@ class UserViewModel:ViewModel(){
     private  var _accessToken = MutableStateFlow("")
     val accessToken: StateFlow<String> = _accessToken.asStateFlow()
 
-    private var _username = MutableStateFlow("")
-    val username: StateFlow<String> = _username.asStateFlow()
+    private var _email = MutableStateFlow("")
+    val email: StateFlow<String> = _email.asStateFlow()
 
     fun setAccessToken(
         accessToken:String,
-        username:String
+        email:String
     ){
         _accessToken.value = accessToken
-        _username.value=username
+        _email.value=email
     }
 }

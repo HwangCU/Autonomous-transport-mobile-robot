@@ -33,8 +33,8 @@ class KakaoAuthViewModel(
     private val _kakaologinResult = MutableLiveData("")
     val kakaologinResult: LiveData<String> get() = _kakaologinResult
 
-    private var _access_token = MutableStateFlow("")
-    val access_token : StateFlow<String> = _access_token.asStateFlow()
+    private var _id_token = MutableStateFlow("")
+    val id_token : StateFlow<String> = _id_token.asStateFlow()
 
     fun snsLogin() {
         // 로그인 조합 예제
@@ -44,6 +44,7 @@ class KakaoAuthViewModel(
             if (error != null) {
                 Log.e("TAG", "카카오계정으로 로그인 실패", error)
             } else if (token != null) {
+                _id_token.value = token.accessToken
                 Log.i("TAG", "카카오계정으로 로그인 성공 ${token.accessToken}")
                 UserInfo()
             }
@@ -64,7 +65,7 @@ class KakaoAuthViewModel(
                     // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
                     UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
                 } else if (token != null) {
-                    _access_token.value = token.accessToken
+                    _id_token.value = token.accessToken
                     Log.i("TAG", "카카오톡으로 로그인 성공 ${token.accessToken}")
                 }
             }
@@ -86,7 +87,6 @@ class KakaoAuthViewModel(
                         "\n이메일: ${user.kakaoAccount?.email}" +
                         "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
                         "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
-                userViewModel.setAccessToken(accessToken = access_token.value , username = "${user.kakaoAccount?.email}" )
                 snsLogin(
                     user.id ?: -1L,
                     user.kakaoAccount?.email ?: "none"
@@ -99,15 +99,24 @@ class KakaoAuthViewModel(
         id: Long,
         email:String
     ){
-        val result = SnsLoginRequest(userNumber = id, username = email, userLoginResource = "kakao", token = userViewModel.accessToken.value)
+        Log.d("TAG","${id}")
+        Log.d("TAG","${email}")
+        Log.d("TAG","${id_token.value}")
+
+        val result = SnsLoginRequest(usernum = id, email = email, userloginresource = "kakao", token = id_token.value)
         RetrofitClient.instance.snsLogin(result).enqueue(object : Callback<SnsLoginResponse> {
             override fun onResponse(call: Call<SnsLoginResponse>, response: Response<SnsLoginResponse>) {
                 if (response.isSuccessful) {
                     val body = response.body()
                     Log.d("TAG","${body}")
                     if (body?.status == "success"){
-                        _kakaologinResult.value = "로그인 성공"
-                        Log.d("TAG","success")
+                        if (body.require_robot) {
+                            _kakaologinResult.value="로봇 등록이 필요합니다"
+                            userViewModel.setAccessToken(email = body.email, accessToken = "${body.access_token}")
+                        } else {
+                            _kakaologinResult.value = "로그인 성공"
+                            Log.d("TAG","success")
+                        }
                     } else {
                         _kakaologinResult.value = "에러"
                         Log.d("TAG","${body}")

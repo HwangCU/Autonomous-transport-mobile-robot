@@ -44,7 +44,7 @@ class AddressSearchViewModel(
         val address = _address.value ?: ""
         val addressList = _adressList.value
 
-        val request = adressRequest(address)
+        val request = adressRequest(address=address, email = userViewModel.email.value)
         RetrofitClient.instance.adress(request).enqueue(object : Callback<adressResponse> {
             override fun onResponse(call: Call<adressResponse>, response: Response<adressResponse>) {
                 val body = response.body()
@@ -65,7 +65,7 @@ class AddressSearchViewModel(
     fun updateAddress(){
         val address = "${_address.value} ${_detail.value}"
         Log.d("TAG","${address}")
-        val request = updateAddressRequest(username = userViewModel.username.value,address=address, access_token = userViewModel.accessToken.value )
+        val request = updateAddressRequest(email = userViewModel.email.value,address=address, access_token = userViewModel.accessToken.value )
         RetrofitClient.instance.updateAddress(request).enqueue(object : Callback<updateAddressResponse> {
             override fun onResponse(
                 call: Call<updateAddressResponse>,
