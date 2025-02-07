@@ -58,6 +58,8 @@ class MainActivity : ComponentActivity() {
         RobotRegistViewModelFactory(userViewModel)
     }
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -66,7 +68,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = "login"
+                    startDestination = "DeliverySceen"
                 ){
                     composable("login") {
                         LoginSceen(
