@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.ssafy_pjt.R
 import com.example.ssafy_pjt.ViewModel.AccountLoginViewModel
+import com.example.ssafy_pjt.ViewModel.UserViewModel
 import com.example.ssafy_pjt.ui.theme.my_blue
 import com.example.ssafy_pjt.ui.theme.my_white
 import com.example.ssafy_pjt.ui.theme.my_yellow
@@ -65,9 +66,16 @@ fun AccountLoginSceen(
                 Toast.makeText(context,"로그인에 성공하셨습니다",Toast.LENGTH_SHORT).show()
                 navController.navigate("HomeSceen")
             }
-            else -> {
+            "로봇이 필요합니다" -> {
+                navController.navigate("RobotRegistration")
+            }
+            "로그인 실패" -> {
                 Toast.makeText(context,"아이디 또는 비밀번호를 확인해 주세요",Toast.LENGTH_SHORT).show()
             }
+            "서버 오류" -> {
+                Toast.makeText(context,"서버 오류 잠시만 있다가 시도해 주세요",Toast.LENGTH_SHORT).show()
+            }
+            else -> {}
         }
     }
 

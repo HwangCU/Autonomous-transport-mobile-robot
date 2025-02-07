@@ -19,6 +19,7 @@
     <string name="autoLogin">자동 로그인</string>
     <string name="robotRegistration">서비스 이용을 위해\n 로봇을 등록해주세요</string>
     <string name="homeRegistration">서비스 이용을 위해\n 집 주소를 등록해주세요</string>
+    <string name="robotId">로봇 아이디 입력 :</string>
     <string name="homeSearchTitle">주소 검색</string>
     <string name="homeSearch">집 주소지를 검색해주세요</string>
     <string name="addressTtiel">주소</string>

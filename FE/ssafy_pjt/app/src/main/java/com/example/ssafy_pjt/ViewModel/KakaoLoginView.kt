@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.ssafy_pjt.network.LoginResponse
 import com.example.ssafy_pjt.network.RetrofitClient
 import com.example.ssafy_pjt.network.SnsLoginRequest
@@ -15,16 +17,24 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-class KakaoAuthViewModel(application: Application) : AndroidViewModel(application) {
+class KakaoAuthViewModel(
+    application: Application,
+    private val userViewModel: UserViewModel
+) : AndroidViewModel(application) {
     private val context = application.applicationContext
     private val _kakaologinResult = MutableLiveData("")
     val kakaologinResult: LiveData<String> get() = _kakaologinResult
 
+    private var _access_token = MutableStateFlow("")
+    val access_token : StateFlow<String> = _access_token.asStateFlow()
 
     fun snsLogin() {
         // 로그인 조합 예제
@@ -48,13 +58,13 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
                     // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
                     // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
                     if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
-                        Log.d("TAG", "check3")
                         return@loginWithKakaoTalk
                     }
 
                     // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
                     UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
                 } else if (token != null) {
+                    _access_token.value = token.accessToken
                     Log.i("TAG", "카카오톡으로 로그인 성공 ${token.accessToken}")
                 }
             }
@@ -76,6 +86,7 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
                         "\n이메일: ${user.kakaoAccount?.email}" +
                         "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
                         "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
+                userViewModel.setAccessToken(accessToken = access_token.value , username = "${user.kakaoAccount?.email}" )
                 snsLogin(
                     user.id ?: -1L,
                     user.kakaoAccount?.email ?: "none"
@@ -88,7 +99,7 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
         id: Long,
         email:String
     ){
-        val result = SnsLoginRequest(userNumber = id, username = email, userLoginResource = "kakao")
+        val result = SnsLoginRequest(userNumber = id, username = email, userLoginResource = "kakao", token = userViewModel.accessToken.value)
         RetrofitClient.instance.snsLogin(result).enqueue(object : Callback<SnsLoginResponse> {
             override fun onResponse(call: Call<SnsLoginResponse>, response: Response<SnsLoginResponse>) {
                 if (response.isSuccessful) {
@@ -112,5 +123,14 @@ class KakaoAuthViewModel(application: Application) : AndroidViewModel(applicatio
                 _kakaologinResult.value="네트워크 오류"
             }
         })
+    }
+}
+
+class KakaoLoginViewModelFactory(
+    private val userViewModel: UserViewModel,
+    private val application: Application
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return KakaoAuthViewModel(application, userViewModel) as T
     }
 }
