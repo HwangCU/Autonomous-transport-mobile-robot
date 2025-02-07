@@ -36,6 +36,7 @@ import com.example.ssafy_pjt.ViewModel.ApiState
 import com.example.ssafy_pjt.ViewModel.GoogleLoginViewModel
 import com.example.ssafy_pjt.ViewModel.KakaoAuthViewModel
 import com.example.ssafy_pjt.R
+import com.example.ssafy_pjt.ViewModel.UserViewModel
 import com.example.ssafy_pjt.network.GoogleApiContract
 import com.example.ssafy_pjt.ui.theme.loginTitle
 import com.example.ssafy_pjt.ui.theme.my_blue
@@ -157,7 +158,7 @@ fun LoginSceen(
                     .padding(start = 25.dp, top = 10.dp)
                     .fillMaxWidth(0.8f),
                 onClick = {
-                    authResultLauncher.launch(1)
+                    googleViewModel.signInWithRevoke(context, authResultLauncher)
                           },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.white),

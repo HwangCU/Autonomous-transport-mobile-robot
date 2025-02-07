@@ -1,11 +1,18 @@
 package com.example.ssafy_pjt.ViewModel
 
+import android.app.Application
+import android.content.Context
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.example.ssafy_pjt.BuildConfig
 import com.example.ssafy_pjt.network.RetrofitClient
 import com.example.ssafy_pjt.network.SnsLoginRequest
 import com.example.ssafy_pjt.network.SnsLoginResponse
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,13 +21,15 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class GoogleLoginViewModel : ViewModel() {
+class GoogleLoginViewModel(
+    private val userViewModel: UserViewModel
+) : ViewModel() {
     private val _loginApiState = MutableStateFlow<ApiState>(ApiState.Idle)
     val loginApiState = _loginApiState.asStateFlow()
 
     fun handleGoogleSignInResult(task: Task<GoogleSignInAccount>?) {
         _loginApiState.value = ApiState.Loading
-        Log.d("TAG"," task ${task}")
+        Log.d("TAG", " task ${task}")
         if (task == null) {
             _loginApiState.value = ApiState.Error("Google 로그인 실패")
             return
@@ -30,6 +39,8 @@ class GoogleLoginViewModel : ViewModel() {
             account?.let {
                 Log.d("TAG", "account.id: ${account.id}")
                 Log.d("TAG", "account.email: ${account.email}")
+                Log.d("TAG", "account.token: ${account?.idToken}")
+                userViewModel.setAccessToken(username = "${account.email}", accessToken = "${account?.idToken}")
                 // 여기서 서버에 토큰을 전송하는 등의 추가 처리
                 googleLogin(
                     account.id?.toLongOrNull() ?: -1L,
@@ -47,36 +58,59 @@ class GoogleLoginViewModel : ViewModel() {
 
     fun googleLogin(
         id: Long,
-        email:String
-    ){
-        val result = SnsLoginRequest(userNumber = id, username = email, userLoginResource = "google")
+        email: String
+    ) {
+        val result =
+            SnsLoginRequest(userNumber = id, username = email, userLoginResource = "google", token = userViewModel.accessToken.value)
         RetrofitClient.instance.snsLogin(result).enqueue(object : Callback<SnsLoginResponse> {
-            override fun onResponse(call: Call<SnsLoginResponse>, response: Response<SnsLoginResponse>) {
+            override fun onResponse(
+                call: Call<SnsLoginResponse>,
+                response: Response<SnsLoginResponse>
+            ) {
                 if (response.isSuccessful) {
                     val body = response.body()
-                    Log.d("TAG","${body}")
-                    if (body?.status == "success"){
+                    Log.d("TAG", "${body}")
+                    if (body?.status == "success") {
                         _loginApiState.value = ApiState.Success("Google 로그인 성공")
-                        Log.d("TAG","success")
+                        Log.d("TAG", "success")
                     } else {
                         _loginApiState.value = ApiState.Error("Google 로그인 에러")
-                        Log.d("TAG","${body}")
+                        Log.d("TAG", "${body}")
                     }
                 } else {
                     _loginApiState.value = ApiState.Error("서버 에러")
-                    Log.d("TAG","server ${response} ,,, ${response}")
+                    Log.d("TAG", "server ${response} ,,, ${response}")
                 }
             }
 
             override fun onFailure(call: Call<SnsLoginResponse>, t: Throwable) {
-                Log.d("TAG","network")
+                Log.d("TAG", "network")
                 _loginApiState.value = ApiState.Error("네트워크 오류")
             }
         })
     }
 
+    fun signInWithRevoke(context: Context, launcher: ActivityResultLauncher<Int>) {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(BuildConfig.GOOGLE_OAUTH_CLIENT_ID)
+            .requestId()
+            .build()
+
+        val googleSignInClient = GoogleSignIn.getClient(context, gso)
+        googleSignInClient.revokeAccess().addOnCompleteListener {
+            launcher.launch(1)
+        }
+
+    }
 }
 
+class GoogleLoginViewModelFactory(
+    private val userViewModel: UserViewModel,
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return GoogleLoginViewModel(userViewModel) as T
+    }
+}
 
 sealed class ApiState {
     object Idle : ApiState()
@@ -84,3 +118,4 @@ sealed class ApiState {
     data class Success(val message: String) : ApiState()
     data class Error(val message: String) : ApiState()
 }
+

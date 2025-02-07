@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val baseURL="http://10.0.2.2:8000/"
+    private const val baseURL="http://192.168.100.40:8000/"
 
     val instance: ApiService by lazy {
         // 로깅 인터셉터 설정

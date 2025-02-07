@@ -9,26 +9,54 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.ssafy_pjt.ViewModel.AccountLoginViewModel
+import com.example.ssafy_pjt.ViewModel.AccountLoginViewModelFactory
+import com.example.ssafy_pjt.ViewModel.AddressSearchViewModel
 import com.example.ssafy_pjt.ViewModel.GoogleLoginViewModel
+import com.example.ssafy_pjt.ViewModel.GoogleLoginViewModelFactory
 import com.example.ssafy_pjt.ViewModel.KakaoAuthViewModel
+import com.example.ssafy_pjt.ViewModel.KakaoLoginViewModelFactory
+import com.example.ssafy_pjt.ViewModel.RobotRegistViewModelFactory
+import com.example.ssafy_pjt.ViewModel.RobotRegistrationViewModel
+import com.example.ssafy_pjt.ViewModel.UserViewModel
+import com.example.ssafy_pjt.ViewModel.addressSearchViewModelFactory
 import com.example.ssafy_pjt.component.AccountLoginSceen
 import com.example.ssafy_pjt.component.HomeRefistrationScreen
 import com.example.ssafy_pjt.component.HomeScreen
 import com.example.ssafy_pjt.component.HomeSearchScreen
 import com.example.ssafy_pjt.component.LoginSceen
+import com.example.ssafy_pjt.component.RobotRegistration
 import com.example.ssafy_pjt.component.SignupSceen
 import com.example.ssafy_pjt.ui.theme.Ssafy_pjtTheme
 import com.kakao.sdk.common.util.Utility
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class MainActivity : ComponentActivity() {
-
-    private val kakaoAuthViewModel: KakaoAuthViewModel by viewModels()
-    private val GoogleLoginViewModel: GoogleLoginViewModel by viewModels()
-    private  val accountLoginViewModel: AccountLoginViewModel by viewModels()
+    private val kakaoAuthViewModel: KakaoAuthViewModel by viewModels{
+        KakaoLoginViewModelFactory(userViewModel,application)
+    }
+    private val GoogleLoginViewModel: GoogleLoginViewModel by viewModels{
+        GoogleLoginViewModelFactory(userViewModel)
+    }
+    private val userViewModel: UserViewModel by viewModels()
+    private val accountLoginViewModel: AccountLoginViewModel by viewModels {
+        AccountLoginViewModelFactory(userViewModel)
+    }
+    private val addressSearchViewModel: AddressSearchViewModel by viewModels{
+        addressSearchViewModelFactory(userViewModel)
+    }
+    private val robotRegistrationViewModel : RobotRegistrationViewModel by viewModels{
+        RobotRegistViewModelFactory(userViewModel)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +66,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = "homeRegisration"
+                    startDestination = "login"
                 ){
                     composable("login") {
                         LoginSceen(
@@ -73,16 +101,25 @@ class MainActivity : ComponentActivity() {
                             navController = navController
                         )
                     }
+                    composable("RobotRegistration"){
+                        RobotRegistration(
+                            modifier = Modifier,
+                            navController = navController,
+                            robotRegistrationViewModel = robotRegistrationViewModel
+                        )
+                    }
                     composable("homeRegisration") {
                         HomeRefistrationScreen(
                             modifier= Modifier,
-                            navController = navController
+                            navController = navController,
+                            viewModel = addressSearchViewModel
                         )
                     }
                     composable("homeSearch") {
                         HomeSearchScreen(
                             modifier = Modifier,
-                            navController = navController
+                            navController = navController,
+                            viewModel = addressSearchViewModel
                         )
                     }
                 }
@@ -90,3 +127,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
