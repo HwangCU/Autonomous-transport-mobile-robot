@@ -3,6 +3,8 @@
 #include <DW1000NgRanging.hpp>
 #include <DW1000NgRTLS.hpp>
 
+#define PASS 10
+
 // connection pins
 const uint8_t PIN_SCK = 18;  //Clock 데이터
 const uint8_t PIN_MOSI = 23; //Master Out Salve In
@@ -90,15 +92,48 @@ void transmitRangeReport() {
     DW1000Ng::getNetworkId(&rangingReport[3]);
     memcpy(&rangingReport[5], main_anchor_address, 2);
     DW1000Ng::getDeviceAddress(&rangingReport[7]);
+    float kal_range = kalman(range_self);
+    range_self = kal_range;
     DW1000NgUtils::writeValueToBytes(&rangingReport[10], static_cast<uint16_t>((range_self*1000)), 2);
     DW1000Ng::setTransmitData(rangingReport, sizeof(rangingReport));
     DW1000Ng::startTransmit();
 }
- 
+
+float A = 1, H = 1; // 상태 공간 방정식즈
+float Q = 0.001, R = 0.03; // 상태 공간 방정식 노이즈, 센서값 노이즈
+float x = 0.3, P = 0.5; // 이전 값, 오차 공분산
+
+int passed_time = 0;
+bool first = true;
+
+float kalman(double distance){
+  if (x == 0) x = 0.1;
+  if(first){
+    first = false;
+    x = distance;
+  }
+  else if (abs(distance - x) > 1 && passed_time < PASS){
+    passed_time += 1;
+    return x;
+  }
+  if(passed_time == PASS){
+    passed_time = 0;
+  }
+    
+  float xp = A * x;
+  float pp = A * P * A + Q;
+  float K = pp * H / (H * pp * H + R);
+  x = xp + K*(distance - H * xp);
+  P = pp - K * H * pp;
+
+  return x;
+
+}
+
 void loop() {     
         RangeAcceptResult result = DW1000NgRTLS::anchorRangeAccept(NextActivity::RANGING_CONFIRM, next_anchor);
         if(result.success) {
-            delay(2); // Tweak based on your hardware
+//            delay(2); // Tweak based on your hardware
             range_self = result.range;
             transmitRangeReport();
 

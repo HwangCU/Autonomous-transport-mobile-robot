@@ -3,8 +3,9 @@
 #include <DW1000NgRanging.hpp>
 #include <DW1000NgRTLS.hpp>
 #include <cmath>
+#include <algorithm>
 
-#define ANTENNA_DIST 0.3 // distance between antenna main and b (cm)
+#define ANTENNA_DIST 0.24 // distance between antenna main and b (cm)
 #define PASS 10
 
 //UART pin 설정
@@ -115,13 +116,17 @@ void setup() {
     MySerial.begin(9600,SERIAL_8N1, RX_PIN, TX_PIN);
 }
 
-float A = 1, H = 1, Q = 0, R = 4, x = 0.3, P =6;
+float A = 1, H = 1; // 상태 공간 방정식즈
+float Q = 0.001, R = 0.03; // 상태 공간 방정식 노이즈, 센서값 노이즈
+float x = 0.3, P = 0.5; // 이전 값, 오차 공분산
 int passed_time = 0;
 bool first = true;
 
 float kalman(double distance){
+  if (x == 0) x = 0.1;
   if(first){
     first = false;
+    x = distance;
   }
   else if (abs(distance - x) > 1 && passed_time < PASS){
     passed_time += 1;
@@ -139,6 +144,24 @@ float kalman(double distance){
   return x;
 }
 
+bool isValidTriangle(double a, double b, double c) {
+    
+    return (a + b > c) && (a + c > b) && (b + c > a);
+}
+
+void fixTriangle(double &a, double &b, double &c) {
+    double max_side = std::max({a, b, c});
+    double sum_other_sides = a + b + c - max_side;
+
+    if (sum_other_sides <= max_side) {
+        max_side = sum_other_sides * 0.99;  
+    }
+
+    if (a >= b && a >= c) a = max_side;
+    else if (b >= a && b >= c) b = max_side;
+    else c = max_side;
+}
+
 void calcDistanceAngle(double &distance, double&angle){
     double a, b, c;
     
@@ -146,12 +169,29 @@ void calcDistanceAngle(double &distance, double&angle){
     b = range_self; // AC, b, TM
     c = range_B; // AB, c, TB
 
+    if(!isValidTriangle(a,b,c))
+    {
+      Serial.println("###INVALID!!!!!!"); 
+      fixTriangle(a,b,c);
+
+    }
+
     distance = sqrt((2*pow(b,2) + 2*pow(c,2) - pow(a,2)) / 4);
 
-    angle = acos((pow(distance,2) + pow(a/2,2) - pow(b,2)) / (2 * distance *(a/2)));
+    double temp = (pow(distance,2) + pow(a/2,2) - pow(b,2)) / (2 * distance *(a/2));
+    Serial.print("[[[TEMP ANGLE]]]: ");
+    Serial.print(temp);
 
+    if(temp <= -1.00){
+      temp = -1;
+    }
+    else if(temp >= 1.00){
+      temp = 1;
+    }
+
+    angle = acos(temp);
     angle = angle * (180/PI);
-    
+
 }
 
 
@@ -195,13 +235,14 @@ void loop() {
                 fin_data += range_B;
                 Serial.println(fin_data);
 
+                Serial.println("");
                 String dist_angle;
                 dist_angle += "[Distance] distance: ";
                 dist_angle += distance;
                 dist_angle += "\n[Angle] angle: ";
                 dist_angle += angle;
                 Serial.println(dist_angle);
-            
+                Serial.println("");
 
 //                //dictionary 형식
 //                String uart_data = "{ distance: "; uart_data += distance;
@@ -217,7 +258,6 @@ void loop() {
                 String uart_text;
                 uart_text += "Data sent to Jetson Orin Nano: ";
                 uart_text += uart_data;
-                uart_text += angle;
                 Serial.println(uart_text);
 
             } 
