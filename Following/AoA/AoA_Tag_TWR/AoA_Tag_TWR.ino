@@ -16,7 +16,7 @@ const uint8_t PIN_IRQ = 17;  // Interrupt Request
 // Extended Unique Identifier register. 64-bit device identifier. Register file: 0x01
 const char EUI[] = "AA:BB:CC:DD:EE:F F:00:00";
 
-volatile uint32_t blink_rate = 200;
+volatile uint32_t blink_rate = 100;
 
 device_configuration_t DEFAULT_CONFIG = {
     false,
