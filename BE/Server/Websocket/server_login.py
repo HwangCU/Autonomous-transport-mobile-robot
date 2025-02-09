@@ -104,7 +104,6 @@ async def handle_login(data):
 @sync_to_async
 def handle_social_login(data):
     """카카오 & 구글 로그인 처리"""
-    print(data)
     try:
         userloginresource = data.get("userloginresource")  # "kakao" 또는 "google"
         token = data.get("token")  # 클라이언트에서 전달받은 access_token 또는 id_token
@@ -117,47 +116,14 @@ def handle_social_login(data):
             return {"status": "error", "message": "Invalid provider"}
 
         if verification["status"] == "success":
-            user_info = verification["user_info"]
-            email = user_info.get("kakao_account", {}).get("email")
-            email = (
-                user_info.get("kakao_account", {}).get("profile", {}).get("nickname")
-            )
-            usernum = user_info.get("id")
-            key = user_info.get("key")
-            if userloginresource == "kakao":
-                user, created = User.objects.get_or_create(
-                    email=email,
-                    defaults={
-                        "loginsource": "kakao",
-                        "email": email,
-                        "is_active": True,
-                    },
-                )
-                kakao_user, _ = KakaoUser.objects.get_or_create(
-                    user=user, usernum=usernum
-                )
-            elif userloginresource == "google":
-                key = user_info.get("key")
-                user, created = User.objects.get_or_create(
-                    email=email,
-                    defaults={
-                        "loginsource": "google",
-                        "email": email,
-                        "is_active": True,
-                    },
-                )
-                google_user, _ = GoogleUser.objects.get_or_create(
-                    user=user, usernum=usernum, key=key
-                )
-
-            access_token, refresh_token = generate_tokens(user.id)
+            access_token, refresh_token = generate_tokens(verification.usernum)
 
             return {
                 "status": "success",
-                "email": email,
-                "usernum": usernum,
+                "email": verification.email,
+                "usernum": verification.usernum,
                 "message": "Login successful.",
-                "require_robot": created,
+                "require_robot": verification.created,
                 "access_token": access_token,
                 "refresh_token": refresh_token,
             }
@@ -180,7 +146,7 @@ def verify_kakao_access_token(access_token):
         print("카카카오 검증 성공")
         user_info = response.json()
         print(user_info)
-        return {"status": "success", "user_info": user_info}
+        return regist_kakao(user_info)
     else:
         print("카카오 검증 실패")
         return {"status": "error", "message": "Invalid Kakao access token"}
@@ -200,6 +166,51 @@ def verify_google_id_token(id_token_str):
         ]:
             return {"status": "error", "message": "Invalid issuer"}
 
-        return {"status": "success", "user_info": user_info}
+        return regist_google(user_info)
     except ValueError:
         return {"status": "error", "message": "Invalid Google ID token"}
+
+
+def regist_kakao(user_info):
+    email = user_info.get("kakao_account", {}).get("profile", {}).get("nickname")
+    usernum = user_info.get("id")
+    key = user_info.get("key")
+    user, created = User.objects.get_or_create(
+        email=email,
+        defaults={
+            "loginsource": "kakao",
+            "email": email,
+            "is_active": True,
+        },
+    )
+    kakao_user, created = KakaoUser.objects.get_or_create(user=user, usernum=usernum)
+
+    return {
+        "status": "success",
+        "user_info": user_info,
+        "usernum": usernum,
+        "email": email,
+        "created": created,
+    }
+
+
+def regist_google(user_info):
+    usernum = user_info.get("sub")
+    email = user_info.get("email")
+    user, created = User.objects.get_or_create(
+        email=email,
+        defaults={
+            "loginsource": "google",
+            "email": email,
+            "is_active": True,
+        },
+    )
+    google_user, created = GoogleUser.objects.get_or_create(user=user, usernum=usernum)
+
+    return {
+        "status": "success",
+        "user_info": user_info,
+        "usernum": usernum,
+        "email": email,
+        "created": created,
+    }
