@@ -1,12 +1,17 @@
 package com.example.ssafy_pjt.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
@@ -25,8 +30,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -35,6 +44,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.example.ssafy_pjt.BuildConfig
 import com.example.ssafy_pjt.R
+import com.example.ssafy_pjt.ui.theme.loginTitle
+import com.example.ssafy_pjt.ui.theme.modeType
 import com.example.ssafy_pjt.ui.theme.my_blue
 import com.example.ssafy_pjt.ui.theme.my_white
 import com.example.ssafy_pjt.ui.theme.my_yellow
@@ -53,96 +64,167 @@ fun HomeScreen(
     Scaffold(
         bottomBar = {
             CustomAppBar(navController, setDeliveryMode, setFollowingMode)
-        }
+        },
+        containerColor = my_white,
     ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
-            Box {
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+            .padding(start = 14.dp, end = 14.dp)
+        ) {
+            Button(
+                onClick = {},
+                modifier = modifier.fillMaxWidth(1f),
+                colors = ButtonDefaults.buttonColors(my_white)
+            ) {
                 Row {
                     Icon(
                         Icons.Default.AccountCircle,
-                        contentDescription = "user"
+                        contentDescription = "user",
+                        Modifier.size(45.dp)
+                            .padding(end=10.dp)
                     )
-                    Text(text= stringResource(R.string.hello))
+                    Text(
+                        text= stringResource(R.string.hello),
+                        color = my_blue,
+                        style = loginTitle
+                    )
                 }
             }
-            Text(text = stringResource(R.string.robotMode))
-            Box{
-                Row {
-                    Box(
-                        modifier = modifier.background(my_yellow)
-                            .size(170.dp)
+            Text(
+                text = stringResource(R.string.robotMode),
+                color = my_blue,
+                style = loginTitle
+            )
+            Box(
+            ) {
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Button (
+                        onClick = {},
+                        modifier = modifier
+                            .height(140.dp)
+                            .width(180.dp),
+                        colors = ButtonDefaults.buttonColors(my_yellow),
+                        shape = RoundedCornerShape(16.dp)
                     ){
-                        Text(
-                            text = stringResource(R.string.followingModeEx)
-                        )
-                        Icon(
-                            painter = painterResource(R.drawable.footprint),
-                            contentDescription = "팔로잉"
-                        )
+                       Column {
+                           Text(
+                               text = stringResource(R.string.followingModeEx),
+                               style = modeType,
+                               color = colorResource(R.color.black)
+                           )
+                           Icon(
+                               painter = painterResource(R.drawable.footprint),
+                               contentDescription = "팔로잉",
+                               tint = colorResource(R.color.black)
+                           )
+                       }
                     }
 
-                    Box(
-                        modifier = modifier.background(my_yellow)
-                            .size(170.dp)
+                    Button (
+                        onClick = {},
+                        modifier = modifier
+                            .height(140.dp)
+                            .width(180.dp),
+                        colors = ButtonDefaults.buttonColors(my_yellow),
+                        shape = RoundedCornerShape(16.dp)
                     ){
-                        Text(
-                            text = stringResource(R.string.deliveryModeEx)
-                        )
-                        Icon(
-                            painter = painterResource(R.drawable.delivery),
-                            contentDescription = "배달"
-                        )
+                        Column {
+                            Text(
+                                text = stringResource(R.string.deliveryModeEx),
+                                color = colorResource(R.color.black),
+                                style = modeType
+                            )
+                            Icon(
+                                painter = painterResource(R.drawable.delivery),
+                                contentDescription = "배달",
+                                tint = colorResource(R.color.black)
+                            )
+                        }
                     }
                 }
             }
             Text(
                 text = stringResource(R.string.robotState),
-                color = my_blue
+                color = my_blue,
+                style = loginTitle
             )
             Box{
-                Row {
-                    Box(
-                        modifier = modifier.background(my_blue)
-                            .size(170.dp)
+                Row(
+                    modifier = modifier.fillMaxWidth()
+                        .padding(bottom =10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Button (
+                        modifier = modifier
+                            .height(140.dp)
+                            .width(180.dp),
+                        colors = ButtonDefaults.buttonColors(my_blue),
+                        shape = RoundedCornerShape(16.dp),
+                        onClick = {}
                     ){
                         Text(
-                            text = stringResource(R.string.followingModeEx),
-                            color = my_white
+                            text = stringResource(R.string.weight),
+                            color = my_white,
                         )
                     }
 
-                    Box(
-                        modifier = modifier.background(my_blue)
-                            .size(170.dp)
+                    Button (
+                        modifier = modifier
+                            .height(140.dp)
+                            .width(180.dp),
+                        colors = ButtonDefaults.buttonColors(my_blue),
+                        onClick = {},
+                        shape = RoundedCornerShape(16.dp)
                     ){
                         Text(
-                            text = stringResource(R.string.deliveryModeEx),
-                            color = my_white
+                            text = stringResource(R.string.move),
+                            color = my_white,
                         )
                     }
                 }
             }
             Box(
-                modifier = modifier.background(my_blue)
-                    .size(170.dp)
+                modifier = modifier.background(my_blue, shape = RoundedCornerShape(16.dp))
+                    .fillMaxWidth(1f)
+                    .height(50.dp)
+                    .clip(RoundedCornerShape(16.dp)),
             ) {
-                Text(
-                    text = stringResource(R.string.bettery),
-                    color = my_white)
-            }
+                Row(
+                    modifier = modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.bettery),
+                        color = my_white)
+                     }
+
+                }
             Text(
                 text = stringResource(R.string.robotLotation),
-                color = my_blue
+                color = my_blue,
+                style = loginTitle
             )
-            AndroidView(
-                factory = { ctx ->
-                    TMapView(ctx).apply {
-                        setSKTMapApiKey(skKey)
-                        tMapView = this
-                    }
-                },
-                modifier = Modifier.fillMaxSize()
-            )
+            Box(
+                modifier = modifier.fillMaxSize(1f)
+                    .padding(bottom = 5.dp)
+                    .clip(RoundedCornerShape(16.dp))
+            ){
+                AndroidView(
+                    factory = { ctx ->
+                        TMapView(ctx).apply {
+                            setSKTMapApiKey(skKey)
+                            tMapView = this
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
     if (deliveryMode){
             AlertDialog(
