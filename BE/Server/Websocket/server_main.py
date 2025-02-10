@@ -88,6 +88,7 @@ async def handler(websocket):
         try:
             message = await websocket.recv()
             data = json.loads(message)
+            print(data)
 
             action = data.get("action")
 

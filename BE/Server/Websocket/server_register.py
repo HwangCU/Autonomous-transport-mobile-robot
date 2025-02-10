@@ -59,7 +59,7 @@ async def handle_registration(data):
 
         await create_user(data)  # 사용자 생성 (비활성화 상태)
         user = await User.objects.aget(email=data["email"])  # 비동기로 사용자 가져오기
-        localuser = await LocalUser.objects.aget(id=user.id)
+        localuser = await LocalUser.objects.aget(user_id=user.id)
         await send_verification_email(user, localuser)  # 이메일 인증 링크 전송
 
         return {
