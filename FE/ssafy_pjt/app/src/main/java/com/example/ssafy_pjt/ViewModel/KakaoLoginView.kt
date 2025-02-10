@@ -87,8 +87,9 @@ class KakaoAuthViewModel(
                         "\n이메일: ${user.kakaoAccount?.email}" +
                         "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
                         "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
+
                 snsLogin(
-                    user.id ?: -1L,
+                    user.id.toString(),
                     user.kakaoAccount?.email ?: "none"
                 )
             }
@@ -96,14 +97,14 @@ class KakaoAuthViewModel(
     }
 
     fun snsLogin(
-        id: Long,
+        id: String,
         email:String
     ){
         Log.d("TAG","${id}")
         Log.d("TAG","${email}")
         Log.d("TAG","${id_token.value}")
-
-        val result = SnsLoginRequest(usernum = id, email = email, userloginresource = "kakao", token = id_token.value)
+        userViewModel.setLoginResource("kakao")
+        val result = SnsLoginRequest(usernum = id, email = email, userloginresource = userViewModel.loginResource.value, token = id_token.value)
         RetrofitClient.instance.snsLogin(result).enqueue(object : Callback<SnsLoginResponse> {
             override fun onResponse(call: Call<SnsLoginResponse>, response: Response<SnsLoginResponse>) {
                 if (response.isSuccessful) {

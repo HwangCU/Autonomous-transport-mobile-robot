@@ -32,10 +32,11 @@ import com.example.ssafy_pjt.ViewModel.AddressSearchViewModel
 fun HomeSearchScreen(
     modifier: Modifier,
     navController: NavController,
-    viewModel: AddressSearchViewModel
+    viewModel: AddressSearchViewModel,
 ){
     var address by remember { mutableStateOf("") }
     val addressList by viewModel.addressList.collectAsState()
+    val prev by viewModel.prev.collectAsState()
 
     Scaffold { it->
         Column(
@@ -65,7 +66,12 @@ fun HomeSearchScreen(
                         modifier = modifier.clickable {
                             viewModel.update(address)
                             Log.d("TAG", "Selected address: $address")
-                            navController.navigate("homeRegisration")
+                            Log.d("TAG", "prev: $prev")
+                            if (prev=="home") {
+                                navController.navigate("homeRegisration")
+                            } else if (prev=="search") {
+                                navController.navigate("DeliverySceen")
+                            }
                         }
                     )
                 }

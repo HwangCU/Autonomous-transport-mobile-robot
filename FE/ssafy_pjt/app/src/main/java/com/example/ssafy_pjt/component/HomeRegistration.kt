@@ -106,6 +106,7 @@ fun HomeRefistrationScreen(
                         TextField(
                             enabled = false,
                             modifier = Modifier.clickable {
+                                viewModel.updatePrev("home")
                                 navController.navigate("homeSearch")
                             },
                             value = address,

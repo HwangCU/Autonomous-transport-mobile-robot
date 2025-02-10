@@ -44,13 +44,13 @@ import com.example.ssafy_pjt.ui.theme.my_yellow
 
 @Composable
 fun LoginSceen(
-    viewModel: KakaoAuthViewModel,
+    kakaoviewModel: KakaoAuthViewModel,
     googleViewModel: GoogleLoginViewModel,
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
     val googleloginApiState by googleViewModel.loginApiState.collectAsState()
-    val KakaoLoginResult by viewModel.kakaologinResult.observeAsState()
+    val KakaoLoginResult by kakaoviewModel.kakaologinResult.observeAsState()
     val context = LocalContext.current
     val authResultLauncher = rememberLauncherForActivityResult(
         contract = GoogleApiContract()
@@ -83,7 +83,7 @@ fun LoginSceen(
                 navController.navigate("HomeSceen")
             }
             "로봇 등록이 필요합니다" ->{
-                navController.navigate("homeRegisration")
+                navController.navigate("RobotRegistration")
             }
             "Google 로그인 실패" -> {
                 // 에러 처리
@@ -150,7 +150,7 @@ fun LoginSceen(
                     .padding(start = 25.dp, top = 10.dp)
                     .fillMaxWidth(0.8f),
                 onClick = {
-                    viewModel.snsLogin()
+                    kakaoviewModel.snsLogin()
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.yellow),

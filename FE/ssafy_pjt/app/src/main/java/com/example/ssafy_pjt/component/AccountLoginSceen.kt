@@ -49,7 +49,7 @@ import com.example.ssafy_pjt.ui.theme.signupTitle
 fun AccountLoginSceen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: AccountLoginViewModel
+    viewModel: AccountLoginViewModel,
 ){
     var email by remember { mutableStateOf(viewModel.email.value ?: "") }
     var userPassword by remember { mutableStateOf(viewModel.userPassword.value ?: "") }

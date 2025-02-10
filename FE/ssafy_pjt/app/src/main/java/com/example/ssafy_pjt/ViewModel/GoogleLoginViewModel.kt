@@ -37,11 +37,12 @@ class GoogleLoginViewModel(
             val account = task.getResult(ApiException::class.java)
             account?.let {
                 Log.d("TAG", "account.id: ${account.id}")
+                Log.d("TAG","${account.id!!::class.java}")
                 Log.d("TAG", "account.email: ${account.email}")
                 Log.d("TAG", "account.token: ${account?.idToken}")
                 // 여기서 서버에 토큰을 전송하는 등의 추가 처리
                 googleLogin(
-                    account.id?.toLongOrNull() ?: -1L,
+                    account.id ?: "",
                     account.email ?: "none",
                     id_token=account.idToken ?: ""
                 )
@@ -56,12 +57,13 @@ class GoogleLoginViewModel(
     }
 
     fun googleLogin(
-        id: Long,
+        id: String,
         email: String,
         id_token:String
     ) {
-        val result =
-            SnsLoginRequest(usernum = id, email = email, userloginresource = "google", token = id_token)
+        userViewModel.setLoginResource("google")
+        val result = SnsLoginRequest(usernum = id, email = email, userloginresource = "${userViewModel.loginResource.value}", token = id_token)
+        Log.d("TAG","result - ${result}")
         RetrofitClient.instance.snsLogin(result).enqueue(object : Callback<SnsLoginResponse> {
             override fun onResponse(
                 call: Call<SnsLoginResponse>,
