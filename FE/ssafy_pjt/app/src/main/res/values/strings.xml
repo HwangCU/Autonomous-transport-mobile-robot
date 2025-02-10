@@ -41,4 +41,6 @@
     <string name="robotState">최근 로봇 상태 확인</string>
     <string name="bettery">배터리</string>
     <string name="robotLotation">로봇 최근 위치</string>
+    <string name="weight">적재 용량</string>
+    <string name="move">남은 주행 가능 거리</string>
 </resources>

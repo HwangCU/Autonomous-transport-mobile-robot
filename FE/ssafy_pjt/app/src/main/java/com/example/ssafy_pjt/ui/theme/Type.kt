@@ -48,3 +48,10 @@ val signupTitle = TextStyle(
     fontFamily = FontFamily.Default,
     lineHeight = 48.sp
 )
+
+val modeType = TextStyle(
+    fontSize = 22.sp,
+    fontWeight = FontWeight.Normal,
+    fontFamily = FontFamily.Default,
+    lineHeight = 30.sp
+)
