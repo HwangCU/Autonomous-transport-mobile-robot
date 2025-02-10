@@ -43,7 +43,7 @@ class KakaoUser(models.Model):
         User, on_delete=models.CASCADE, related_name="kakao_user"
     )
     key = models.CharField(max_length=1000)
-    usernum = models.IntegerField(unique=True)  # 카카오의 고유 유저 ID
+    usernum = models.CharField(unique=True, max_length=1000)  # 카카오의 고유 유저 ID
 
     def __str__(self):
         return f"{self.email} (Kakao)"
@@ -56,7 +56,7 @@ class GoogleUser(models.Model):
         User, on_delete=models.CASCADE, related_name="google_user"
     )
     key = models.CharField(max_length=1000)
-    usernum = models.IntegerField(unique=True)  # 구글의 고유 유저 ID
+    usernum = models.CharField(unique=True, max_length=1000)  # 구글의 고유 유저 ID
 
     def __str__(self):
         return f"{self.email} (Google)"
