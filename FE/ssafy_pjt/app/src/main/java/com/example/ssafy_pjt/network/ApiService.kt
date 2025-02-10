@@ -1,6 +1,5 @@
 package com.example.ssafy_pjt.network
 
-import com.example.ssafy_pjt.ViewModel.RobotRegistrationViewModel
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -33,7 +32,7 @@ data class SignupResponse(
 data class SnsLoginRequest(
     val token: String,
     val email: String,
-    val usernum: Long,
+    val usernum: String,
     val userloginresource: String
 )
 

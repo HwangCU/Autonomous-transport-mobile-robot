@@ -68,16 +68,17 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = "DeliverySceen"
+                    startDestination = "HomeSceen"
                 ){
                     composable("login") {
                         LoginSceen(
-                            viewModel = kakaoAuthViewModel,
+                            kakaoviewModel = kakaoAuthViewModel,
                             modifier = Modifier,
                             navController = navController,
                             googleViewModel= GoogleLoginViewModel,
                             )
                     }
+
                     composable("signup") {
                         SignupSceen(
                             modifier = Modifier,
@@ -100,7 +101,8 @@ class MainActivity : ComponentActivity() {
                     composable("DeliverySceen") {
                         DeliverySceen(
                             modifier = Modifier,
-                            navController = navController
+                            navController = navController,
+                            viewModel = addressSearchViewModel
                         )
                     }
                     composable("RobotRegistration"){

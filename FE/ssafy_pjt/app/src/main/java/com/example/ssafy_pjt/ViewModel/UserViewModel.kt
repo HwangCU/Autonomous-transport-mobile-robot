@@ -12,6 +12,13 @@ class UserViewModel:ViewModel(){
     private var _email = MutableStateFlow("")
     val email: StateFlow<String> = _email.asStateFlow()
 
+    private var _loginResource = MutableStateFlow("")
+    val loginResource = _loginResource.asStateFlow()
+
+    fun setLoginResource(it:String){
+        _loginResource.value=it
+    }
+
     fun setAccessToken(
         accessToken:String,
         email:String

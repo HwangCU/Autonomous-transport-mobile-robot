@@ -1,6 +1,7 @@
 package com.example.ssafy_pjt.ViewModel
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,6 +22,9 @@ import retrofit2.Response
 class AddressSearchViewModel(
     private  val userViewModel: UserViewModel
 ): ViewModel() {
+    private var _prev = MutableStateFlow("")
+    val prev = _prev.asStateFlow()
+
     private var _detail =  MutableLiveData("")
     val detail: LiveData<String> get() = _detail
 
@@ -38,6 +42,10 @@ class AddressSearchViewModel(
     }
     fun updateDetail(it: String){
         _detail.value = it
+    }
+
+    fun updatePrev(it:String){
+        _prev.value = it
     }
 
     fun getAdress(){

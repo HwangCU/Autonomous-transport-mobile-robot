@@ -37,6 +37,7 @@ class AccountLoginViewModel (
         val email = _email.value ?: ""
         val password = _userPassword.value ?: ""
         val request = LoginRequest(email,password)
+        userViewModel.setLoginResource("local")
 
         RetrofitClient.instance.login(request).enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {

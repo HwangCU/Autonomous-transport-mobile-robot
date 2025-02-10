@@ -30,7 +30,6 @@ class RobotRegistrationViewModel(
 
     fun robotRegist(){
         val robotId = _robotId.value ?:""
-        Log.d("TAG",userViewModel.email.value)
         val request = robotRegistRequest(email = userViewModel.email.value, robot_id = robotId, access_token =userViewModel.accessToken.value )
         RetrofitClient.instance.robotRegistration(request).enqueue(object : Callback<robotRegistResponse> {
             override fun onResponse(

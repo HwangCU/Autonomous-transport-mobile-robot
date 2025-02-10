@@ -10,6 +10,7 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,8 +19,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.ssafy_pjt.BuildConfig
+import com.example.ssafy_pjt.ViewModel.AddressSearchViewModel
 import com.example.ssafy_pjt.component.CustomAppBar
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -30,7 +33,8 @@ import com.skt.tmap.overlay.TMapMarkerItem
 @Composable
 fun DeliverySceen(
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    viewModel: AddressSearchViewModel
 ) {
     val skKey = BuildConfig.SK_app_key
     val context = LocalContext.current
@@ -40,6 +44,7 @@ fun DeliverySceen(
     var locationCallback by remember { mutableStateOf<LocationCallback?>(null) }
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     var targetAddress by remember { mutableStateOf("") }
+    var prev by remember { mutableStateOf("") }
 
     // 위치 권한 요청 런처
     val locationPermissionLauncher = rememberLauncherForActivityResult(
@@ -83,7 +88,7 @@ fun DeliverySceen(
     }
 
     Scaffold(
-        bottomBar = { CustomAppBar(navController, {}) }
+        bottomBar = { CustomAppBar(navController,{},{}) }
     ) { paddingValues ->
         Box(
             modifier = modifier
@@ -114,11 +119,15 @@ fun DeliverySceen(
                         .padding(16.dp)
                 ) {
                     TextField(
+                        enabled = false,
                         value = targetAddress,
                         onValueChange = { targetAddress = it },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 8.dp),
+                            .padding(bottom = 8.dp)
+                            .clickable {
+                                viewModel.updatePrev("search")
+                                navController.navigate("homeSearch") },
                         placeholder = { Text("주소를 입력하세요") },
                         colors = TextFieldDefaults.colors(
                             unfocusedContainerColor = MaterialTheme.colorScheme.surface,
