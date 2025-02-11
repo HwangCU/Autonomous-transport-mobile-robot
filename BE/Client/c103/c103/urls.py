@@ -8,4 +8,5 @@ urlpatterns = [
     path("api/", include("register.urls")),
     path("api/", include("robot.urls")),
     path("api/", include("address.urls")),
+    path("api/", include("footpath.urls")),
 ]

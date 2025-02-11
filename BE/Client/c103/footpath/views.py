@@ -1,4 +1,4 @@
-# login/views.py
+# footpath/views.py
 import json
 import asyncio
 import ssl
@@ -8,11 +8,7 @@ from websockets import connect  # pip install websockets
 
 
 @csrf_exempt
-def robot_regist(request):
-    """
-    FE에서 JSON 형식으로 email, password를 POST로 전송하면,
-    WebSocket 서버에 login 패킷을 전송한 후 그 결과를 반환합니다.
-    """
+def request_location_view(request):
     if request.method != "POST":
         return JsonResponse(
             {"status": "error", "message": "Only POST method allowed."}, status=405
@@ -20,31 +16,18 @@ def robot_regist(request):
 
     try:
         data = json.loads(request.body)
+        print(data)
     except json.JSONDecodeError:
         return JsonResponse({"status": "error", "message": "Invalid JSON."}, status=400)
 
-    email = data.get("email")
     access_token = data.get("access_token")
-    robot_id = data.get("robot_id")
 
-    if not access_token or not robot_id:
-        return JsonResponse(
-            {
-                "status": "error",
-                "message": f"Not enough user informations. {access_token} {robot_id}",
-            },
-            status=400,
-        )
-
-    # WebSocket 서버에 전송할 패킷 구성
     payload = {
-        "action": "regist_robot",
-        "email": email,
+        "action": "request_location",
         "access_token": access_token,
-        "robot_id": robot_id,
     }
 
-    async def send_register():
+    async def send_footpath():
         # 개발 중 SSL 검증 비활성화 (운영 환경에서는 올바른 인증서 설정 필요)
         ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         ssl_context.check_hostname = False
@@ -60,14 +43,15 @@ def robot_regist(request):
     # 동기 코드에서 asyncio 이벤트 루프 생성 후 실행
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    response_data = loop.run_until_complete(send_register())
+    response_data = loop.run_until_complete(send_footpath())
     loop.close()
 
     return JsonResponse(response_data)
 
 
 @csrf_exempt
-def robot_location(request):
+def footpath_view(request):
+    print("lon lat: ", request)
     if request.method != "POST":
         return JsonResponse(
             {"status": "error", "message": "Only POST method allowed."}, status=405
@@ -75,27 +59,29 @@ def robot_location(request):
 
     try:
         data = json.loads(request.body)
+        print(data)
     except json.JSONDecodeError:
         return JsonResponse({"status": "error", "message": "Invalid JSON."}, status=400)
 
+    y = data.get("y")
+    x = data.get("x")
     access_token = data.get("access_token")
 
-    if not access_token:
+    if not x or not y:
         return JsonResponse(
-            {
-                "status": "error",
-                "message": f"Not enough user informations. {access_token} {robot_id}",
-            },
+            {"status": "error", "message": "email and password are required."},
             status=400,
         )
 
     # WebSocket 서버에 전송할 패킷 구성
     payload = {
-        "action": "request_location",
+        "action": "footpath",
+        "x": x,
+        "y": y,
         "access_token": access_token,
     }
 
-    async def send_register():
+    async def send_footpath():
         # 개발 중 SSL 검증 비활성화 (운영 환경에서는 올바른 인증서 설정 필요)
         ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         ssl_context.check_hostname = False
@@ -111,7 +97,7 @@ def robot_location(request):
     # 동기 코드에서 asyncio 이벤트 루프 생성 후 실행
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    response_data = loop.run_until_complete(send_register())
+    response_data = loop.run_until_complete(send_footpath())
     loop.close()
 
     return JsonResponse(response_data)

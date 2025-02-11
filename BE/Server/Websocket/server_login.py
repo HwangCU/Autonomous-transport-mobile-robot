@@ -40,24 +40,34 @@ def authenticate_user(email, password):
         return None
 
 
-def generate_tokens(user):
+@sync_to_async
+def authenticate_robot(robot_id, password):
+    try:
+        robot = Robot.objects.get(robot_id=robot_id)
+        user_pass = LocalUser.objects.get(user_id=robot.user_id)
+        if check_password(password, user_pass.password):
+            return robot.id
+        return None
+    except User.DoesNotExist:
+        return None
+
+
+def generate_tokens(requester_id, requester_type):
     now = datetime.utcnow()
 
-    # if userloginresource=="local":
-    #     usernum = LocalUser.objects.get(user_id=user.id).get("user_id")
-    # elif userloginresource=="kakao":
-    #     usernum = KakaoUser.objects.get(user_id=user.id).get("usernum")
-    # elif userloginresource=="google":
-    #     usernum = GoogleUser.objects.get(user_id=user.id).get("usernum")
+    if requester_type not in ["user", "robot"]:
+        raise ValueError("Invalid requester_type. Must be 'user' or 'robot'.")
 
     access_token_payload = {
-        "user_id": user,
+        "requester_type": requester_type,
+        f"{requester_type}_id": requester_id,
         "exp": now + timedelta(minutes=ACCESS_TOKEN_EXPIRATION),
     }
     access_token = jwt.encode(access_token_payload, SECRET_KEY, algorithm="HS256")
 
     refresh_token_payload = {
-        "user_id": user,
+        "requester_type": requester_type,
+        f"{requester_type}_id": requester_id,
         "exp": now + timedelta(days=REFRESH_TOKEN_EXPIRATION),
     }
     refresh_token = jwt.encode(refresh_token_payload, SECRET_KEY, algorithm="HS256")
@@ -80,7 +90,7 @@ async def handle_login(data):
 
         user = await authenticate_user(email, password)
         if user:
-            access_token, refresh_token = generate_tokens(user)
+            access_token, refresh_token = generate_tokens(user, "user")
 
             # 로봇 등록 여부 확인
             robot_required = await check_robot_registered(user)
@@ -135,7 +145,7 @@ def handle_social_login(data):
         print(f"verification is {verification}")
 
         if verification["status"] == "success":
-            access_token, refresh_token = generate_tokens(user_id)
+            access_token, refresh_token = generate_tokens(user_id, "user")
 
             return {
                 "status": "success",
@@ -244,3 +254,29 @@ def regist_google(user_info):
         "created": created,
         "require_robot": robot_exists,
     }
+
+
+async def handle_robot_login(data):
+    try:
+        robot_id = data.get("robot_id")
+        password = data.get("password")
+
+        if not robot_id or not password:
+            return {"status": "error", "message": "email and password are required"}
+
+        robot = await authenticate_robot(robot_id, password)
+        if robot:
+            access_token, refresh_token = generate_tokens(robot, "robot")
+
+            return {
+                "status": "success",
+                "message": "Robot Login successful",
+                "robot_id": robot_id,
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+            }
+        else:
+            return {"status": "error", "message": "Invalid email or password"}
+
+    except Exception as e:
+        return {"status": "error", "message": f"Internal server error: {e}"}
