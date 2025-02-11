@@ -3,6 +3,10 @@
 #include <DW1000NgRanging.hpp>
 #include <DW1000NgRTLS.hpp>
 
+#include <queue>
+
+#define WINDOW_SIZE 3
+
 // connection pins
 const uint8_t PIN_SCK = 18;  //Clock 데이터
 const uint8_t PIN_MOSI = 23; //Master Out Salve In
@@ -28,7 +32,7 @@ device_configuration_t DEFAULT_CONFIG = {
     false,
     SFDMode::STANDARD_SFD,
     Channel::CHANNEL_5,
-    DataRate::RATE_850KBPS,
+    DataRate::RATE_6800KBPS,
     PulseFrequency::FREQ_16MHZ,
     PreambleLength::LEN_256,
     PreambleCode::CODE_3
@@ -90,15 +94,55 @@ void transmitRangeReport() {
     DW1000Ng::getNetworkId(&rangingReport[3]);
     memcpy(&rangingReport[5], main_anchor_address, 2);
     DW1000Ng::getDeviceAddress(&rangingReport[7]);
+    range_self = movingAverage(kalman(range_self));
     DW1000NgUtils::writeValueToBytes(&rangingReport[10], static_cast<uint16_t>((range_self*1000)), 2);
     DW1000Ng::setTransmitData(rangingReport, sizeof(rangingReport));
     DW1000Ng::startTransmit();
 }
- 
+
+double A = 1, H = 1; // 상태 공간 방정식
+double Q = 0.001, R = 0.05; // 상태 공간 방정식 노이즈, 센서값 노이즈
+double x = 0.3, P = 0.5; // 이전 값, 오차 공분산
+
+bool first = true;
+
+double kalman(double distance){
+  if (x == 0) x = 0.1;
+  if(first){
+    first = false;
+    x = distance;
+  }
+  
+  double xp = A * x;
+  double pp = A * P * A + Q;
+  double K = pp * H / (H * pp * H + R);
+  x = xp + K*(distance - H * xp);
+  P = pp - K * H * pp;
+
+  return x;
+
+}
+
+
+std::queue<double> window;
+double sum = 0;
+double movingAverage(double distance){
+  window.push(distance);
+  sum += distance;
+
+  if(window.size() > WINDOW_SIZE)
+  {
+    sum -= window.front();
+    window.pop();
+  }
+  return sum / window.size();
+}
+
+
 void loop() {     
         RangeAcceptResult result = DW1000NgRTLS::anchorRangeAccept(NextActivity::RANGING_CONFIRM, next_anchor);
         if(result.success) {
-            delay(2); // Tweak based on your hardware
+//            delay(2); // Tweak based on your hardware
             range_self = result.range;
             transmitRangeReport();
 
