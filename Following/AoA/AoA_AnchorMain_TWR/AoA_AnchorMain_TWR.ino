@@ -3,9 +3,11 @@
 #include <DW1000NgRanging.hpp>
 #include <DW1000NgRTLS.hpp>
 #include <cmath>
+#include <algorithm>
+#include <queue>
 
-#define ANTENNA_DIST 0.3 // distance between antenna main and b (cm)
-#define PASS 10
+#define ANTENNA_DIST 0.45 // distance between antenna main and b (cm)
+#define WINDOW_SIZE 3 //window size
 
 //UART pin 설정
 #define TX_PIN 26
@@ -57,7 +59,7 @@ device_configuration_t DEFAULT_CONFIG = {
     false,
     SFDMode::STANDARD_SFD,
     Channel::CHANNEL_5,
-    DataRate::RATE_850KBPS,
+    DataRate::RATE_6800KBPS,
     PulseFrequency::FREQ_16MHZ,
     PreambleLength::LEN_256,
     PreambleCode::CODE_3
@@ -112,31 +114,62 @@ void setup() {
     DW1000Ng::getPrintableDeviceMode(msg);
     Serial.print("Device mode: "); Serial.println(msg);  
 
-    MySerial.begin(9600,SERIAL_8N1, RX_PIN, TX_PIN);
+    MySerial.begin(921600,SERIAL_8N1, RX_PIN, TX_PIN);
 }
 
-float A = 1, H = 1, Q = 0, R = 4, x = 0.3, P =6;
-int passed_time = 0;
+double A = 1, H = 1; // 상태 공간 방정식
+double Q = 0.001, R = 0.05; // 상태 공간 방정식 노이즈, 센서값 노이즈
+double x = 0.3, P = 0.5; // 이전 값, 오차 공분산
 bool first = true;
 
-float kalman(double distance){
+double kalman(double distance){
+  if (x == 0) x = 0.1;
   if(first){
     first = false;
-  }
-  else if (abs(distance - x) > 1 && passed_time < PASS){
-    passed_time += 1;
-    return x;
-  }
-  if(passed_time == PASS){
-    passed_time = 0;
+    x = distance;
   }
     
-  float xp = A * x;
-  float pp = A * P * A + Q;
-  float K = pp * H / (H * pp * H + R);
+  double xp = A * x;
+  double pp = A * P * A + Q;
+  double K = pp * H / (H * pp * H + R);
   x = xp + K*(distance - H * xp);
   P = pp - K * H * pp;
   return x;
+}
+
+std::queue<double> window;
+double sum = 0;
+
+double movingAverage(double distance){
+  window.push(distance);
+  sum += distance;
+
+  if(window.size() > WINDOW_SIZE)
+  {
+    sum -= window.front();
+    window.pop();
+  }
+  return sum / window.size();
+}
+
+
+
+bool isValidTriangle(double a, double b, double c) {
+    
+    return (a + b > c) && (a + c > b) && (b + c > a);
+}
+
+void fixTriangle(double &a, double &b, double &c) {
+    double max_side = std::max({a, b, c});
+    double sum_other_sides = a + b + c - max_side;
+
+    if (sum_other_sides <= max_side) {
+        max_side = sum_other_sides * 0.99;  
+    }
+
+    if (a >= b && a >= c) a = max_side;
+    else if (b >= a && b >= c) b = max_side;
+    else c = max_side;
 }
 
 void calcDistanceAngle(double &distance, double&angle){
@@ -146,12 +179,25 @@ void calcDistanceAngle(double &distance, double&angle){
     b = range_self; // AC, b, TM
     c = range_B; // AB, c, TB
 
+    if(!isValidTriangle(a,b,c))
+    {
+      fixTriangle(a,b,c);
+    }
+
     distance = sqrt((2*pow(b,2) + 2*pow(c,2) - pow(a,2)) / 4);
 
-    angle = acos((pow(distance,2) + pow(a/2,2) - pow(b,2)) / (2 * distance *(a/2)));
+    double temp = (pow(distance,2) + pow(a/2,2) - pow(b,2)) / (2 * distance *(a/2));
 
+    if(temp <= -1.00){
+      temp = -1;
+    }
+    else if(temp >= 1.00){
+      temp = 1;
+    }
+
+    angle = acos(temp);
     angle = angle * (180/PI);
-    
+
 }
 
 
@@ -169,18 +215,18 @@ void loop() {
             RangeAcceptResult result = DW1000NgRTLS::anchorRangeAccept(NextActivity::RANGING_CONFIRM, next_anchor);
             if(!result.success) return;
             range_self = result.range;
-            range_self = kalman(range_self); // kalman 필터 적용
+            range_self = movingAverage(kalman(range_self)); // kalman 필터 적용
 
 
-            String rangeString = "Range: "; rangeString += range_self; rangeString += " m";
-            rangeString += "\t RX power: "; rangeString += DW1000Ng::getReceivePower(); rangeString += " dBm";
-            Serial.println(rangeString);
+//            String rangeString = "Range: "; rangeString += range_self; rangeString += " m";
+//            rangeString += "\t RX power: "; rangeString += DW1000Ng::getReceivePower(); rangeString += " dBm";
+//            Serial.println(rangeString);
 
         } else if(recv_data[9] == 0x60) {
             double range = static_cast<double>(DW1000NgUtils::bytesAsValue(&recv_data[10],2) / 1000.0);
-            String rangeReportString = "Range from: "; rangeReportString += recv_data[7];
-            rangeReportString += " = "; rangeReportString += range;
-            Serial.println(rangeReportString);
+//            String rangeReportString = "Range from: "; rangeReportString += recv_data[7];
+//            rangeReportString += " = "; rangeReportString += range;
+//            Serial.println(rangeReportString);
             if(recv_data[7] == anchor_b[0] && recv_data[8] == anchor_b[1]) {
                 range_B = range;
                 
@@ -195,13 +241,14 @@ void loop() {
                 fin_data += range_B;
                 Serial.println(fin_data);
 
+                Serial.println("");
                 String dist_angle;
                 dist_angle += "[Distance] distance: ";
                 dist_angle += distance;
                 dist_angle += "\n[Angle] angle: ";
                 dist_angle += angle;
                 Serial.println(dist_angle);
-            
+                Serial.println("");
 
 //                //dictionary 형식
 //                String uart_data = "{ distance: "; uart_data += distance;
@@ -217,8 +264,7 @@ void loop() {
                 String uart_text;
                 uart_text += "Data sent to Jetson Orin Nano: ";
                 uart_text += uart_data;
-                uart_text += angle;
-                Serial.println(uart_text);
+//                Serial.println(uart_text);
 
             } 
 
