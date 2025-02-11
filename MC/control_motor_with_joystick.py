@@ -58,8 +58,9 @@ def main():
             if event.type == ecodes.EV_KEY:
                 if event.code == 308:
                     print("Forward...")
-                    GPIO.output(right_dir1, GPIO.HIGH)
-                    GPIO.output(left_dir2, GPIO.HIGH)
+                    
+                    GPIO.output(right_dir1, GPIO.LOW)
+                    GPIO.output(left_dir2, GPIO.LOW)
                     if event.value:
                         forward = 1
                         stable_pwm = 20
@@ -69,8 +70,9 @@ def main():
 
                 elif event.code == 304:
                     print("Backward...")
-                    GPIO.output(right_dir1, GPIO.LOW)
-                    GPIO.output(left_dir2, GPIO.LOW)
+
+                    GPIO.output(right_dir1, GPIO.HIGH)
+                    GPIO.output(left_dir2, GPIO.HIGH)
                     if event.value:
                         forward = -1
                         stable_pwm = 20
@@ -135,7 +137,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-
 
 
 
