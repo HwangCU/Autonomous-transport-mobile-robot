@@ -6,7 +6,7 @@
 #include <DW1000NgRTLS.hpp>
 
 // connection pins
-const uint8_t PIN_SCK = 18;  //Clock 데이터
+const uint8_t  PIN_SCK = 18;  //Clock 데이터
 const uint8_t PIN_MOSI = 23; //Master Out Salve In
 const uint8_t PIN_MISO = 19; //Master In Slave Out
 const uint8_t PIN_SS = 4;  // ss||cs Slave(Chip) Select 여러 슬레이브 중 하나 선택 
@@ -14,7 +14,7 @@ const uint8_t PIN_RST = 15; // Reset
 const uint8_t PIN_IRQ = 17;  // Interrupt Request 
 
 // Extended Unique Identifier register. 64-bit device identifier. Register file: 0x01
-const char EUI[] = "AA:BB:CC:DD:EE:F F:00:00";
+const char EUI[] = "AA:BB:CC:DD:EE:FF:00:00";
 
 volatile uint32_t blink_rate = 100;
 
@@ -26,7 +26,7 @@ device_configuration_t DEFAULT_CONFIG = {
     false,
     SFDMode::STANDARD_SFD,
     Channel::CHANNEL_5,
-    DataRate::RATE_850KBPS,
+    DataRate::RATE_6800KBPS,
     PulseFrequency::FREQ_16MHZ,
     PreambleLength::LEN_256,
     PreambleCode::CODE_3
