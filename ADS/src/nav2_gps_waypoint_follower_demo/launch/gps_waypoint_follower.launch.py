@@ -1,12 +1,16 @@
-#!/usr/bin/env python3
-# gps_waypoint_follower.launch.py
+# Copyright (c) 2018 Intel Corporation
 #
-# 이 파일은 Nav2 GPS Waypoint Following을 위한 메인 launch 파일입니다.
-# 주요 기능:
-# 1. 실제 하드웨어 설정 실행 (real_hardware.launch.py)
-# 2. robot_localization 실행 (GPS + IMU fusion)
-# 3. Nav2 네비게이션 스택 실행
-# 4. 시각화 도구 실행 (선택적: RVIZ, Mapviz)
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import os
 
@@ -21,23 +25,20 @@ from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
-    # 필요한 패키지 디렉토리 경로 설정
+    # Get the launch directory
     bringup_dir = get_package_share_directory('nav2_bringup')
     gps_wpf_dir = get_package_share_directory(
         "nav2_gps_waypoint_follower_demo")
     launch_dir = os.path.join(gps_wpf_dir, 'launch')
     params_dir = os.path.join(gps_wpf_dir, "config")
-
-    # Nav2 파라미터 파일 로드
     nav2_params = os.path.join(params_dir, "nav2_no_map_params.yaml")
     configured_params = RewrittenYaml(
         source_file=nav2_params, root_key="", param_rewrites="", convert_types=True
     )
 
-    # 시각화 도구 사용 여부 설정
     use_rviz = LaunchConfiguration('use_rviz')
     use_mapviz = LaunchConfiguration('use_mapviz')
-    # Launch 파일 인자 설정
+
     declare_use_rviz_cmd = DeclareLaunchArgument(
         'use_rviz',
         default_value='False',
@@ -47,12 +48,10 @@ def generate_launch_description():
         'use_mapviz',
         default_value='False',
         description='Whether to start mapviz')
-    
-    # 수정된 부분: gazebo_cmd를 real_hardware_cmd로 변경
-    # 시뮬레이션 대신 실제 하드웨어 설정 사용
+
     gazebo_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(launch_dir, 'real_hardware.launch.py'))
+            os.path.join(launch_dir, 'gazebo_gps_world.launch.py'))
     )
 
     robot_localization_cmd = IncludeLaunchDescription(
@@ -65,7 +64,7 @@ def generate_launch_description():
             os.path.join(bringup_dir, "launch", "navigation_launch.py")
         ),
         launch_arguments={
-            "use_sim_time": "False", # 실제 하드웨어이므로 False로 변경
+            "use_sim_time": "True",
             "params_file": configured_params,
             "autostart": "True",
         }.items(),
