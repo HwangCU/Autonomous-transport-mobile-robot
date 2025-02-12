@@ -14,6 +14,7 @@ class User(models.Model):
         max_length=10, choices=LOGINSOURCE_CHOICES
     )  # 계정 제공자 구분
     email = models.EmailField(unique=True)  # 이메일 (로컬/소셜 계정 공통)
+    username = models.CharField(max_length=150, null=True, blank=True, default="홍길동")
     address = models.CharField(
         max_length=255, null=True, blank=True, default=None
     )  # 주소
@@ -29,7 +30,6 @@ class LocalUser(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="local_user"
     )
-    username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=255)  # bcrypt 해시 저장
 
     def __str__(self):
