@@ -55,6 +55,7 @@ dependencies {
     // tmap 라이브러리
     implementation(files("libs/vsm-tmap-sdk-v2-android-1.7.23.aar"))
     implementation(files("libs/tmap-sdk-1.8.aar"))
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.0") // 통신
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

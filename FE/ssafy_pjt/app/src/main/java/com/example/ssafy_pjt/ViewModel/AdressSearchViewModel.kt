@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.ssafy_pjt.network.RetrofitClient
 import com.example.ssafy_pjt.network.adressRequest
 import com.example.ssafy_pjt.network.adressResponse
+import com.example.ssafy_pjt.network.roadRequest
+import com.example.ssafy_pjt.network.roadResponse
 import com.example.ssafy_pjt.network.updateAddressRequest
 import com.example.ssafy_pjt.network.updateAddressResponse
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -94,6 +96,30 @@ class AddressSearchViewModel(
                 _updateResult.value="fail"
             }
 
+        })
+    }
+
+    fun destination(){
+        val request = roadRequest(_address.value ?: "", access_token = userViewModel.accessToken.value)
+        Log.d("TAG","토큰 : ${userViewModel.accessToken.value} email : ${userViewModel.email.value}")
+        RetrofitClient.instance.RoadSearch(request).enqueue(object : Callback<roadResponse>{
+            override fun onResponse(call: Call<roadResponse>, response: Response<roadResponse>) {
+                val body = response.body()
+                if (body?.status == "success"){
+                    val coordinates = body.path_list.map { coordinate ->
+                        Pair(coordinate[0], coordinate[1])  // (경도, 위도)
+                    }
+                    userViewModel.setPath(coordinates) // StateFlow 업데이트
+                    userViewModel.setTime(body.time)
+                    Log.d("TAG", "시간: ${body.time}초")
+                    Log.d("TAG", "경로 저장 성공: ${userViewModel.path.value.size}개 좌표")
+                } else {
+                    Log.d("TAG","bad request")
+                }
+            }
+            override fun onFailure(call: Call<roadResponse>, t: Throwable) {
+                Log.d("TAG","${t}")
+            }
         })
     }
 }
