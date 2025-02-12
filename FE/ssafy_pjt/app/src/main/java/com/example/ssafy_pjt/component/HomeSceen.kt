@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -174,6 +175,7 @@ fun HomeScreen(
                                style = modeType,
                                color = colorResource(R.color.black)
                            )
+                           Spacer(modifier = Modifier.height(5.dp))
                            Icon(
                                painter = painterResource(R.drawable.footprint),
                                contentDescription = "팔로잉",
@@ -198,6 +200,7 @@ fun HomeScreen(
                                 color = colorResource(R.color.black),
                                 style = modeType
                             )
+                            Spacer(modifier = Modifier.height(5.dp))
                             Icon(
                                 painter = painterResource(R.drawable.delivery),
                                 contentDescription = "배달",
