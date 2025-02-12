@@ -38,7 +38,7 @@ def send_verification_email(user, localuser):
     """이메일 인증 링크 전송"""
     token = generate_email_token(user.email)
     print("토큰은 토큰 : ", token)
-    verification_url = f"http://192.168.100.40:8002/api/verify-email/{token}"  #
+    verification_url = f"http://c103.duckdns.org:8502/api/verify-email/{token}"  #
 
     subject = "이메일 인증을 완료해주세요"
     message = f"안녕하세요, {localuser.username}님!\n\n아래 링크를 클릭하여 이메일 인증을 완료해주세요:\n\n{verification_url}"
