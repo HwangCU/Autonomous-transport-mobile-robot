@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "robot",
     "address",
     "footpath",
+    "user",
 ]
 
 MIDDLEWARE = [

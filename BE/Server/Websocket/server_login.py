@@ -80,6 +80,11 @@ def check_robot_registered(user_id):
     return not Robot.objects.filter(user_id=user_id).exists()
 
 
+@sync_to_async
+def check_email_activate(user_id):
+    return User.objects.get(id=user_id).is_active
+
+
 async def handle_login(data):
     try:
         email = data.get("email")
@@ -91,6 +96,13 @@ async def handle_login(data):
         user = await authenticate_user(email, password)
         if user:
             access_token, refresh_token = generate_tokens(user, "user")
+
+            # 이메일 인증 여부 확인
+            if not await check_email_activate(user):
+                return {
+                    "status": "error",
+                    "message": "Inactivated email. Please verifying your email.",
+                }
 
             # 로봇 등록 여부 확인
             robot_required = await check_robot_registered(user)
@@ -202,14 +214,17 @@ def verify_google_id_token(id_token_str):
 
 
 def regist_kakao(user_info):
-    email = user_info.get("kakao_account", {}).get("profile", {}).get("nickname")
+    email = user_info.get("kakao_account", {}).get("email")
     usernum = user_info.get("id")
     key = user_info.get("key")
+    nickname = user_info.get("kakao_account", {}).get("profile", {}).get("nickname")
+
     user, created = User.objects.get_or_create(
         email=email,
         defaults={
             "loginsource": "kakao",
             "email": email,
+            "username": nickname,
             "is_active": True,
         },
     )
@@ -223,6 +238,7 @@ def regist_kakao(user_info):
         "status": "success",
         "user_info": user_info,
         "usernum": usernum,
+        "username": nickname,
         "email": email,
         "created": created,
         "require_robot": robot_exists,

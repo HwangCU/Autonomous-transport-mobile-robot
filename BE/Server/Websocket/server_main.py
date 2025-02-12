@@ -123,6 +123,7 @@ async def handler(websocket):
                 "regist_robot",
                 "address_regist",
                 "request_location",
+                "get_profile",
             ]:
                 token = data.get("access_token")
                 if not token:
@@ -148,6 +149,8 @@ async def handler(websocket):
                     response = await handle_footpath(data, user)
                 elif action == "request_location":
                     response = await handle_request_robot_location(data, user)
+                elif action == "get_profile":
+                    response = await handle_get_profile(data, user)
             elif action == "register":
                 response = await handle_registration(data)
             elif action == "login":
