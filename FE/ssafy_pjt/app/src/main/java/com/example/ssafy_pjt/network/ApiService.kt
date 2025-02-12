@@ -37,9 +37,9 @@ data class SnsLoginRequest(
 )
 
 data class SnsLoginResponse(
-    val email: String,
     val status:String,
     val message: String,
+    val email: String,
     val access_token:String?,
     val refresh_token : String?,
     val require_robot: Boolean
@@ -76,6 +76,19 @@ data class robotRegistResponse(
     val message: String
 )
 
+data class roadRequest(
+    val destination: String,
+    val access_token: String?
+)
+
+data class roadResponse(
+    val status: String,
+    val message: String,
+    val path_list: List<List<Double>>,
+    val time:Int
+)
+
+
 interface ApiService{
     @POST("/api/login/")
     fun login(@Body request: LoginRequest): Call<LoginResponse>
@@ -89,5 +102,7 @@ interface ApiService{
     fun updateAddress(@Body request: updateAddressRequest): Call<updateAddressResponse>
     @POST("/api/robot_regist/")
     fun robotRegistration(@Body request: robotRegistRequest): Call<robotRegistResponse>
+    @POST("/api/footpath/")
+    fun RoadSearch(@Body request: roadRequest): Call<roadResponse>
 }
 
