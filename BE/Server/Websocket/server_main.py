@@ -54,6 +54,7 @@ from Websocket.server_robot import (
 )
 from Websocket.server_address import handle_address_update
 from Websocket.server_footpath import handle_footpath
+from Websocket.server_profile import handle_get_profile, handle_edit_profile
 
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 # ssl_context.load_cert_chain(
@@ -124,6 +125,7 @@ async def handler(websocket):
                 "address_regist",
                 "request_location",
                 "get_profile",
+                "edit_profile",
             ]:
                 token = data.get("access_token")
                 if not token:
@@ -151,6 +153,8 @@ async def handler(websocket):
                     response = await handle_request_robot_location(data, user)
                 elif action == "get_profile":
                     response = await handle_get_profile(data, user)
+                elif action == "edit_profile":
+                    response = await handle_edit_profile(data, user)
             elif action == "register":
                 response = await handle_registration(data)
             elif action == "login":

@@ -16,15 +16,10 @@ def create_user(data):
         is_active=False,
     )
     local_user = LocalUser.objects.create(
-        user=user, username=data["username"], password=make_password(data["password"])
+        user=user, password=make_password(data["password"])
     )
     user.save()
-
-
-@sync_to_async
-def check_user_exists(field, value):
-    """필드 중복 확인"""
-    return LocalUser.objects.filter(**{field: value}).exists()
+    local_user.save()
 
 
 @sync_to_async
@@ -34,14 +29,14 @@ def check_email_exists(field, value):
 
 
 @sync_to_async
-def send_verification_email(user, localuser):
+def send_verification_email(user):
     """이메일 인증 링크 전송"""
     token = generate_email_token(user.email)
     print("토큰은 토큰 : ", token)
     verification_url = f"http://c103.duckdns.org:8502/api/verify-email/{token}"  #
 
     subject = "이메일 인증을 완료해주세요"
-    message = f"안녕하세요, {localuser.username}님!\n\n아래 링크를 클릭하여 이메일 인증을 완료해주세요:\n\n{verification_url}"
+    message = f"안녕하세요, {user.username}님!\n\n아래 링크를 클릭하여 이메일 인증을 완료해주세요:\n\n{verification_url}"
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
 
@@ -49,18 +44,16 @@ async def handle_registration(data):
     """회원가입 처리 + 이메일 인증 추가"""
     try:
         required_fields = {"username", "password", "email"}
+        print(f"required field is {required_fields}")
         if not required_fields.issubset(data.keys()):
             return {"status": "error", "message": "Missing required fields"}
 
-        if await check_user_exists("username", data["username"]):
-            return {"status": "error", "message": "Username already exists"}
         if await check_email_exists("email", data["email"]):
             return {"status": "error", "message": "Email already exists"}
 
         await create_user(data)  # 사용자 생성 (비활성화 상태)
         user = await User.objects.aget(email=data["email"])  # 비동기로 사용자 가져오기
-        localuser = await LocalUser.objects.aget(user_id=user.id)
-        await send_verification_email(user, localuser)  # 이메일 인증 링크 전송
+        await send_verification_email(user)  # 이메일 인증 링크 전송
 
         return {
             "status": "success",

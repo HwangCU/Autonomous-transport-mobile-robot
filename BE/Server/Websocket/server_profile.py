@@ -1,9 +1,10 @@
 # server_profile.py
-
+from asgiref.sync import sync_to_async
 from robots.models import Robot  # 로봇 정보를 저장하는 모델. robots 앱에 있다고 가정
 
 
-def get_profile(data, user):
+@sync_to_async
+def handle_get_profile(data, user):
     """
     사용자의 프로필 정보를 가져옵니다.
 
@@ -27,7 +28,8 @@ def get_profile(data, user):
         return {"status": "error", "message": f"Internal server error: {e}"}
 
 
-def edit_profile(data, user):
+@sync_to_async
+def handle_edit_profile(data, user):
     """
     사용자의 프로필 정보를 수정합니다.
 
