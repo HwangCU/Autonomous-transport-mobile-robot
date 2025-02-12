@@ -32,12 +32,14 @@ def get_address(request):
             "currentPage": "1",
             "countPerPage": "10",
             "keyword": keyword,
-            "confmKey": "devU01TX0FVVEgyMDI1MDIwNTE0MzkyOTExNTQ0OTI=",  # 실제 API 키로 변경해야 함
+            "confmKey": "devU01TX0FVVEgyMDI1MDIxMzAwNDMwMTExNTQ2NTc=",  # 실제 API 키로 변경해야 함
             "resultType": "json",
         }
 
         # API 호출
         response = requests.get(API_URL, params=params)
+
+        print("get address response is ", response)
         api_result = response.json()
 
         # juso 리스트에서 roadAddr 값만 추출
