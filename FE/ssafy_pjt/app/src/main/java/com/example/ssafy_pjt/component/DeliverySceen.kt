@@ -45,6 +45,10 @@ import com.skt.tmap.TMapView
 import com.skt.tmap.overlay.TMapMarkerItem
 import com.skt.tmap.overlay.TMapPolyLine
 import kotlinx.coroutines.awaitAll
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 @Composable
 fun DeliverySceen(
@@ -369,6 +373,18 @@ fun updateMapLocation(mapView: TMapView?, lat: Double, lng: Double) {
 // 상수
 private const val REQUEST_CHECK_SETTINGS = 100
 
+// 두 지점 사이의 거리를 계산하는 함수 (Haversine 공식 사용)
+fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+    val earthRadius = 6371.0 // 지구 반지름 (km)
+    val dLat = Math.toRadians(lat2 - lat1)
+    val dLon = Math.toRadians(lon2 - lon1)
+    val a = sin(dLat/2) * sin(dLat/2) +
+            cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
+            sin(dLon/2) * sin(dLon/2)
+    val c = 2 * atan2(sqrt(a), sqrt(1-a))
+    return earthRadius * c * 1000 // 미터로 변환
+}
+
 fun drawDeliveryPath(
     mapView: TMapView?,
     userViewModel: UserViewModel,
@@ -376,39 +392,62 @@ fun drawDeliveryPath(
     return mapView?.let { view ->
         try {
             val coordinates = userViewModel.path.value
-            Log.d("TAG", "list ${coordinates}")
 
-            // 기존 마커와 폴리라인 모두 제거
-            view.removeAllTMapMarkerItem()
+            // 출발지와 도착지 좌표
+            val startPoint = coordinates.first()
+            val endPoint = coordinates.last()
 
+            // 거리 계산
+            val distance = calculateDistance(
+                startPoint.second, // 위도
+                startPoint.first,  // 경도
+                endPoint.second,   // 위도
+                endPoint.first     // 경도
+            )
+
+            // 거리에 따른 줌 레벨 동적 조절
+            val zoomLevel = when {
+                distance < 500 -> 16   // 500m 미만: 매우 상세한 지도
+                distance < 1000 -> 15  // 1km 미만: 상세한 지도
+                distance < 3000 -> 14  // 3km 미만: 중간 정도 확대
+                distance < 5000 -> 13  // 5km 미만: 약간 축소
+                distance < 10000 -> 12 // 10km 미만: 더 축소
+                else -> 11             // 10km 이상: 최대한 축소
+            }
+
+            // 지도 중심점 계산
+            val centerLat = (startPoint.second + endPoint.second) / 2
+            val centerLon = (startPoint.first + endPoint.first) / 2
+
+            // 마커 및 경로 그리기 (기존 코드와 동일)
             val tMapPoints = ArrayList<TMapPoint>()
             coordinates.forEach { (longitude, latitude) ->
                 tMapPoints.add(TMapPoint(latitude, longitude))
             }
 
-            // 출발지 마커 생성
-            val startPoint = coordinates.first()
+            // 기존 마커 제거
+            view.removeAllTMapMarkerItem()
+
+            // 출발지 마커
             val startMarker = TMapMarkerItem().apply {
                 id = "start"
                 tMapPoint = TMapPoint(startPoint.second, startPoint.first)
                 visible = true
                 name = "출발지"
-                icon = BitmapFactory.decodeResource(view.context.resources,R.drawable.roboticon)
+                icon = BitmapFactory.decodeResource(view.context.resources, R.drawable.roboticon)
             }
             view.addTMapMarkerItem(startMarker)
 
-            // 목적지 마커 생성
-            val endPoint = coordinates.last()
+            // 도착지 마커
             val endMarker = TMapMarkerItem().apply {
                 id = "end"
                 tMapPoint = TMapPoint(endPoint.second, endPoint.first)
                 visible = true
                 name = "목적지"
-                // 아이콘 설정이 필요하다면 여기에 추가
             }
             view.addTMapMarkerItem(endMarker)
 
-            // 폴리라인 생성 및 추가
+            // 폴리라인 생성
             val polyline = TMapPolyLine("delivery-path", tMapPoints).apply {
                 lineColor = 0xFF007AFF.toInt()
                 lineWidth = 5f
@@ -418,10 +457,13 @@ fun drawDeliveryPath(
             }
             view.addTMapPolyLine(polyline)
 
-            // 경로가 전체적으로 보이도록 중심점과 줌 레벨 조정
-            view.zoomToSpan(maxOf(startPoint.second, endPoint.second) - minOf(startPoint.second, endPoint.second),
-                maxOf(startPoint.first, endPoint.first) - minOf(startPoint.first, endPoint.first))
-            view.setZoomLevel(16)
+            // 계산된 중심점과 줌 레벨 적용
+            view.setCenterPoint(centerLat, centerLon)
+            view.setZoomLevel(zoomLevel)
+
+            // 거리 로깅
+            Log.d("DeliveryPath", "Distance: ${distance}m, Zoom Level: $zoomLevel")
+
             true
         } catch (e: Exception) {
             Log.e("TAG", "경로 그리기 실패", e)
