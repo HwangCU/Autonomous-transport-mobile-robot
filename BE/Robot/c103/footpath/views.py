@@ -27,7 +27,7 @@ def footpath_view(request):
 
     if not x or not y:
         return JsonResponse(
-            {"status": "error", "message": "email and password are required."},
+            {"status": "error", "message": "longitude and latitude are required."},
             status=400,
         )
 

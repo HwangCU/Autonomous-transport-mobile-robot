@@ -25,8 +25,8 @@ def get_current_location_view(request):
     """
     if request.method == "POST":
         # 여기서는 예시로 고정된 좌표를 사용
-        current_latitude = 37.123456  # 예시 위도
-        current_longitude = 127.654321  # 예시 경도
+        current_latitude = 35.196796  # 예시 위도
+        current_longitude = 126.806460  # 예시 경도
 
         return JsonResponse(
             {

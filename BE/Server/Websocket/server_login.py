@@ -61,7 +61,7 @@ def generate_tokens(requester_id, requester_type):
     access_token_payload = {
         "requester_type": requester_type,
         f"{requester_type}_id": requester_id,
-        "exp": now + timedelta(minutes=ACCESS_TOKEN_EXPIRATION),
+        "exp": now + timedelta(days=ACCESS_TOKEN_EXPIRATION),
     }
     access_token = jwt.encode(access_token_payload, SECRET_KEY, algorithm="HS256")
 
