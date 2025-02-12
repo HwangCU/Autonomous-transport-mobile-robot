@@ -5,38 +5,34 @@ ekf_filter_node_odom:
     frequency: 30.0
     two_d_mode: true # Recommended to use 2d mode for nav2 in mostly planar environments
     print_diagnostics: true
-    debug: false
+    debug: true
+    debug_out_file: ekf_filter_node_map_debug.txt
+    print_diagnostics: true
     publish_tf: true
+    enable_get_state: true
 
     map_frame: map
     odom_frame: odom
-    base_link_frame: base_footprint # 로봇 베이스 프레임 (base_footprint에서 변경 필요)
+    base_link_frame: base_footprint # the frame id used by the turtlebot's diff drive plugin
     world_frame: odom
 
-    # 엔코더 관련 설정 - 제거
-    # odom0: odom
-    # odom0_config: [false, false, false,
-    #               false, false, false,
-    #               true,  true,  true,
-    #               false, false, true,
-    #               false, false, false]
-              
-    # odom0_queue_size: 10
-    # odom0_differential: false
-    # odom0_relative: false
+    odom0: odom
+    odom0_config: [false, false, false,
+                  false, false, false,
+                  true,  true,  true,
+                  false, false, true,
+                  false, false, false]
+    odom0_queue_size: 10
+    odom0_differential: false
+    odom0_relative: false
 
     imu0: imu
     imu0_config: [false, false, false,
                   false,  false,  true,
-                  true, true, true,
-                  false,  false,  true,
+                  false, false, false,
+                  false,  false,  false,
                   false,  false,  false]
-              # [false, false, false,   ← (x, y, z 위치는 업데이트하지 않음)
-              #  false, false, true,   ← (roll, pitch, yaw(true) 자세)
-              #  true,  true,  true,    ← (x, y, z 선형 속도는 사용)
-              #  false, false, true,    ← (roll rate, pitch rate는 무시하고, yaw rate는 사용)
-              #  false, false, false]   ← (가속도 항목들은 사용하지 않음)
-    imu0_differential: true  # If using a real robot you might want to set this to true, since usually absolute measurements from real imu's are not very accurate
+    imu0_differential: false  # If using a real robot you might want to set this to true, since usually absolute measurements from real imu's are not very accurate
     imu0_relative: false
     imu0_queue_size: 10
     imu0_remove_gravitational_acceleration: true
@@ -64,43 +60,44 @@ ekf_filter_node_map:
     frequency: 30.0
     two_d_mode: true  # Recommended to use 2d mode for nav2 in mostly planar environments
     print_diagnostics: true
-    debug: false
+    debug: true
+    debug_out_file: ekf_filter_node_map_debug.txt
+    print_diagnostics: true
     publish_tf: true
+    enable_get_state: true 
 
     map_frame: map
     odom_frame: odom
-    base_link_frame: base_footprint # 로봇 베이스 프레임 (base_footprint에서 변경 필요)
+    base_link_frame: base_footprint # the frame id used by the turtlebot's diff drive plugin
     world_frame: map
 
-    # odom0 설정 제거
-    # odom0: odom
-    # odom0_config: [false, false, false,
-    #               false, false, false,
-    #               true,  true,  true,
-    #               false, false, true,
-    #               false, false, false]
-    # odom0_queue_size: 10
-    # odom0_differential: false
-    # odom0_relative: false
+    odom0: odom
+    odom0_config: [false, false, false,
+                  false, false, false,
+                  true,  true,  true,
+                  false, false, true,
+                  false, false, false]
+    odom0_queue_size: 10
+    odom0_differential: false
+    odom0_relative: false
 
     odom1: odometry/gps
-    odom1_config: [true,  true,  false, # x, y 위치만 사용
+    odom1_config: [true,  true,  false,
                   false, false, false,
                   false, false, false,
                   false, false, false,
                   false, false, false]
     odom1_queue_size: 10
-    odom1_differential: false #  GPS는 절대 위치이므로 False
+    odom1_differential: false
     odom1_relative: false
 
     imu0: imu
-    # IMU 설정 - odom1과 동일하게 수정
     imu0_config: [false, false, false,
-                  false, false, true,
-                  true, true, true,
-                  false, false, true,
-                  false, false, false]
-    imu0_differential: true  # If using a real robot you might want to set this to true, since usually absolute measurements from real imu's are not very accurate
+                  false,  false,  true,
+                  false, false, false,
+                  false,  false,  false,
+                  false,  false,  false]
+    imu0_differential: false  # If using a real robot you might want to set this to true, since usually absolute measurements from real imu's are not very accurate
     imu0_relative: false
     imu0_queue_size: 10
     imu0_remove_gravitational_acceleration: true
@@ -132,9 +129,5 @@ navsat_transform:
     zero_altitude: true
     broadcast_utm_transform: true
     publish_filtered_gps: true
-    use_odometry_yaw: true # 오도메트리의 yaw 사용 (false로 변경 권장)
+    use_odometry_yaw: true
     wait_for_datum: false 
-    # wait_for_datum: true 
-    # datum: [37.123456, 127.123456, 0.0]  # [위도, 경도, yaw(라디안)]
-    # 고정된 작업 영역이 있는 경우 -> true + datum 설정
-    # 다양한 위치에서 시작하는 경우 -> false
