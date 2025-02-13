@@ -246,12 +246,16 @@ fun SendHomeScreen(
             },
             dismissButton = {
                 Button(
-                    colors = ButtonDefaults.buttonColors(my_blue),
+                    border = BorderStroke(1.dp, colorResource(R.color.black)),
+                    colors = ButtonDefaults.buttonColors(my_white),
                     onClick = {
                         setDeliveryMode(false)
                     }
                 ) {
-                    Text(text = stringResource(R.string.cancle))
+                    Text(
+                        text= stringResource(R.string.cancle),
+                        color = colorResource(R.color.black)
+                    )
                 }
             },
             onDismissRequest = {

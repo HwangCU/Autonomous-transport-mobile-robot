@@ -1,35 +1,16 @@
-package com.example.ssafy_pjt.component
-
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import com.example.ssafy_pjt.component.game.GameButton
+import com.example.ssafy_pjt.component.game.Joystick
 
 @Composable
 fun GameController(
@@ -39,42 +20,132 @@ fun GameController(
     onButtonClick: (String) -> Unit = { _ -> }
 ) {
     Box(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color(0xFFDEDEDE))  // 게임보이 밝은 회색
     ) {
-        // 뒤로가기 버튼 추가
-        Button(
-            onClick = { navController.popBackStack() },
+        // 게임보이 본체
+        Box(
             modifier = Modifier
-                .align(Alignment.TopStart)
+                .align(Alignment.Center)
+                .size(width = 380.dp, height = 600.dp)
+                .background(
+                    color = Color(0xFFCFD2CF),
+                    shape = MaterialTheme.shapes.medium
+                )
                 .padding(16.dp)
         ) {
-            Text("뒤로가기")
-        }
+            // 상단 화면 부분
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .size(width = 300.dp, height = 280.dp)
+                    .background(
+                        color = Color(0xFF9CA084),  // 게임보이 LCD 색상
+                        shape = MaterialTheme.shapes.small
+                    )
+                    .padding(8.dp)
+            ) {
+                // Nintendo 로고
+                Text(
+                    text = "Nintendo®",
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(4.dp),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF4A4B4A)
+                )
 
-        // 기존 조이스틱
-        Joystick(
-            modifier = Modifier
-                .size(200.dp)
-                .align(Alignment.BottomStart)
-                .padding(16.dp),
-            onDirectionChange = onDirectionChange
-        )
+                // GAME BOY 로고
+                Text(
+                    text = "GAME BOY",
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 24.dp),
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color(0xFF4A4B4A)
+                )
+            }
 
-        // 기존 버튼들
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            GameButton(
-                text = "B",
-                onClick = { onButtonClick("B") }
-            )
-            GameButton(
-                text = "A",
-                onClick = { onButtonClick("A") }
-            )
+            // 조이스틱 영역
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 16.dp, top = 32.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(140.dp)
+                        .background(
+                            color = Color(0xFF4A4B4A),
+                            shape = MaterialTheme.shapes.medium
+                        )
+                        .padding(8.dp)
+                ) {
+                    Joystick(
+                        modifier = Modifier.fillMaxSize(),
+                        onDirectionChange = onDirectionChange
+                    )
+                }
+            }
+
+            // 버튼 영역 - 오른쪽에 기울어진 형태로
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 16.dp, top = 32.dp)
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    GameButton(
+                        text = "B",
+                        onClick = { onButtonClick("B") },
+                        modifier = Modifier.size(50.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF9C0000)
+                        )
+                    )
+                    GameButton(
+                        text = "A",
+                        onClick = { onButtonClick("A") },
+                        modifier = Modifier.size(50.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF9C0000)
+                        )
+                    )
+                }
+            }
+
+            // START/SELECT 버튼
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 32.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Button(
+                    onClick = { },
+                    modifier = Modifier.size(width = 60.dp, height = 20.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF4A4B4A)
+                    ),
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Text("SELECT", fontSize = 8.sp)
+                }
+                Button(
+                    onClick = { },
+                    modifier = Modifier.size(width = 60.dp, height = 20.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF4A4B4A)
+                    ),
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Text("START", fontSize = 8.sp)
+                }
+            }
         }
     }
 }

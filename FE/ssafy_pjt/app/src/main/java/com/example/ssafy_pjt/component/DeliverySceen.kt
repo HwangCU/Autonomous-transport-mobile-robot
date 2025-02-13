@@ -10,6 +10,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -85,7 +86,7 @@ fun DeliverySceen(
     //path 상탱 변화 감지
     LaunchedEffect(userViewModel.path) {
         userViewModel.path.collect {pathList ->
-            if (drawDeliveryPath(tMapView,userViewModel)){
+            if (viewModel.drawDeliveryPath(tMapView,userViewModel)){
                 setStart(true)
             }
         }
@@ -180,12 +181,12 @@ fun DeliverySceen(
                                     Manifest.permission.ACCESS_COARSE_LOCATION
                                 ))
                             } else if (isLocationEnabled(context)) {
-                                requestCurrentLocation(
+                                viewModel.requestCurrentLocation(
                                     fusedLocationClient
                                 ) { lat, lng ->
                                     userViewModel.setLocati8on(lat,lng)
                                     currentLocation = Pair(lat, lng)
-                                    updateMapLocation(tMapView, lat, lng)
+                                    viewModel.updateMapLocation(tMapView, lat, lng)
                                 }
                             }
                         },
@@ -216,12 +217,16 @@ fun DeliverySceen(
                 },
                 dismissButton = {
                     Button(
-                        colors = ButtonDefaults.buttonColors(my_blue),
+                        border = BorderStroke(1.dp, colorResource(R.color.black)),
+                        colors = ButtonDefaults.buttonColors(my_white),
                         onClick = {
                             setFollowingMode(false)
                         }
                     ) {
-                        Text(text= stringResource(R.string.cancle))
+                        Text(
+                            text= stringResource(R.string.cancle),
+                            color = colorResource(R.color.black)
+                        )
                     }
                 },
                 onDismissRequest = {
@@ -314,162 +319,6 @@ private fun requestLocationSettings(context: Context) {
     }
 }
 
-/**
- * 현재 위치 요청
- */
-@SuppressLint("MissingPermission")
-fun requestCurrentLocation(
-    fusedLocationClient: FusedLocationProviderClient,
-    onLocationReceived: (Double, Double) -> Unit
-) {
-    fusedLocationClient.getCurrentLocation(
-        Priority.PRIORITY_HIGH_ACCURACY, null
-    ).addOnSuccessListener { location ->
-        location?.let {
-            onLocationReceived(it.latitude, it.longitude)
-        }
-    }.addOnFailureListener { e ->
-        Log.e("DeliveryScreen", "위치 가져오기 실패", e)
-    }
-}
-
-/**
- * 지도에 현재 위치 마커 추가
- */
-fun updateMapLocation(mapView: TMapView?, lat: Double, lng: Double) {
-    mapView?.let { view ->
-        // 현재 줌 레벨 저장
-        val currentZoom = view.getZoomLevel()
-
-        val tMapPoint = TMapPoint(lat, lng)
-
-        // 마커 생성 및 추가
-        val marker = TMapMarkerItem().apply {
-            id = "currentLocation"
-            this.tMapPoint = tMapPoint
-            visible = true
-            name = "현재 위치"
-            icon = BitmapFactory.decodeResource(view.context.resources,R.drawable.roboticon)
-        }
-
-        try {
-            view.setCenterPoint(lat, lng)
-            Log.d("TAG","${lng},${lat}")
-            // 기존 마커 삭제 및 새 마커 추가
-            view.removeAllTMapMarkerItem()
-            view.addTMapMarkerItem(marker)
-
-            // 마커 위치로 지도 중심 이동
-            // 사용자가 수동으로 줌을 조절한 경우 그 레벨 유지
-            if (currentZoom == 0) {  // 초기 상태일 때만 기본 줌 레벨 설정
-                view.setZoomLevel(17)
-            } else {}
-        } catch (e: Exception) {
-            Log.e("DeliveryScreen", "마커 추가 실패", e)
-        }
-    }
-}
 
 // 상수
 private const val REQUEST_CHECK_SETTINGS = 100
-
-// 두 지점 사이의 거리를 계산하는 함수 (Haversine 공식 사용)
-fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-    val earthRadius = 6371.0 // 지구 반지름 (km)
-    val dLat = Math.toRadians(lat2 - lat1)
-    val dLon = Math.toRadians(lon2 - lon1)
-    val a = sin(dLat/2) * sin(dLat/2) +
-            cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
-            sin(dLon/2) * sin(dLon/2)
-    val c = 2 * atan2(sqrt(a), sqrt(1-a))
-    return earthRadius * c * 1000 // 미터로 변환
-}
-
-fun drawDeliveryPath(
-    mapView: TMapView?,
-    userViewModel: UserViewModel,
-):Boolean {
-    return mapView?.let { view ->
-        try {
-            val coordinates = userViewModel.path.value
-
-            // 출발지와 도착지 좌표
-            val startPoint = coordinates.first()
-            val endPoint = coordinates.last()
-
-            // 거리 계산
-            val distance = calculateDistance(
-                startPoint.second, // 위도
-                startPoint.first,  // 경도
-                endPoint.second,   // 위도
-                endPoint.first     // 경도
-            )
-
-            // 거리에 따른 줌 레벨 동적 조절
-            val zoomLevel = when {
-                distance < 500 -> 16   // 500m 미만: 매우 상세한 지도
-                distance < 1000 -> 15  // 1km 미만: 상세한 지도
-                distance < 3000 -> 14  // 3km 미만: 중간 정도 확대
-                distance < 5000 -> 13  // 5km 미만: 약간 축소
-                distance < 10000 -> 12 // 10km 미만: 더 축소
-                else -> 11             // 10km 이상: 최대한 축소
-            }
-
-            // 지도 중심점 계산
-            val centerLat = (startPoint.second + endPoint.second) / 2
-            val centerLon = (startPoint.first + endPoint.first) / 2
-
-            // 마커 및 경로 그리기 (기존 코드와 동일)
-            val tMapPoints = ArrayList<TMapPoint>()
-            coordinates.forEach { (longitude, latitude) ->
-                tMapPoints.add(TMapPoint(latitude, longitude))
-            }
-
-            // 기존 마커 제거
-            view.removeAllTMapMarkerItem()
-
-            // 출발지 마커
-            val startMarker = TMapMarkerItem().apply {
-                id = "start"
-                tMapPoint = TMapPoint(startPoint.second, startPoint.first)
-                visible = true
-                name = "출발지"
-                icon = BitmapFactory.decodeResource(view.context.resources, R.drawable.roboticon)
-            }
-            view.addTMapMarkerItem(startMarker)
-
-            // 도착지 마커
-            val endMarker = TMapMarkerItem().apply {
-                id = "end"
-                tMapPoint = TMapPoint(endPoint.second, endPoint.first)
-                visible = true
-                name = "목적지"
-            }
-            view.addTMapMarkerItem(endMarker)
-
-            // 폴리라인 생성
-            val polyline = TMapPolyLine("delivery-path", tMapPoints).apply {
-                lineColor = 0xFF007AFF.toInt()
-                lineWidth = 5f
-                outLineColor = 0xFF007AFF.toInt()
-                outLineWidth = 1f
-                lineAlpha = 255
-            }
-            view.addTMapPolyLine(polyline)
-
-            // 계산된 중심점과 줌 레벨 적용
-            view.setCenterPoint(centerLat, centerLon)
-            view.setZoomLevel(zoomLevel)
-
-            // 거리 로깅
-            Log.d("DeliveryPath", "Distance: ${distance}m, Zoom Level: $zoomLevel")
-
-            true
-        } catch (e: Exception) {
-            Log.e("TAG", "경로 그리기 실패", e)
-            e.printStackTrace()
-            false
-        }
-    } ?: false
-}
-

@@ -52,6 +52,7 @@ android {
 }
 
 dependencies {
+
     // tmap 라이브러리
     implementation(files("libs/vsm-tmap-sdk-v2-android-1.7.23.aar"))
     implementation(files("libs/tmap-sdk-1.8.aar"))

@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -304,12 +305,16 @@ fun HomeScreen(
             },
             dismissButton = {
                 Button(
-                    colors = ButtonDefaults.buttonColors(my_blue),
+                    border = BorderStroke(1.dp, colorResource(R.color.black)),
+                    colors = ButtonDefaults.buttonColors(my_white),
                     onClick = {
                         setDeliveryMode(false)
                     }
                 ) {
-                    Text(text= stringResource(R.string.cancle))
+                    Text(
+                        text= stringResource(R.string.cancle),
+                        color = colorResource(R.color.black)
+                    )
                 }
             },
             onDismissRequest = {
@@ -333,12 +338,16 @@ fun HomeScreen(
                 },
                 dismissButton = {
                     Button(
-                        colors = ButtonDefaults.buttonColors(my_blue),
+                        border = BorderStroke(1.dp, colorResource(R.color.black)),
+                        colors = ButtonDefaults.buttonColors(my_white),
                         onClick = {
                             setFollowingMode(false)
                         }
                     ) {
-                        Text(text= stringResource(R.string.cancle))
+                        Text(
+                            text= stringResource(R.string.cancle),
+                            color = colorResource(R.color.black)
+                        )
                     }
                 },
                 onDismissRequest = {

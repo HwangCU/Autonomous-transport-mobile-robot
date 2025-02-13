@@ -1,6 +1,7 @@
 package com.example.ssafy_pjt
 
 import DeliverySceen
+import GameController
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -42,6 +43,7 @@ import com.kakao.sdk.common.util.Utility
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.io.File
 
 class MainActivity : ComponentActivity() {
     private val kakaoAuthViewModel: KakaoAuthViewModel by viewModels{
@@ -61,8 +63,6 @@ class MainActivity : ComponentActivity() {
         RobotRegistViewModelFactory(userViewModel)
     }
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = "login"
+                    startDestination = "GameController"
                 ){
                     composable("login") {
                         LoginSceen(
@@ -145,6 +145,12 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("SendHomeScreen") {
                         SendHomeScreen(
+                            modifier = Modifier,
+                            navController = navController
+                        )
+                    }
+                    composable("GameController") {
+                        GameController(
                             modifier = Modifier,
                             navController = navController
                         )
