@@ -1,6 +1,7 @@
 package com.example.ssafy_pjt
 
 import DeliverySceen
+import GameController
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -31,12 +32,15 @@ import com.example.ssafy_pjt.ViewModel.RobotRegistrationViewModel
 import com.example.ssafy_pjt.ViewModel.UserViewModel
 import com.example.ssafy_pjt.ViewModel.addressSearchViewModelFactory
 import com.example.ssafy_pjt.component.AccountLoginSceen
+import com.example.ssafy_pjt.component.FollowingScreen
 import com.example.ssafy_pjt.component.HomeRefistrationScreen
 import com.example.ssafy_pjt.component.HomeScreen
 import com.example.ssafy_pjt.component.HomeSearchScreen
 import com.example.ssafy_pjt.component.LoginSceen
 import com.example.ssafy_pjt.component.ProfileScreen
 import com.example.ssafy_pjt.component.RobotRegistration
+import com.example.ssafy_pjt.component.SendHomeScreen
+import com.example.ssafy_pjt.component.Setting
 import com.example.ssafy_pjt.component.SignupSceen
 import com.example.ssafy_pjt.ui.theme.Ssafy_pjtTheme
 import com.example.ssafy_pjt.ViewModel.ProfileViewModel
@@ -44,6 +48,7 @@ import com.kakao.sdk.common.util.Utility
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.io.File
 import com.example.ssafy_pjt.network.RetrofitClient
 import androidx.activity.result.ActivityResultLauncher
 
@@ -98,7 +103,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = "HomeSceen"
+                    startDestination = "GameController"
                 ){
                     composable("login") {
                         LoginSceen(
@@ -133,7 +138,8 @@ class MainActivity : ComponentActivity() {
                         DeliverySceen(
                             modifier = Modifier,
                             navController = navController,
-                            viewModel = addressSearchViewModel
+                            viewModel = addressSearchViewModel,
+                            userViewModel = userViewModel
                         )
                     }
                     composable("RobotRegistration"){
@@ -155,6 +161,30 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier,
                             navController = navController,
                             viewModel = addressSearchViewModel
+                        )
+                    }
+                    composable("FollowingScreen") {
+                        FollowingScreen(
+                            modifier = Modifier,
+                            navController = navController
+                        )
+                    }
+                    composable("Setting") {
+                        Setting(
+                            modifier = Modifier,
+                            navController = navController
+                        )
+                    }
+                    composable("SendHomeScreen") {
+                        SendHomeScreen(
+                            modifier = Modifier,
+                            navController = navController
+                        )
+                    }
+                    composable("GameController") {
+                        GameController(
+                            modifier = Modifier,
+                            navController = navController
                         )
                     }
                     composable("ProfileScreen") {
