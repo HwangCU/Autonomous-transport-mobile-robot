@@ -73,7 +73,9 @@ fun CustomAppBar(
             }
 
             IconButton(
-                onClick = { /* 설정 이동 */ }
+                onClick = {
+                    navController.navigate("Setting")
+                }
             ) {
                 Icon(
                     Icons.Default.Settings,
