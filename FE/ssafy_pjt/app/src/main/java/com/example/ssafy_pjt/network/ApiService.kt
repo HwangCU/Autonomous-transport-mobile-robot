@@ -4,6 +4,14 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
 
+data class UserProfile(
+    val username: String,
+    val email: String,
+    val address: String,
+    val robotId: String?,
+    val profileImage: String? = null
+)
+
 data class LoginRequest(
     val email: String,
     val password : String
@@ -76,7 +84,27 @@ data class robotRegistResponse(
     val message: String
 )
 
-interface ApiService{
+data class getProfileRequest(
+    val access_token: String
+)
+
+data class getProfileResponse(
+    val status: String,
+    val profile: UserProfile
+)
+
+data class updateProfileRequest(
+    val access_token: String,
+    val username: String,
+    val address: String
+)
+
+data class updateProfileResponse(
+    val status: String,
+    val profile: UserProfile
+)
+
+interface ApiService {
     @POST("/api/login/")
     fun login(@Body request: LoginRequest): Call<LoginResponse>
     @POST("/api/register/")
@@ -89,5 +117,8 @@ interface ApiService{
     fun updateAddress(@Body request: updateAddressRequest): Call<updateAddressResponse>
     @POST("/api/robot_regist/")
     fun robotRegistration(@Body request: robotRegistRequest): Call<robotRegistResponse>
+    @POST("/api/get_profile/")
+    fun getProfile(@Body request: getProfileRequest): Call<getProfileResponse>
+    @POST("/api/edit_profile/")
+    fun updateProfile(@Body request: updateProfileRequest): Call<updateProfileResponse>
 }
-
