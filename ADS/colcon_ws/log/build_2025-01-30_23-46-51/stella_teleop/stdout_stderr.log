@@ -1,0 +1,30 @@
+running develop
+Removing /home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages/stella-teleop.egg-link (link to .)
+running egg_info
+writing ../../../build/stella_teleop/stella_teleop.egg-info/PKG-INFO
+writing dependency_links to ../../../build/stella_teleop/stella_teleop.egg-info/dependency_links.txt
+writing entry points to ../../../build/stella_teleop/stella_teleop.egg-info/entry_points.txt
+writing requirements to ../../../build/stella_teleop/stella_teleop.egg-info/requires.txt
+writing top-level names to ../../../build/stella_teleop/stella_teleop.egg-info/top_level.txt
+reading manifest file '../../../build/stella_teleop/stella_teleop.egg-info/SOURCES.txt'
+writing manifest file '../../../build/stella_teleop/stella_teleop.egg-info/SOURCES.txt'
+running build
+running build_py
+running install
+running install_lib
+creating /home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages/stella_teleop
+copying /home/yun/colcon_ws/build/stella_teleop/build/lib/stella_teleop/__init__.py -> /home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages/stella_teleop
+creating /home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages/stella_teleop/script
+copying /home/yun/colcon_ws/build/stella_teleop/build/lib/stella_teleop/script/__init__.py -> /home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages/stella_teleop/script
+copying /home/yun/colcon_ws/build/stella_teleop/build/lib/stella_teleop/script/teleop_keyboard.py -> /home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages/stella_teleop/script
+byte-compiling /home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages/stella_teleop/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages/stella_teleop/script/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages/stella_teleop/script/teleop_keyboard.py to teleop_keyboard.cpython-310.pyc
+running install_data
+copying resource/stella_teleop -> /home/yun/colcon_ws/install/stella_teleop/share/ament_index/resource_index/packages
+copying package.xml -> /home/yun/colcon_ws/install/stella_teleop/share/stella_teleop
+running install_egg_info
+Copying ../../../build/stella_teleop/stella_teleop.egg-info to /home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages/stella_teleop-2.1.2-py3.10.egg-info
+running install_scripts
+Installing teleop_keyboard script to /home/yun/colcon_ws/install/stella_teleop/lib/stella_teleop
+writing list of installed files to '/home/yun/colcon_ws/build/stella_teleop/install.log'
