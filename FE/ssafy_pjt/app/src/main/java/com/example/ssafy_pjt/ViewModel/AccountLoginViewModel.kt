@@ -45,11 +45,12 @@ class AccountLoginViewModel (
                     val body = response.body()
                     Log.d("TAG","${body}")
                     if (body?.status == "success"){
+                        userViewModel.setAccessToken(accessToken = body.access_token ?: "", email= body.email)
                         if (body.require_robot){
-                            userViewModel.setAccessToken(accessToken = body.access_token ?: "", email= body.email)
+                            Log.d("TAG","토큰 : ${userViewModel.accessToken} email : ${userViewModel.email}")
                             _loginResult.value = "로봇이 필요합니다"
                         } else {
-                        _loginResult.value = "로그인 성공"
+                            _loginResult.value = "로그인 성공"
                         }
                         Log.d("TAG","success")
                     } else {
