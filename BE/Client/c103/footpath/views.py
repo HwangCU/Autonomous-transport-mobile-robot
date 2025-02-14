@@ -171,26 +171,25 @@ def get_path(response_data, des_x, des_y):
     print("\n\n final response data \n\n", response)
 
     # 모든 이동 경로를 저장할 리스트
-    route_coordinates = []
-
-    # features 리스트에서 데이터 추출
+    waypoints = []
     total_time = 0
 
     for feature in response["features"]:
         if feature["geometry"]["type"] == "LineString":
-            route_coordinates.extend(feature["geometry"]["coordinates"])
+            for coord in feature["geometry"]["coordinates"]:
+                waypoints.append(
+                    {"latitude": coord[1], "longitude": coord[0]}  # 위도  # 경도
+                )
             if "time" in feature["properties"]:
                 total_time += feature["properties"]["time"]
 
-        
-
-    print(route_coordinates)
+    print(waypoints)
 
     return JsonResponse(
         {
             "status": "success",
             "message": "path success",
-            "path_list": route_coordinates,
-            "time":total_time,
+            "waypoints": waypoints,
+            "time": total_time,
         }
     )
