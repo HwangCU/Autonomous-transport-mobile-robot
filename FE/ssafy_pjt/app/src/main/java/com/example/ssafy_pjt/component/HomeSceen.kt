@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -38,6 +39,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +50,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -55,7 +58,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 //import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.ssafy_pjt.BuildConfig
 import com.example.ssafy_pjt.R
 import com.example.ssafy_pjt.ViewModel.UserViewModel
@@ -131,19 +136,43 @@ fun HomeScreen(
             .padding(start = 14.dp, end = 14.dp)
         ) {
             Button(
-                onClick = {},
+                onClick = { navController.navigate("ProfileScreen") },
                 modifier = modifier.fillMaxWidth(1f),
                 colors = ButtonDefaults.buttonColors(my_white)
             ) {
-                Row {
-                    Icon(
-                        Icons.Default.AccountCircle,
-                        contentDescription = "user",
-                        Modifier.size(45.dp)
-                            .padding(end=10.dp)
-                    )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val profileImage by userViewModel.profileImage.collectAsState()
+                    
+                    Box(
+                        modifier = Modifier
+                            .size(45.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xff5e77e1)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (profileImage != null) {
+                            AsyncImage(
+                                model = profileImage,
+                                contentDescription = "Profile Image",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        } else {
+                            Icon(
+                                Icons.Default.AccountCircle,
+                                contentDescription = "user",
+                                modifier = Modifier.fillMaxSize(),
+                                tint = Color.White
+                            )
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.width(10.dp))
+                    
                     Text(
-                        text= stringResource(R.string.hello),
+                        text = stringResource(R.string.hello),
                         color = my_blue,
                         style = loginTitle
                     )
