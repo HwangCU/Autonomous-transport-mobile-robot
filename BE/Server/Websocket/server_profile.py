@@ -23,7 +23,8 @@ def handle_get_profile(data, user):
             "username": user.username,
             "email": user.email,
         }
-        return {"status": "success", "profile": profile}
+        print(profile)
+        return {"status": "success", "profile": profile, "message": profile}
     except Exception as e:
         return {"status": "error", "message": f"Internal server error: {e}"}
 
@@ -57,6 +58,11 @@ def handle_edit_profile(data, user):
             "username": user.username,
             "email": user.email,
         }
-        return {"status": "success", "profile": updated_profile}
+        print(updated_profile)
+        return {
+            "status": "success",
+            "profile": updated_profile,
+            "message": updated_profile,
+        }
     except Exception as e:
         return {"status": "error", "message": f"Internal server error: {e}"}
