@@ -136,8 +136,8 @@ async def handle_login(data):
 def handle_social_login(data):
     """카카오 & 구글 로그인 처리"""
     try:
-        userloginresource = data.get("userloginresource")  # "kakao" 또는 "google"
-        token = data.get("token")  # 클라이언트에서 전달받은 access_token 또는 id_token
+        userloginresource = data.get("userloginresource")
+        token = data.get("token")
 
         if userloginresource == "kakao":
             verification = verify_kakao_access_token(token)
@@ -150,13 +150,12 @@ def handle_social_login(data):
             usernum = uinfo.get("sub")
             email = uinfo.get("email")
             user_id = User.objects.get(email=email).id
-
         else:
             return {"status": "error", "message": "Invalid provider"}
 
-        print(f"verification is {verification}")
-
         if verification["status"] == "success":
+            # Robot 체크를 동기적으로 수행
+            robot_exists = Robot.objects.filter(user_id=user_id).exists()
             access_token, refresh_token = generate_tokens(user_id, "user")
 
             return {
@@ -164,7 +163,7 @@ def handle_social_login(data):
                 "email": email,
                 "usernum": usernum,
                 "message": "Login successful.",
-                "require_robot": verification.get("require_robot"),
+                "require_robot": not robot_exists,  # 존재하지 않으면 True 반환
                 "access_token": access_token,
                 "refresh_token": refresh_token,
             }
@@ -172,7 +171,10 @@ def handle_social_login(data):
         return verification
 
     except Exception as e:
-        return {"status": "error", "message": f"Server error: {e}"}
+        return {
+            "status": "error",
+            "message": str(e),
+        }  # 예외 메시지를 직접 문자열로 변환
 
 
 def verify_kakao_access_token(access_token):
