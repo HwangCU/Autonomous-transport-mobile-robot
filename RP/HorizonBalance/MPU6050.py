@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-import smbus 
+import smbus
 from time import sleep
 
 
@@ -79,10 +79,8 @@ def safe_read_raw_data(addr):
     try:
         #Accelero and Gyro value are 16-bit
         high = safe_read_byte_data(addr)
-        print(f"high byte: {high}")
         sleep(0.01)
         low = safe_read_byte_data(addr+1)
-        print(f"low byte: {low}")
         sleep(0.01)
 
         #concatenate higher and lower value
@@ -91,7 +89,6 @@ def safe_read_raw_data(addr):
         #to get signed value from mpu6050
         if(value > 32768):
             value = value - 65536
-        print(f"value: {value}")
         return value
     except OSError as e:
         print(f"I2C Read Error: {e}")
