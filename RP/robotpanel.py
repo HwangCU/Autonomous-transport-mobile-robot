@@ -105,7 +105,7 @@ class RobotUI(QMainWindow):
         self.caution_widget = QWidget()
         caution_layout = QHBoxLayout(self.caution_widget)
         
-        star_icon = QSvgWidget("star_filled.svg")
+        star_icon = QSvgWidget("./assets/star_filled.svg")
         star_icon.setFixedSize(int(window_height * 0.05), int(window_height * 0.05))
         
         caution_text = QLabel("자율주행을 위해 카메라가 주위를 보고 있어요")
