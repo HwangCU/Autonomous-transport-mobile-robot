@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 import com.example.ssafy_pjt.BuildConfig
 import com.example.ssafy_pjt.R
 import com.example.ssafy_pjt.ViewModel.AddressSearchViewModel
+import com.example.ssafy_pjt.ViewModel.JourneyHistoryViewModel
 import com.example.ssafy_pjt.ViewModel.UserViewModel
 import com.example.ssafy_pjt.component.CustomAppBar
 import com.example.ssafy_pjt.ui.theme.modeType
@@ -70,6 +71,7 @@ fun DeliverySceen(
     var (start, setStart) = remember { mutableStateOf(false) }
     var targetAddress by remember { mutableStateOf("") }
     var mapInitialized by remember { mutableStateOf(false) }
+    val historyViewModel: JourneyHistoryViewModel = viewModel()
 
     // 위치 권한 요청 런처
     val locationPermissionLauncher = rememberLauncherForActivityResult(
@@ -265,6 +267,7 @@ fun DeliverySceen(
                         }
                         Button (
                             onClick = {
+                                historyViewModel.addJourney(destination = viewModel.address.value ?: "", mode ="배달 모드", startPoint = "삼성전자 광주사업장" )
                             },
                             modifier = modifier.size(80.dp)
                                 .padding(bottom = 5.dp),

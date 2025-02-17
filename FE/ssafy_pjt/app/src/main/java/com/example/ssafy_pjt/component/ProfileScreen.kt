@@ -52,7 +52,7 @@ private fun ProfileContent(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: ProfileViewModel,
-    onImageClick: () -> Unit
+    onImageClick: () -> Unit,
 ) {
     val isEditing = remember { mutableStateOf(false) }
     var editedUsername by remember { mutableStateOf(userProfile.username) }
@@ -263,6 +263,7 @@ private fun ProfileContent(
                     }
                     ActionButton(text = "로그아웃") {
                         viewModel.onLogoutClick()
+                        navController.navigate("login")
                     }
                 }
             }

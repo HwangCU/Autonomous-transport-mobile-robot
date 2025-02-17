@@ -53,6 +53,8 @@ android {
 
 dependencies {
 
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
     // tmap 라이브러리
     implementation(files("libs/vsm-tmap-sdk-v2-android-1.7.23.aar"))
     implementation(files("libs/tmap-sdk-1.8.aar"))
@@ -90,6 +92,7 @@ dependencies {
     implementation(libs.androidx.tools.core)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.play.services.location)
+    implementation(libs.androidx.storage)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

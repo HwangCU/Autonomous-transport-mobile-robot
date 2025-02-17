@@ -1,5 +1,6 @@
 package com.example.ssafy_pjt.component.game
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -15,6 +16,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import com.example.ssafy_pjt.network.BluetoothService
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -23,6 +25,7 @@ import kotlin.math.sqrt
 @Composable
 fun Joystick(
     modifier: Modifier = Modifier,
+    bluetoothService: BluetoothService,
     onDirectionChange: (Float, Float) -> Unit = { _, _ -> }
 ) {
     var center: Offset by remember { mutableStateOf(Offset.Zero) }
@@ -56,12 +59,15 @@ fun Joystick(
 
                                 val normalizedX = (handle.x - center.x) / baseRadius
                                 val normalizedY = (handle.y - center.y) / baseRadius
+
+                                bluetoothService.sendMessage(x=normalizedX,y=normalizedY)
                                 onDirectionChange(normalizedX, normalizedY)
                             }
                             // 터치 업 이벤트
                             PointerEventType.Release -> {
                                 // 중앙으로 복귀
                                 handle = center
+                                bluetoothService.sendMessage(0f,0f)
                                 onDirectionChange(0f, 0f)
                             }
                         }

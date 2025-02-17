@@ -12,9 +12,9 @@
     <string name="userPasswordAgain">비밀번호를 한번더 입력해 주세요</string>
     <string name="infoCheck">정보 확인</string>
     <string name="menu_main">메인</string>
-    <string name="menu_delivery">배달 모드</string>
+    <string name="menu_delivery">배달</string>
     <string name="deliveryModeEx">배달 모드 \n실행</string>
-    <string name="menu_following">팔로잉 모드</string>
+    <string name="menu_following">팔로잉</string>
     <string name="followingModeEx">팔로잉 \n모드 실행</string>
     <string name="menu_setting">설정</string>
     <string name="infoCheckDetail">위와 같은 정보로 회원가입을 진행하시겠습니까?</string>
@@ -56,4 +56,8 @@
 
     <string name="expectTime">예상 소요 시간</string>
     <string name="realTime">%d분</string>
+    <string name="gamestart">start</string>
+    <string name="gameback">back</string>
+    <string name="copyright_company">Copyright © 2025 Carrybot in Gwangju Hanam</string>
+    <string name="copyright_rights">All Rights Reserved.</string>
 </resources>
