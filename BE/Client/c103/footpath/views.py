@@ -37,7 +37,6 @@ def request_location_view(request):
     return JsonResponse(resp)
 
 
-# TODO: 앱으로부터 목표(x, y) 받아오기,
 @csrf_exempt
 def footpath_view(request):
     print("lon lat: ", request)
@@ -162,3 +161,33 @@ def get_path(response_data, des_x, des_y):
             "time": total_time,
         }
     )
+
+
+@csrf_exempt
+def send_footpath_view(request):
+    if request.method != "POST":
+        return JsonResponse(
+            {"status": "error", "message": "Only POST method allowed."}, status=405
+        )
+
+    try:
+        data = json.loads(request.body)
+        print(data)
+    except json.JSONDecodeError:
+        return JsonResponse({"status": "error", "message": "Invalid JSON."}, status=400)
+
+    access_token = data.get("access_token")
+    footpath = data.get("footpath")
+
+    # TODO: footpath 가공해서 로봇에서 받을 수 있게 수정하
+
+    payload = {
+        "action": "send_footpath",
+        "access_token": access_token,
+        "footpath": footpath,
+    }
+
+    # (2) WebSocket 서버에 "login" 패킷 전송
+    resp = ws_manager.send_login(payload)
+
+    return JsonResponse(resp)

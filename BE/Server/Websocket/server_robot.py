@@ -5,6 +5,7 @@ import requests
 
 from robots.models import Robot
 from users.models import User
+from server_request import handle_request_robot
 
 from robot_info import (
     robot_connections,
@@ -46,36 +47,19 @@ async def handle_robot_registration(data, user):
 
 @sync_to_async
 def handle_request_robot_location(data, user, timeout=10):
-    """
-    robot_id를 사용하여 해당 로봇에 위치 요청 메시지를 보내고, 응답을 기다립니다.
-    """
-
-    print("\nhandle_request_robot_location\n")
-    robot = Robot.objects.get(user_id=user.id)
-    print(robot)
-    robot_id = robot.robot_id
-    print(robot_id)
-
-    if robot_id not in robot_connections:
-        return {"status": "error", "message": f"Robot {robot_id} not connected"}
-
-    robot_ip = robot_ip_list[robot_id]
-    print(robot_ip)
+    if user.id not in robot_connections:
+        return {"status": "error", "message": f"Robot {user.id} not connected"}
 
     # 로봇 연결에 대한 Lock을 사용하여 동시에 여러 recv() 호출을 방지
-    if robot_id not in robot_locks:
-        robot_locks[robot_id] = asyncio.Lock()
+    if user.id not in robot_locks:
+        robot_locks[user.id] = asyncio.Lock()
 
-    # TODO: 코드 가공해서 사용
-    # 로봇의 위치 요청 URL (로봇이 자체적으로 운영하는 Django 앱의 엔드포인트)
-    robot_url = f"http://{robot_ip}:9000/robot/location/"
+    # 0218 TODO: 로봇으로는 POST를 보낼 수 없음. (싸피 또는 어떠한 공유기가 막고있음). 따라서 websocket을 활용한 요청이 필요함
+    # 이 과정을 websocket으로 변경해서 전송할 필요 있음.
+    # robot_url = f"http://{robot_ip}:9000/robot/location/"
 
     # 필요한 경우 추가 데이터(예: 인증 토큰, action 등)를 포함할 수 있음
     payload = {"action": "location_request"}
 
-    try:
-        response = requests.post(robot_url, json=payload, timeout=10)
-        data = response.json()
-        return data
-    except requests.RequestException as e:
-        return {"status": "error", "message": f"Request error: {e}"}
+    response = handle_request_robot(payload, user)
+    return response.json
