@@ -8,6 +8,7 @@ from websockets import connect  # pip install websockets
 import urllib.parse
 import requests
 from rest_framework.response import Response
+from c103.ws_manager import ws_manager  # 위에서 만든 매니저 임포트
 
 
 @csrf_exempt
@@ -30,26 +31,10 @@ def request_location_view(request):
         "access_token": access_token,
     }
 
-    async def send_footpath():
-        # 개발 중 SSL 검증 비활성화 (운영 환경에서는 올바른 인증서 설정 필요)
-        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        ssl_context.check_hostname = False
-        ssl_context.verify_mode = ssl.CERT_NONE
+    # (2) WebSocket 서버에 "login" 패킷 전송
+    resp = ws_manager.send_login(payload)
 
-        # WebSocket 서버 URL (실제 환경에 맞게 수정)
-        ws_url = "wss://c103.duckdns.org:8501"
-        async with connect(ws_url, ssl=ssl_context) as websocket:
-            await websocket.send(json.dumps(payload))
-            response = await websocket.recv()
-            return json.loads(response)
-
-    # 동기 코드에서 asyncio 이벤트 루프 생성 후 실행
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    response_data = loop.run_until_complete(send_footpath())
-    loop.close()
-
-    return JsonResponse(response_data)
+    return JsonResponse(resp)
 
 
 # TODO: 앱으로부터 목표(x, y) 받아오기,
@@ -82,27 +67,10 @@ def footpath_view(request):
         "action": "request_location",
         "access_token": access_token,
     }
+    # (2) WebSocket 서버에 "login" 패킷 전송
+    resp = ws_manager.send_login(payload)
 
-    async def send_footpath():
-        # 개발 중 SSL 검증 비활성화 (운영 환경에서는 올바른 인증서 설정 필요)
-        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        ssl_context.check_hostname = False
-        ssl_context.verify_mode = ssl.CERT_NONE
-
-        # WebSocket 서버 URL (실제 환경에 맞게 수정)
-        ws_url = "wss://c103.duckdns.org:8501"
-        async with connect(ws_url, ssl=ssl_context) as websocket:
-            await websocket.send(json.dumps(payload))
-            response = await websocket.recv()
-            return json.loads(response)
-
-    # 동기 코드에서 asyncio 이벤트 루프 생성 후 실행
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    response_data = loop.run_until_complete(send_footpath())
-    loop.close()
-
-    return get_path(response_data, des_x, des_y)
+    return get_path(resp, des_x, des_y)
 
 
 def url_encode(text):

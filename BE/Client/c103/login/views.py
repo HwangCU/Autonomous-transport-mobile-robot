@@ -5,6 +5,7 @@ import ssl
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from websockets import connect  # pip install websockets
+from c103.ws_manager import ws_manager  # 위에서 만든 매니저 임포트
 
 
 @csrf_exempt
@@ -19,6 +20,10 @@ def login_view(request):
             {"status": "error", "message": "Only POST method allowed."}, status=405
         )
 
+    # (1) 만약 아직 연결 안 되어 있으면 connect()
+    if not ws_manager.is_connected():
+        ws_manager.connect()
+
     try:
         data = json.loads(request.body)
         print(data)
@@ -27,6 +32,7 @@ def login_view(request):
 
     email = data.get("email")
     password = data.get("password")
+
     if not email or not password:
         return JsonResponse(
             {"status": "error", "message": "email and password are required."},
@@ -40,26 +46,10 @@ def login_view(request):
         "password": password,
     }
 
-    async def send_login():
-        # 개발 중 SSL 검증 비활성화 (운영 환경에서는 올바른 인증서 설정 필요)
-        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        ssl_context.check_hostname = False
-        ssl_context.verify_mode = ssl.CERT_NONE
+    # (2) WebSocket 서버에 "login" 패킷 전송
+    resp = ws_manager.send_login(payload)
 
-        # WebSocket 서버 URL (실제 환경에 맞게 수정)
-        ws_url = "wss://c103.duckdns.org:8501"
-        async with connect(ws_url, ssl=ssl_context) as websocket:
-            await websocket.send(json.dumps(payload))
-            response = await websocket.recv()
-            return json.loads(response)
-
-    # 동기 코드에서 asyncio 이벤트 루프 생성 후 실행
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    response_data = loop.run_until_complete(send_login())
-    loop.close()
-
-    return JsonResponse(response_data)
+    return JsonResponse(resp)
 
 
 @csrf_exempt
@@ -103,23 +93,7 @@ def sns_login_view(request):
         "token": token,
     }
 
-    async def send_login():
-        # 개발 중 SSL 검증 비활성화 (운영 환경에서는 올바른 인증서 설정 필요)
-        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        ssl_context.check_hostname = False
-        ssl_context.verify_mode = ssl.CERT_NONE
+    # (2) WebSocket 서버에 "login" 패킷 전송
+    resp = ws_manager.send_login(payload)
 
-        # WebSocket 서버 URL (실제 환경에 맞게 수정)
-        ws_url = "wss://c103.duckdns.org:8501"
-        async with connect(ws_url, ssl=ssl_context) as websocket:
-            await websocket.send(json.dumps(payload))
-            response = await websocket.recv()
-            return json.loads(response)
-
-    # 동기 코드에서 asyncio 이벤트 루프 생성 후 실행
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    response_data = loop.run_until_complete(send_login())
-    loop.close()
-
-    return JsonResponse(response_data)
+    return JsonResponse(resp)

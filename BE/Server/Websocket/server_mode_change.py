@@ -2,6 +2,10 @@
 
 from asgiref.sync import sync_to_async
 from users.models import User
+from robots.models import Robot
+
+from robot_info import robot_connections, robot_locks, robot_ip_list
+from client_info import client_connections, client_locks, client_ip_list
 
 
 @sync_to_async
@@ -13,7 +17,7 @@ def get_user_by_id(user_id):
         return None
 
 
-async def handle_mod_change(data, user):
+async def handle_mode_change(data, user):
     """mod_change 처리"""
     try:
         new_mode = data.get("mode")
@@ -25,9 +29,9 @@ async def handle_mod_change(data, user):
             }
 
         # 모드 전환 로직 (예: 데이터베이스 업데이트)
-        result = await change_mode_for_user(user, new_mode)
 
-        if result:
+        if True:
+            print("mode change true")
             return {
                 "status": "success",
                 "message": f"Mode successfully changed to {new_mode}",
@@ -40,15 +44,3 @@ async def handle_mod_change(data, user):
 
     except Exception as e:
         return {"status": "error", "message": f"Internal server error: {e}"}
-
-
-@sync_to_async
-def change_mode_for_user(user, new_mode):
-    """사용자 모드 변경 로직"""
-    try:
-        user.mode = new_mode  # 'mode' 필드가 있다고 가정
-        user.save()
-        return True
-    except Exception as e:
-        print(f"Error changing mode: {e}")
-        return False
