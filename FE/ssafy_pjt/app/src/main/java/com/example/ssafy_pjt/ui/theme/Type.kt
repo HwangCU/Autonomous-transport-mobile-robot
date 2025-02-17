@@ -62,3 +62,8 @@ val modeType = TextStyle(
     fontFamily = FontFamily.Default,
     lineHeight = 30.sp
 )
+
+val menu_style=TextStyle(
+    fontSize = 12.sp,
+    fontWeight = FontWeight.Bold,
+)

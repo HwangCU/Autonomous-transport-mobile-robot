@@ -1,5 +1,6 @@
 package com.example.ssafy_pjt
 
+import BluetoothScreen
 import DeliverySceen
 import GameController
 import android.net.Uri
@@ -51,6 +52,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.io.File
 import com.example.ssafy_pjt.network.RetrofitClient
 import androidx.activity.result.ActivityResultLauncher
+import com.example.ssafy_pjt.component.DeviceItem
 
 class MainActivity : ComponentActivity() {
     private val kakaoAuthViewModel: KakaoAuthViewModel by viewModels{
@@ -103,7 +105,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = "GameController"
+                    startDestination = "login"
                 ){
                     composable("login") {
                         LoginSceen(
@@ -172,7 +174,8 @@ class MainActivity : ComponentActivity() {
                     composable("Setting") {
                         Setting(
                             modifier = Modifier,
-                            navController = navController
+                            navController = navController,
+                            profileViewModel=profileViewModel
                         )
                     }
                     composable("SendHomeScreen") {
@@ -195,6 +198,17 @@ class MainActivity : ComponentActivity() {
                                 checkAndRequestPermission()
                             }
                         )
+                    }
+                    composable("bluetooth") {
+                        BluetoothScreen {
+                            navController.navigate("GameController")
+                        }
+                    }
+                    /*composable("device") {
+                        DeviceItem(
+                            onClick = {},
+                            device = {}
+                        ) { }*/
                     }
                 }
             }

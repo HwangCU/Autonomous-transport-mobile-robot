@@ -28,10 +28,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.sp
 import com.example.ssafy_pjt.ViewModel.ApiState
 import com.example.ssafy_pjt.ViewModel.GoogleLoginViewModel
 import com.example.ssafy_pjt.ViewModel.KakaoAuthViewModel
@@ -128,7 +133,7 @@ fun LoginSceen(
                     .padding(top = 100.dp, start = 35.dp)
                     .size(250.dp)
             )
-            Spacer(modifier = modifier.height(45.dp))
+            Spacer(modifier = modifier.height(25.dp))
             Button(
                 modifier = modifier
                     .height(45.dp)
@@ -157,7 +162,16 @@ fun LoginSceen(
                     contentColor = colorResource(R.color.black)
                 )
             ) {
-                Text(text = stringResource(R.string.kaakaoLogin))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Icon(
+                        painterResource(R.drawable.kakao),
+                        contentDescription = "kakao",
+                        tint = Color.Unspecified
+                    )
+                    Text(text = stringResource(R.string.kaakaoLogin))
+                }
             }
             Button(
                 modifier = modifier
@@ -172,7 +186,16 @@ fun LoginSceen(
                     contentColor = colorResource(R.color.black)
                 )
             ) {
-                Text(text = stringResource(R.string.googleLogin))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.google),
+                        contentDescription = "googleIcon",
+                        tint = Color.Unspecified
+                    )
+                    Text(text = stringResource(R.string.googleLogin))
+                }
             }
             Button(
                 modifier = modifier
@@ -187,6 +210,14 @@ fun LoginSceen(
             ) {
                 Text(text = stringResource(R.string.signUp))
             }
+            Spacer(modifier = modifier.size(20.dp))
+            Text(text = stringResource(R.string.copyright_company)
+                    + "\n"
+                    + stringResource(R.string.copyright_rights),
+                fontSize = 14.sp,
+                color = Color.Black,
+                modifier = modifier.padding(start = 25.dp)
+            )
         }
     }
 }
