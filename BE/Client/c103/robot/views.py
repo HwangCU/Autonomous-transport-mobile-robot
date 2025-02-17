@@ -44,26 +44,12 @@ def robot_regist(request):
         "robot_id": robot_id,
     }
 
-    async def send_register():
-        # 개발 중 SSL 검증 비활성화 (운영 환경에서는 올바른 인증서 설정 필요)
-        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        ssl_context.check_hostname = False
-        ssl_context.verify_mode = ssl.CERT_NONE
+    from c103.ws_manager import ws_manager  # 위에서 만든 매니저 임포트
 
-        # WebSocket 서버 URL (실제 환경에 맞게 수정)
-        ws_url = "wss://c103.duckdns.org:8501"
-        async with connect(ws_url, ssl=ssl_context) as websocket:
-            await websocket.send(json.dumps(payload))
-            response = await websocket.recv()
-            return json.loads(response)
+    # (2) WebSocket 서버에 "login" 패킷 전송
+    resp = ws_manager.send_login(payload)
 
-    # 동기 코드에서 asyncio 이벤트 루프 생성 후 실행
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    response_data = loop.run_until_complete(send_register())
-    loop.close()
-
-    return JsonResponse(response_data)
+    return JsonResponse(resp)
 
 
 @csrf_exempt
@@ -84,7 +70,7 @@ def robot_location(request):
         return JsonResponse(
             {
                 "status": "error",
-                "message": f"Not enough user informations. {access_token} {robot_id}",
+                "message": f"Not enough user informations. {access_token}",
             },
             status=400,
         )
@@ -95,23 +81,48 @@ def robot_location(request):
         "access_token": access_token,
     }
 
-    async def send_register():
-        # 개발 중 SSL 검증 비활성화 (운영 환경에서는 올바른 인증서 설정 필요)
-        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        ssl_context.check_hostname = False
-        ssl_context.verify_mode = ssl.CERT_NONE
+    from c103.ws_manager import ws_manager  # 위에서 만든 매니저 임포트
 
-        # WebSocket 서버 URL (실제 환경에 맞게 수정)
-        ws_url = "wss://c103.duckdns.org:8501"
-        async with connect(ws_url, ssl=ssl_context) as websocket:
-            await websocket.send(json.dumps(payload))
-            response = await websocket.recv()
-            return json.loads(response)
+    # (2) WebSocket 서버에 "login" 패킷 전송
+    resp = ws_manager.send_login(payload)
 
-    # 동기 코드에서 asyncio 이벤트 루프 생성 후 실행
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    response_data = loop.run_until_complete(send_register())
-    loop.close()
+    return JsonResponse(resp)
 
-    return JsonResponse(response_data)
+
+@csrf_exempt
+def robot_mode_change(request):
+    if request.method != "POST":
+        return JsonResponse(
+            {"status": "error", "message": "Only POST method allowed."}, status=405
+        )
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"status": "error", "message": "Invalid JSON."}, status=400)
+
+    access_token = data.get("access_token")
+    mode = data.get("mode")
+
+    if not access_token:
+        return JsonResponse(
+            {
+                "status": "error",
+                "message": f"Not enough user informations. {access_token} {mode}",
+            },
+            status=400,
+        )
+
+    # WebSocket 서버에 전송할 패킷 구성
+    payload = {
+        "action": "mode_change",
+        "access_token": access_token,
+        "mode": mode,
+    }
+
+    from c103.ws_manager import ws_manager  # 위에서 만든 매니저 임포트
+
+    # (2) WebSocket 서버에 "login" 패킷 전송
+    resp = ws_manager.send_login(payload)
+
+    return JsonResponse(resp)
