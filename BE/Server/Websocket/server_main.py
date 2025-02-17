@@ -264,13 +264,13 @@ async def handler(websocket):
 async def main():
     async with serve(
         handler,
-        SERVER_ADDR,
+        "0.0.0.0",
         SERVER_PORT,
         ssl=ssl_context,
         ping_interval=None,
         ping_timeout=None,
     ):
-        print("Secure WebSocket server running on wss://0.0.0.0:8601")
+        print("Secure WebSocket server running on wss://0.0.0.0:8501")
         await asyncio.Future()
 
 
