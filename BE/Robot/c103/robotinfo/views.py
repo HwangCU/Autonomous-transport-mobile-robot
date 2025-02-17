@@ -10,7 +10,6 @@ from websockets import connect  # pip install websockets
 # Create your views here.
 
 
-# TODO: 로봇 정보 전송
 def response_gps_view():
     gps = {"longitude": 1, "latitude": 2}
     return gps

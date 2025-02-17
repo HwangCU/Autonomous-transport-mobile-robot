@@ -158,6 +158,7 @@ async def handler(websocket):
                 "request_location",
                 "get_profile",
                 "edit_profile",
+                "send_footpath",
             ]:
                 token = data.get("access_token")
                 if not token:
@@ -184,7 +185,6 @@ async def handler(websocket):
                         await robot_connections[user.id].send(json.dumps(payload))
                 elif action == "regist_robot":
                     response = await handle_robot_registration(data, user)
-
                 elif action == "address_regist":
                     response = await handle_address_update(data, user)
                 elif action == "footpath":
@@ -195,6 +195,8 @@ async def handler(websocket):
                     response = await handle_get_profile(data, user)
                 elif action == "edit_profile":
                     response = await handle_edit_profile(data, user)
+                elif action == "send_footpath":
+                    response = await handle_footpath(data, user)
             elif action == "register":
                 response = await handle_registration(data)
             elif action == "login":
