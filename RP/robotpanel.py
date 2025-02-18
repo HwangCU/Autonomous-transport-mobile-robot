@@ -17,7 +17,7 @@ class AsyncThread(QThread):
         super().__init__()
         self.load_horize = load_horize
 
-    def run(self):
+    def run(self) -> None:
         asyncio.run(self.load_horize.main())
 
 class RobotUI(QMainWindow):
@@ -56,30 +56,30 @@ class RobotUI(QMainWindow):
         self.update_ui_state(self.default_message)
         
     # Jetson 연결 초기화
-    async def init_jetson(self):
+    async def init_jetson(self) -> None:
+        asyncio.create_task(self.jetson._receive_data())
         if await self.jetson.connect():
             self.jetson.message_received.connect(self.handle_jetson_message)
     
     # Jetson으로부터 받은 메시지 처리
-    def handle_jetson_message(self, message):
+    def handle_jetson_message(self, message: str) -> None:
         self.update_ui_state(message)
     
     # 비상 정지 버튼 클릭 시 실행
-    def emergency_stop(self):
+    def emergency_stop(self) -> None:
         try:
             asyncio.run_coroutine_threadsafe(
                 self.jetson.emergency_stop(), 
                 self.loop
             )
-            self.update_ui_state(self.error_message)
         except Exception as e:
             print(f"{self.logger_prefix} 비상정지 명령 처리 중 오류: {e}")
 
     # 로봇 잠금 해제 메시지 전송
-    async def unlock_robot(self):
+    async def unlock_robot(self) -> None:
         await self.jetson.send_data('unlock_robot')
 
-    def update_ui_state(self, signal):
+    def update_ui_state(self, signal: str) -> None:
         # 분기 처리
         if signal == 'standard': # 대기 모드
             self.status_label.setText("안녕하세요")
@@ -125,8 +125,12 @@ class RobotUI(QMainWindow):
             self.status_label.setText("비상정지 중 입니다")
             self.unlock_button.hide()
             self.caution_widget.hide()
+        elif signal == 'test': # 테스트 모드
+            self.status_label.setText("테스트 모드가 실행 중이에요")
+            self.unlock_button.hide()
+            self.caution_widget.hide()
         
-    def handle_connection_status(self, is_connected):
+    def handle_connection_status(self, is_connected: bool) -> None:
         if is_connected:
             self.connection_retry_count = 0
             self.update_ui_state(self.default_message)
@@ -135,7 +139,7 @@ class RobotUI(QMainWindow):
             print(f"{self.logger_prefix} 연결 재시도... (시도 횟수: {self.connection_retry_count})")
             self.update_ui_state(self.connection_error_message)
 
-    def initUI(self):
+    def initUI(self) -> None:
         # 화면 설정
         screen = QDesktopWidget().screenGeometry()
         window_width = int(screen.width())
@@ -235,13 +239,13 @@ class RobotUI(QMainWindow):
         main_layout.setContentsMargins(50, 50, 50, 50)
 
     # 창을 화면 중앙에 위치시키는 메서드
-    def center(self):
+    def center(self) -> None:
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-    def cleanup(self):
+    def cleanup(self) -> None:
         try:
             self.load_horize.cleanup()
             if self.loop and self.loop.is_running():
