@@ -7,6 +7,8 @@ import errno
 import json
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+from hardcarry_interface.msg import RobotMode
+from hardcarry_interface.srv import EmergencyControl
 
 class RPCommunicationNode(Node):
     # 메시지 모드 종류
@@ -63,6 +65,15 @@ class RPCommunicationNode(Node):
             self.create_timer(1.0, self.test_timer_callback)
         
         self.get_logger().info('RP Communication Server Node has been started.')
+        
+        # RobotMode 토픽 $구독$
+        self.subscription = self.create_subscription(
+            RobotMode,
+            'RobotMode',
+            self.robot_mode_callback,
+            10
+        )
+        self.get_logger().info('RobotMode.msg 구독 시작')
 
     def cleanup(self):
         self.running = False
@@ -322,6 +333,11 @@ class RPCommunicationNode(Node):
                     self.message_queue.task_done()
             except Exception as e:
                 self.get_logger().error(f'메시지 큐 처리 중 오류: {str(e)}')
+
+    # RobotMode 토픽 메시지 수신 시 콜백 함수
+    def robot_mode_callback(self, msg):
+        self.get_logger().info(f'RobotMode 메시지 수신: mode={msg.mode}')
+        self.send_status_message(msg.mode)
 
 def main(args=None):
     rclpy.init(args=args)
