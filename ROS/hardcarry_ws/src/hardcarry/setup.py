@@ -25,6 +25,8 @@ setup(
         'console_scripts': [
             'main_node = hardcarry.main_node:main',
             'following_node = hardcarry.following_node:main',
+            'joycon_node = hardcarry.joycon_node:main',
+            'rp_com_node = hardcarry.rp_com_node:main',
         ],
     },
 )
