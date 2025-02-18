@@ -1,0 +1,47 @@
+[0.429s] Invoking command in '/home/yun/colcon_ws/src/gps_imu_tf_publisher': PYTHONPATH=/home/yun/colcon_ws/build/gps_imu_tf_publisher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/yun/colcon_ws/install/gps_imu_tf_publisher/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/gps_imu_tf_publisher build --build-base /home/yun/colcon_ws/build/gps_imu_tf_publisher/build install --record /home/yun/colcon_ws/build/gps_imu_tf_publisher/install.log --single-version-externally-managed install_data
+[0.593s] running egg_info
+[0.594s] creating ../../build/gps_imu_tf_publisher/gps_imu_tf_publisher.egg-info
+[0.594s] writing ../../build/gps_imu_tf_publisher/gps_imu_tf_publisher.egg-info/PKG-INFO
+[0.594s] writing dependency_links to ../../build/gps_imu_tf_publisher/gps_imu_tf_publisher.egg-info/dependency_links.txt
+[0.594s] writing entry points to ../../build/gps_imu_tf_publisher/gps_imu_tf_publisher.egg-info/entry_points.txt
+[0.594s] writing requirements to ../../build/gps_imu_tf_publisher/gps_imu_tf_publisher.egg-info/requires.txt
+[0.594s] writing top-level names to ../../build/gps_imu_tf_publisher/gps_imu_tf_publisher.egg-info/top_level.txt
+[0.594s] writing manifest file '../../build/gps_imu_tf_publisher/gps_imu_tf_publisher.egg-info/SOURCES.txt'
+[0.595s] reading manifest file '../../build/gps_imu_tf_publisher/gps_imu_tf_publisher.egg-info/SOURCES.txt'
+[0.596s] writing manifest file '../../build/gps_imu_tf_publisher/gps_imu_tf_publisher.egg-info/SOURCES.txt'
+[0.596s] running build
+[0.596s] running build_py
+[0.596s] creating /home/yun/colcon_ws/build/gps_imu_tf_publisher/build
+[0.596s] creating /home/yun/colcon_ws/build/gps_imu_tf_publisher/build/lib
+[0.596s] creating /home/yun/colcon_ws/build/gps_imu_tf_publisher/build/lib/gps_imu_tf_publisher
+[0.596s] copying gps_imu_tf_publisher/__init__.py -> /home/yun/colcon_ws/build/gps_imu_tf_publisher/build/lib/gps_imu_tf_publisher
+[0.596s] copying gps_imu_tf_publisher/tf_publisher.py -> /home/yun/colcon_ws/build/gps_imu_tf_publisher/build/lib/gps_imu_tf_publisher
+[0.596s] copying gps_imu_tf_publisher/gps_transform.py -> /home/yun/colcon_ws/build/gps_imu_tf_publisher/build/lib/gps_imu_tf_publisher
+[0.596s] copying gps_imu_tf_publisher/imu_to_odom.py -> /home/yun/colcon_ws/build/gps_imu_tf_publisher/build/lib/gps_imu_tf_publisher
+[0.596s] running install
+[0.596s] running install_lib
+[0.597s] creating /home/yun/colcon_ws/install/gps_imu_tf_publisher/lib/python3.10/site-packages/gps_imu_tf_publisher
+[0.597s] copying /home/yun/colcon_ws/build/gps_imu_tf_publisher/build/lib/gps_imu_tf_publisher/__init__.py -> /home/yun/colcon_ws/install/gps_imu_tf_publisher/lib/python3.10/site-packages/gps_imu_tf_publisher
+[0.597s] copying /home/yun/colcon_ws/build/gps_imu_tf_publisher/build/lib/gps_imu_tf_publisher/tf_publisher.py -> /home/yun/colcon_ws/install/gps_imu_tf_publisher/lib/python3.10/site-packages/gps_imu_tf_publisher
+[0.597s] copying /home/yun/colcon_ws/build/gps_imu_tf_publisher/build/lib/gps_imu_tf_publisher/gps_transform.py -> /home/yun/colcon_ws/install/gps_imu_tf_publisher/lib/python3.10/site-packages/gps_imu_tf_publisher
+[0.597s] copying /home/yun/colcon_ws/build/gps_imu_tf_publisher/build/lib/gps_imu_tf_publisher/imu_to_odom.py -> /home/yun/colcon_ws/install/gps_imu_tf_publisher/lib/python3.10/site-packages/gps_imu_tf_publisher
+[0.597s] byte-compiling /home/yun/colcon_ws/install/gps_imu_tf_publisher/lib/python3.10/site-packages/gps_imu_tf_publisher/__init__.py to __init__.cpython-310.pyc
+[0.597s] byte-compiling /home/yun/colcon_ws/install/gps_imu_tf_publisher/lib/python3.10/site-packages/gps_imu_tf_publisher/tf_publisher.py to tf_publisher.cpython-310.pyc
+[0.597s] byte-compiling /home/yun/colcon_ws/install/gps_imu_tf_publisher/lib/python3.10/site-packages/gps_imu_tf_publisher/gps_transform.py to gps_transform.cpython-310.pyc
+[0.598s] byte-compiling /home/yun/colcon_ws/install/gps_imu_tf_publisher/lib/python3.10/site-packages/gps_imu_tf_publisher/imu_to_odom.py to imu_to_odom.cpython-310.pyc
+[0.598s] running install_data
+[0.598s] creating /home/yun/colcon_ws/install/gps_imu_tf_publisher/share/ament_index
+[0.598s] creating /home/yun/colcon_ws/install/gps_imu_tf_publisher/share/ament_index/resource_index
+[0.598s] creating /home/yun/colcon_ws/install/gps_imu_tf_publisher/share/ament_index/resource_index/packages
+[0.598s] copying resource/gps_imu_tf_publisher -> /home/yun/colcon_ws/install/gps_imu_tf_publisher/share/ament_index/resource_index/packages
+[0.598s] copying package.xml -> /home/yun/colcon_ws/install/gps_imu_tf_publisher/share/gps_imu_tf_publisher
+[0.598s] creating /home/yun/colcon_ws/install/gps_imu_tf_publisher/share/gps_imu_tf_publisher/launch
+[0.598s] copying launch/tf_publisher.launch.py -> /home/yun/colcon_ws/install/gps_imu_tf_publisher/share/gps_imu_tf_publisher/launch
+[0.598s] running install_egg_info
+[0.599s] Copying ../../build/gps_imu_tf_publisher/gps_imu_tf_publisher.egg-info to /home/yun/colcon_ws/install/gps_imu_tf_publisher/lib/python3.10/site-packages/gps_imu_tf_publisher-0.0.1-py3.10.egg-info
+[0.600s] running install_scripts
+[0.614s] Installing gps_transform script to /home/yun/colcon_ws/install/gps_imu_tf_publisher/lib/gps_imu_tf_publisher
+[0.614s] Installing imu_to_odom script to /home/yun/colcon_ws/install/gps_imu_tf_publisher/lib/gps_imu_tf_publisher
+[0.614s] Installing tf_publisher script to /home/yun/colcon_ws/install/gps_imu_tf_publisher/lib/gps_imu_tf_publisher
+[0.614s] writing list of installed files to '/home/yun/colcon_ws/build/gps_imu_tf_publisher/install.log'
+[0.627s] Invoked command in '/home/yun/colcon_ws/src/gps_imu_tf_publisher' returned '0': PYTHONPATH=/home/yun/colcon_ws/build/gps_imu_tf_publisher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/yun/colcon_ws/install/gps_imu_tf_publisher/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/gps_imu_tf_publisher build --build-base /home/yun/colcon_ws/build/gps_imu_tf_publisher/build install --record /home/yun/colcon_ws/build/gps_imu_tf_publisher/install.log --single-version-externally-managed install_data
