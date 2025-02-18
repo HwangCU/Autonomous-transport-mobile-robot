@@ -19,7 +19,7 @@ class HorizonBalancer:
         self.level_angle = motor.level_angle
         self.pmotor_degree = self.level_angle
 
-    def kalman(self, value):
+    def kalman(self, value: float) -> float:
         xp = self.A * self.x
         pp = self.A * self.P * self.A + self.Q
         K = pp * self.H / (self.H * pp * self.H + self.R)
@@ -28,7 +28,7 @@ class HorizonBalancer:
 
         return self.x
 
-    def balance_step(self):
+    def balance_step(self) -> None:
         # 센서는 - 회전방향, 서보모터는 + 회전방향
         angle = sensor.safe_readYaw('x')
 
@@ -51,7 +51,7 @@ class HorizonBalancer:
             self.pmotor_degree = motor_degree
             # print(f"Motor: {motor_degree:.1f} DEG")
 
-    def cleanup(self):
+    def cleanup(self) -> None:
         print("End balance process")
         motor.endServo()
 

@@ -27,7 +27,7 @@ class LoadScale:
         
         print("Tare done! Add weight now...")
 
-    def update_drift(self, measured, filtered):
+    def update_drift(self, measured: float, filtered: float) -> None:
         # 물체가 올려진 상태에서 무게가 거의 일정하다고 가정할 수 있다면,
         # 측정된 값과 필터 결과의 차이를 천천히 추정 오프셋으로 반영
         error = filtered - measured
@@ -60,7 +60,7 @@ class LoadScale:
 
         return int(kilogram)
 
-    def cleanAndExit(self):
+    def cleanAndExit(self) -> None:
         print("Cleaning...")
         print("Scaler turned off!")
         sys.exit()

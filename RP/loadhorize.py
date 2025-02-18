@@ -1,7 +1,9 @@
 import asyncio
 import aiohttp
+import json
 from LoadScale.scale import LoadScale
 from HorizonBalance.horizebalancer import HorizonBalancer
+from typing import Optional
 
 class LoadHorize:
     def __init__(self):
@@ -11,7 +13,7 @@ class LoadHorize:
         self.server_url = 'http://c103.duckdns.org:8502/api/weight/'
         self.logger_prefix = "[LoadHorize]"
 
-    async def read_scale(self, err_cnt=0):
+    async def read_scale(self, err_cnt: int = 0) -> Optional[float]:
         if err_cnt > 10:
             print(f"{self.logger_prefix} Too many errors in scale reading. Stopping...")
             return None
@@ -28,7 +30,7 @@ class LoadHorize:
             await asyncio.sleep(0.1)
             return await self.read_scale(err_cnt + 1)
 
-    async def send_kilogram(self):
+    async def send_kilogram(self) -> None:
         async with aiohttp.ClientSession() as session:
             while True:
                 try:
@@ -42,22 +44,22 @@ class LoadHorize:
                     if abs(kilogram - self.pkilogram) >= 1:
                         self.pkilogram = kilogram
                         print("send kilogram")
-                        # HTTP POST 요청으로 데이터 전송
+
                         payload = {
                             "weight": kilogram,
                             "robot_id": "user"
                         }
-                        async with session.post(url=self.server_url, json=payload) as response:
+                        async with session.post(url=self.server_url, data=json.dumps(payload)) as response:
                             if response.status == 200:
                                 print(f"Kilogram sent: {kilogram}")
                             else:
                                 print(f"Failed to send data: {response.status}")
-                    await asyncio.sleep(0.5)
+                    await asyncio.sleep(0.7)
                 except Exception as e:
                     print(f"Error in send_kilogram: {e}")
                     await asyncio.sleep(1)
 
-    async def balance_control(self, err_cnt=0):
+    async def balance_control(self, err_cnt: int = 0) -> None:
         if err_cnt > 10:
             print("Too many errors in balance control. Stopping...")
             return
@@ -73,7 +75,7 @@ class LoadHorize:
             print(f"Unexpected error in balance control: {e}")
             self.balancer.cleanup()  # 예상치 못한 에러 발생 시 정리
 
-    async def main(self):
+    async def main(self) -> None:
         try:
             await asyncio.gather(
                 self.send_kilogram(),
@@ -86,7 +88,7 @@ class LoadHorize:
         finally:
             self.cleanup()
 
-    def cleanup(self):
+    def cleanup(self) -> None:
         self.scale.cleanAndExit()
         self.balancer.cleanup()
 
@@ -95,16 +97,16 @@ class LoadHorizeTest:
         self.server_url = 'http://c103.duckdns.org:8502/api/weight/'
         self.send_kilogram_err_cnt = 0
 
-    async def send_kilogram(self):
+    async def send_kilogram(self) -> None:
         while True:
             try:
                 async with aiohttp.ClientSession() as session:
-                    async with session.post(url=self.server_url, json={'weight': 65}) as response:
+                    async with session.post(url=self.server_url, data=json.dumps({'weight': 65, 'robot_id': 'user'})) as response:
                         if response.status == 200:
                             print(f"Kilogram sent: 65")
                         else:
                             print(f"Failed to send data: {response.status}")
-                await asyncio.sleep(0.5)
+                await asyncio.sleep(5)
             except Exception as e:
                 if self.send_kilogram_err_cnt > 10:
                     print("Too many errors in send_kilogram. Stopping...")
@@ -113,12 +115,12 @@ class LoadHorizeTest:
                 self.send_kilogram_err_cnt += 1
                 await asyncio.sleep(1)
     
-    async def balance_control(self):
+    async def balance_control(self) -> None:
         while True:
             print("balance control: Motor 90 DEG / Sensor 94 DEG")
             await asyncio.sleep(0.18)
 
-    async def main(self):
+    async def main(self) -> None:
         try:
             await asyncio.gather(
                 self.send_kilogram(),
@@ -129,7 +131,7 @@ class LoadHorizeTest:
         except Exception as e:
             print(f"Error in main: {e}")
     
-    def cleanup(self):
+    def cleanup(self) -> None:
         print("cleanup")
         return
 
