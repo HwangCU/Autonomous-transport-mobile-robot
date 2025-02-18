@@ -1,73 +1,140 @@
 import sys
+import asyncio
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QDesktopWidget
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtSvg import QSvgWidget
+from loadhorize import LoadHorize, LoadHorizeTest
+from jetsoncommunication import JetsonCommunication
+import threading
+import json
+
+# 비동기 작업을 처리하기 위한 스레드
+class AsyncThread(QThread):
+    signal = pyqtSignal(str)  # UI 업데이트를 위한 시그널
+
+    def __init__(self, load_horize):
+        super().__init__()
+        self.load_horize = load_horize
+
+    def run(self):
+        asyncio.run(self.load_horize.main())
 
 class RobotUI(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.logger_prefix = "[RobotUI]"
         # 동적으로 변경될 UI 요소
         self.unlock_button = None
         self.status_label = None
         self.caution_widget = None
-        self.initUI()
+        
+        # Jetson 연결 설정
+        self.jetson = JetsonCommunication(server_ip='192.168.1.101')
+        self.jetson.connection_status_changed.connect(self.handle_connection_status)
+        
+        # LoadHorize 인스턴스 생성
+        # self.load_horize = LoadHorize()
+        self.load_horize = LoadHorizeTest()
+        
+        # 비동기 작업을 위한 스레드 설정
+        self.async_thread = AsyncThread(self.load_horize)
+        self.async_thread.start()
+        
+        self.connection_retry_count = 0
+        self.retry_interval = 3  # 재시도 간격 (초)
 
-        # 테스트 변수
-        self.test_mode = ['standard', 'follow', 'follow-gohome', 'follow-home', 'delivery', 'delivery-stopover', 'delivery-arrived', 'error']
-        self.test_index = 0
+        # 기본 설정 메시지
+        self.default_message = "standard"
+        self.error_message = "error"
+        self.connection_error_message = "connection_error"
+        self.emergency_stop_message = "emergency_stop"
         
-    def unlock_robot(self):
-        print("로봇 잠금 해제")
-        # 테스트 모드
-        self.test_index += 1
-        if self.test_index >= len(self.test_mode):
-            self.test_index = 0
-        self.update_ui_state(self.test_mode[self.test_index])
+        self.loop = None  # loop를 None으로 초기화
+        
+        self.initUI()
+        self.update_ui_state(self.default_message)
+        
+    # Jetson 연결 초기화
+    async def init_jetson(self):
+        if await self.jetson.connect():
+            self.jetson.message_received.connect(self.handle_jetson_message)
     
+    # Jetson으로부터 받은 메시지 처리
+    def handle_jetson_message(self, message):
+        self.update_ui_state(message)
+    
+    # 비상 정지 버튼 클릭 시 실행
     def emergency_stop(self):
-        print("비상 정지")
-        # 테스트 모드
-        self.test_index += 1
-        if self.test_index >= len(self.test_mode):
-            self.test_index = 0
-        self.update_ui_state(self.test_mode[self.test_index])
-        
-    def update_ui_state(self, signal_value):
-        if signal_value == 'standard': # 홈 화면
+        try:
+            asyncio.run_coroutine_threadsafe(
+                self.jetson.emergency_stop(), 
+                self.loop
+            )
+            self.update_ui_state(self.error_message)
+        except Exception as e:
+            print(f"{self.logger_prefix} 비상정지 명령 처리 중 오류: {e}")
+
+    # 로봇 잠금 해제 메시지 전송
+    async def unlock_robot(self):
+        await self.jetson.send_data('unlock_robot')
+
+    def update_ui_state(self, signal):
+        # 분기 처리
+        if signal == 'standard': # 대기 모드
             self.status_label.setText("안녕하세요")
             self.unlock_button.hide()
             self.caution_widget.show()
-        elif signal_value == 'follow': # 팔로잉 모드
+        elif signal == 'joycon': # 조이콘 모드
+            self.status_label.setText("조이콘 모드가 실행 중이에요")
+            self.unlock_button.hide()
+            self.caution_widget.show()
+        elif signal == 'follow': # 팔로잉 모드
             self.status_label.setText("팔로잉 모드가 실행 중이에요")
             self.unlock_button.hide()
             self.caution_widget.show()
-        elif signal_value == 'follow-gohome': # 팔로잉 모드 - 집으로 돌아가기 중일 때
+        elif signal == 'gohome': # 집으로 돌아가기 중일 때
             self.status_label.setText("집으로 돌아가고 있어요")
             self.unlock_button.hide()
             self.caution_widget.show()
-        elif signal_value == 'follow-home': # 팔로잉 모드 - 집에 도착했을 때
+        elif signal == 'home': # 집에 도착했을 때
             self.status_label.setText("집에 도착했어요")
             self.unlock_button.hide()
             self.caution_widget.show()
-        elif signal_value == 'delivery': # 배달 모드 - 배달 중
+        elif signal == 'delivery': # 배달 모드 - 배달 중
             self.status_label.setText("로봇이 배달 중이에요")
             self.unlock_button.hide()
             self.caution_widget.show()
-        elif signal_value == 'delivery-stopover': # 배달 모드 - 주문한 가게 도착
+        elif signal == 'delivery-stopover': # 배달 모드 - 주문한 가게 도착
             self.status_label.setText("로봇이 목적지에 도착했어요")
             self.unlock_button.show()
             self.caution_widget.show()
-        elif signal_value == 'delivery-arrived': # 배달 모드 - 배달 완료
+        elif signal == 'delivery-arrived': # 배달 모드 - 배달 완료
             self.status_label.setText("배달을 완료했어요")
             self.unlock_button.hide()
             self.caution_widget.show()
-        elif signal_value == 'error': # 에러 상태
+        elif signal == 'error': # 에러 상태
             self.status_label.setText("로봇에 문제가 발생했습니다")
             self.unlock_button.hide()
             self.caution_widget.hide()
+        elif signal == 'connection_error': # 젯슨과 통신 오류
+            self.status_label.setText(f"로봇과 연결 중입니다... (시도 횟수: {self.connection_retry_count})")
+            self.unlock_button.hide()
+            self.caution_widget.hide()
+        elif signal == 'emergency_stop': # 비상정지
+            self.status_label.setText("비상정지 중 입니다")
+            self.unlock_button.hide()
+            self.caution_widget.hide()
         
-    # UI 초기화 메서드
+    def handle_connection_status(self, is_connected):
+        if is_connected:
+            self.connection_retry_count = 0
+            self.update_ui_state(self.default_message)
+        else:
+            self.connection_retry_count += 1
+            print(f"{self.logger_prefix} 연결 재시도... (시도 횟수: {self.connection_retry_count})")
+            self.update_ui_state(self.connection_error_message)
+
     def initUI(self):
         # 화면 설정
         screen = QDesktopWidget().screenGeometry()
@@ -174,9 +241,64 @@ class RobotUI(QMainWindow):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
+    def cleanup(self):
+        try:
+            self.load_horize.cleanup()
+            if self.loop and self.loop.is_running():
+                # 먼저 이벤트 루프의 모든 태스크를 정리
+                pending = asyncio.all_tasks(self.loop)
+                for task in pending:
+                    task.cancel()
+                
+                # Jetson 연결 종료
+                close_task = asyncio.run_coroutine_threadsafe(
+                    self.jetson.close(),
+                    self.loop
+                )
+                try:
+                    close_task.result(timeout=2)  # 2초 타임아웃으로 변경
+                except Exception as e:
+                    print(f"Jetson close error: {e}")
+                
+                # 이벤트 루프 정리
+                self.loop.call_soon_threadsafe(self.loop.stop)
+                
+        except Exception as e:
+            print(f"Final cleanup error: {e}")
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     rb = RobotUI()
     rb.show()
-    rb.update_ui_state('standard')  # 초기 상태 설정
-    sys.exit(app.exec_())
+    
+    # 비동기 초기화를 위한 별도 스레드
+    async def init_async():
+        await rb.init_jetson()
+    
+    # 새로운 이벤트 루프 생성 및 설정
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    rb.loop = loop
+    
+    # 백그라운드 태스크로 실행
+    def run_async_loop():
+        try:
+            loop.run_until_complete(init_async())
+            loop.run_forever()
+        except Exception as e:
+            print(f"Async loop error: {e}")
+        finally:
+            try:
+                loop.stop()
+                loop.close()
+            except Exception as e:
+                print(f"Loop cleanup error: {e}")
+    
+    # 별도 스레드에서 이벤트 루프 실행
+    thread = threading.Thread(target=run_async_loop, daemon=True)
+    thread.start()
+    
+    try:
+        sys.exit(app.exec_())
+    finally:
+        rb.cleanup()
