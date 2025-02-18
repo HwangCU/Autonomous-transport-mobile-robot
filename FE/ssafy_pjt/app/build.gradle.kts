@@ -60,7 +60,8 @@ dependencies {
     implementation(files("libs/tmap-sdk-1.8.aar"))
     implementation("io.coil-kt:coil-compose:2.4.0")
 
-    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0") // 통신
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0") // 통신
+    implementation ("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     
@@ -93,6 +94,10 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.play.services.location)
     implementation(libs.androidx.storage)
+    implementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

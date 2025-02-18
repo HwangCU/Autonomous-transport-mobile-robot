@@ -3,6 +3,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +30,24 @@ fun GameController(
     onButtonClick: (String) -> Unit = { _ -> }
 ) {
     val context = LocalContext.current
-    val bluetoothService = BluetoothService.getInstance(context)
+    val bluetoothService = remember { BluetoothService.getInstance(context) }
+    val isConnected by bluetoothService.isConnected.collectAsState()
+
+    LaunchedEffect(Unit) {
+        if (!isConnected) {
+            navController.navigate("bluetooth")
+        }
+    }
+    if (!isConnected){
+        return
+    }
+
+    // 화면을 나갈 때 블루투스 연결 해제
+    DisposableEffect(Unit) {
+        onDispose {
+            bluetoothService.disconnect()
+        }
+    }
 
     BluetoothPermissionHandler {
 

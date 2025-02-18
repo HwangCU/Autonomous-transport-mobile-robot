@@ -52,9 +52,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.io.File
 import com.example.ssafy_pjt.network.RetrofitClient
 import androidx.activity.result.ActivityResultLauncher
+import com.example.ssafy_pjt.ViewModel.socketViewModel
 import com.example.ssafy_pjt.component.DeviceItem
 
 class MainActivity : ComponentActivity() {
+    private val socketViewModel: socketViewModel by viewModels()
+
     private val kakaoAuthViewModel: KakaoAuthViewModel by viewModels{
         KakaoLoginViewModelFactory(userViewModel,application)
     }
@@ -105,7 +108,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = "login"
+                    startDestination = "Setting"
                 ){
                     composable("login") {
                         LoginSceen(
@@ -133,7 +136,8 @@ class MainActivity : ComponentActivity() {
                         HomeScreen(
                             modifier = Modifier,
                             navController = navController,
-                            userViewModel = userViewModel
+                            userViewModel = userViewModel,
+                            socketViewModel = socketViewModel
                         )
                     }
                     composable("DeliverySceen") {
@@ -200,15 +204,12 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("bluetooth") {
-                        BluetoothScreen {
+                        BluetoothScreen(
+                            navController = navController,
+                            onDeviceSelected = {
                             navController.navigate("GameController")
-                        }
-                    }
-                    /*composable("device") {
-                        DeviceItem(
-                            onClick = {},
-                            device = {}
-                        ) { }*/
+                            }
+                        )
                     }
                 }
             }

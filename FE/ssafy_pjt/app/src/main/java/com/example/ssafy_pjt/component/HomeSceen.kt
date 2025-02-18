@@ -38,6 +38,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -64,6 +65,8 @@ import coil.compose.AsyncImage
 import com.example.ssafy_pjt.BuildConfig
 import com.example.ssafy_pjt.R
 import com.example.ssafy_pjt.ViewModel.UserViewModel
+import com.example.ssafy_pjt.ViewModel.socketViewModel
+import com.example.ssafy_pjt.network.SocketService
 import com.example.ssafy_pjt.ui.theme.loginTitle
 import com.example.ssafy_pjt.ui.theme.modeType
 import com.example.ssafy_pjt.ui.theme.my_blue
@@ -81,7 +84,8 @@ import com.skt.tmap.TMapView
 fun HomeScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    socketViewModel:socketViewModel
 ) {
     val skKey = BuildConfig.SK_app_key
     var (deliveryMode, setDeliveryMode) = remember { mutableStateOf(false) }
@@ -90,6 +94,26 @@ fun HomeScreen(
     var isPermissionGranted by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val (lat,lng) = userViewModel.loaction.value
+    val socketService = remember { SocketService.getInstance() }
+    socketViewModel.connectToSocket()
+    socketViewModel.sendSocketMessage("hello")
+    val isConnected by socketService.isConnected.collectAsState()
+    val serverResponses by socketViewModel.serverResponses.collectAsState()
+
+    LaunchedEffect(socketService) {
+    }
+
+    LaunchedEffect(Unit) {
+        socketViewModel.connectToSocket()
+    }
+
+    LaunchedEffect(isConnected) {
+        if (!isConnected) {
+            Log.d("TAG","연결 끊김")
+        } else {
+            Log.d("TAG","연결 됨")
+        }
+    }
 
     // 위치 권한 요청 런처
     val locationPermissionLauncher = rememberLauncherForActivityResult(
