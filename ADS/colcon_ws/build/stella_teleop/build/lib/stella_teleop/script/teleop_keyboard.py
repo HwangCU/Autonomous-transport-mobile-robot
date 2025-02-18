@@ -14,8 +14,8 @@ else:
     import termios
     import tty
 
-STELLA_MAX_LIN_VEL = 2.0 # m/s
-STELLA_MAX_ANG_VEL = 3.14 # rad/s
+STELLA_MAX_LIN_VEL = 10.0 # m/s
+STELLA_MAX_ANG_VEL = 15.14 # rad/s
 
 
 LIN_VEL_STEP_SIZE = 0.1

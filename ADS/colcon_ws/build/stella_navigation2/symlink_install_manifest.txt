@@ -4,6 +4,7 @@
 /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/map/stella_world.pgm
 /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/map/stella_world.yaml
 /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/param/sunny_nav_param.yaml
+/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/param/sunny_nav_param2.yaml
 /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/rviz/quarantine_robot_nav2_view.rviz
 /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/rviz/stella_navigation2.rviz
 /home/yun/colcon_ws/install/stella_navigation2/share/ament_index/resource_index/package_run_dependencies/stella_navigation2
