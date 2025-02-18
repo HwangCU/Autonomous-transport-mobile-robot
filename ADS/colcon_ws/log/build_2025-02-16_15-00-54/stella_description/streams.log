@@ -1,0 +1,24 @@
+[0.198s] Invoking command in '/home/yun/colcon_ws/build/stella_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/home/yun/colcon_ws/install/nav2_gps_waypoint_follower_demo:/home/yun/test/install/turtlebot3_teleop:/home/yun/test/install/turtlebot3_example:/home/yun/test/install/road_API:/home/yun/test/install/nav2_simple_commander:/home/yun/test/install/gps_imu_publisher:/opt/ros/humble /usr/bin/cmake --build /home/yun/colcon_ws/build/stella_description -- -j20 -l20
+[0.402s] Invoked command in '/home/yun/colcon_ws/build/stella_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/home/yun/colcon_ws/install/nav2_gps_waypoint_follower_demo:/home/yun/test/install/turtlebot3_teleop:/home/yun/test/install/turtlebot3_example:/home/yun/test/install/road_API:/home/yun/test/install/nav2_simple_commander:/home/yun/test/install/gps_imu_publisher:/opt/ros/humble /usr/bin/cmake --build /home/yun/colcon_ws/build/stella_description -- -j20 -l20
+[0.403s] Invoking command in '/home/yun/colcon_ws/build/stella_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/home/yun/colcon_ws/install/nav2_gps_waypoint_follower_demo:/home/yun/test/install/turtlebot3_teleop:/home/yun/test/install/turtlebot3_example:/home/yun/test/install/road_API:/home/yun/test/install/nav2_simple_commander:/home/yun/test/install/gps_imu_publisher:/opt/ros/humble /usr/bin/cmake --install /home/yun/colcon_ws/build/stella_description
+[0.410s] -- Install configuration: ""
+[0.410s] -- Execute custom install script
+[0.410s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/meshes/bases/sunny_robot_first.STL
+[0.410s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/rviz/model.rviz
+[0.411s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/urdf/sunny_factory_description.urdf
+[0.411s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/ament_index/resource_index/package_run_dependencies/stella_description
+[0.411s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/ament_index/resource_index/parent_prefix_path/stella_description
+[0.411s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/environment/ament_prefix_path.sh
+[0.411s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/environment/ament_prefix_path.dsv
+[0.411s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/environment/path.sh
+[0.411s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/environment/path.dsv
+[0.411s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/local_setup.bash
+[0.411s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/local_setup.sh
+[0.411s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/local_setup.zsh
+[0.411s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/local_setup.dsv
+[0.412s] -- Symlinking: /home/yun/colcon_ws/install/stella_description/share/stella_description/package.dsv
+[0.424s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/ament_index/resource_index/packages/stella_description
+[0.425s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/cmake/stella_descriptionConfig.cmake
+[0.425s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/cmake/stella_descriptionConfig-version.cmake
+[0.425s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/package.xml
+[0.441s] Invoked command in '/home/yun/colcon_ws/build/stella_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/home/yun/colcon_ws/install/nav2_gps_waypoint_follower_demo:/home/yun/test/install/turtlebot3_teleop:/home/yun/test/install/turtlebot3_example:/home/yun/test/install/road_API:/home/yun/test/install/nav2_simple_commander:/home/yun/test/install/gps_imu_publisher:/opt/ros/humble /usr/bin/cmake --install /home/yun/colcon_ws/build/stella_description
