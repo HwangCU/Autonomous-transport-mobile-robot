@@ -1,17 +1,21 @@
-# c103/c103/wsgi.py
-"""
-WSGI config for c103 project.
-"""
 import os
+import threading
 from django.core.wsgi import get_wsgi_application
-
-# 여기서 ws_manager 임포트
-from .ws_manager import ws_manager
+from c103.ws_manager import ws_manager, run_tcp_server
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "c103.settings")
 
-# 1) WebSocket 연결 시도
-ws_manager.connect()
 
-# 2) WSGI 애플리케이션
+def start_threads():
+    # 1) 웹소켓 매니저 연결 (스레드로 돌려도 되고, 직접 호출도 가능)
+    threading.Thread(target=ws_manager.connect, daemon=True).start()
+    # 2) TCP 서버 스레드
+    threading.Thread(target=run_tcp_server, daemon=True).start()
+    print("[WSGI] Started ws_manager.connect + run_tcp_server threads")
+
+
+# 중복 실행 방지 (Django autoreload 시 2번 실행될 수 있음)
+if os.environ.get("RUN_MAIN") == "true":
+    start_threads()
+
 application = get_wsgi_application()
