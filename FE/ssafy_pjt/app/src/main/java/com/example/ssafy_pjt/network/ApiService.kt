@@ -116,14 +116,6 @@ data class updateProfileResponse(
     val profile: UserProfile
 )
 
-data class modeChangeRequest(
-    val mode:String,
-    val robotId: String
-)
-
-data class modeChangeResponse(
-    val status: String
-)
 
 interface ApiService{
     @POST("/api/login/")
@@ -144,6 +136,4 @@ interface ApiService{
     fun getProfile(@Body request: getProfileRequest): Call<getProfileResponse>
     @POST("/api/edit_profile/")
     fun updateProfile(@Body request: updateProfileRequest): Call<updateProfileResponse>
-    @POST("")
-    fun modeChange(@Body request: modeChangeRequest): Call<modeChangeResponse>
 }

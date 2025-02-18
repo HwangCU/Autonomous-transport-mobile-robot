@@ -55,9 +55,7 @@ fun AccountLoginSceen(
     var userPassword by remember { mutableStateOf(viewModel.userPassword.value ?: "") }
     var (autoLogin,setAutoLogin) = remember { mutableStateOf(false) }
     var (checkUser,setCheckUser) = remember { mutableStateOf(false) }
-    fun autoUserLogin(){
-        setAutoLogin(true)
-    }
+
     val loginResult by viewModel.loginResult.observeAsState()
     val context = LocalContext.current
     LaunchedEffect(loginResult) {

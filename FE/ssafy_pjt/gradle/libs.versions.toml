@@ -15,6 +15,7 @@ navigationRuntimeAndroid = "2.9.0-alpha05"
 navigationRuntimeKtx = "2.8.6"
 runtimeLivedata = "1.7.7"
 storage = "1.5.0"
+appcompat = "1.4.2"
 
 [libraries]
 
@@ -39,6 +40,7 @@ androidx-navigation-runtime-android = { group = "androidx.navigation", name = "n
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 androidx-storage = { group = "androidx.test.services", name = "storage", version.ref = "storage" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 
 
 [plugins]
