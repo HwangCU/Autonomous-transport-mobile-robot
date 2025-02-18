@@ -1,1 +1,0 @@
-/home/yun/colcon_ws/build/stella_navigation2/ament_cmake_core/stella_navigation2Config.cmake
