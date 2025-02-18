@@ -8,19 +8,20 @@ import json
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from hardcarry_interface.msg import RobotMode
-from hardcarry_interface.srv import EmergencyControl
+from hardcarry_interface.srv import EmergencyStop
 
 class RPCommunicationNode(Node):
     # 메시지 모드 종류
-    # mode == 0    # 홈 화면
-    # mode == 1    # 조이콘 모드
-    # mode == 2    # 팔로잉 모드
-    # mode == 4    # 집으로 돌아가기 중일 때
-    # mode == 41   # 집에 도착했을 때
-    # mode == 3    # 배달 모드 - 배달 중
-    # mode == 31   # 배달 모드 - 주문한 가게 도착
-    # mode == 32   # 배달 모드 - 배달 완료
-    # mode == 500  # 에러 상태
+    # mode : 0   대기 모드
+    # mode : 1   조이콘 모드
+    # mode : 2   팔로잉 모드
+    # mode : 4   집으로 돌아가기 중일 때
+    # mode : 41  집에 도착했을 때
+    # mode : 3   배달 모드 - 배달 중
+    # mode : 31  배달 모드 - 주문한 가게 도착
+    # mode : 32  배달 모드 - 배달 완료
+    # mode : 100 에러 상태
+    # mode : 127 테스트 모드    
     MODE_MESSAGES = {
         0: 'standard',
         1: 'joycon',
@@ -30,7 +31,8 @@ class RPCommunicationNode(Node):
         32: 'delivery-arrived',
         4: 'gohome',
         41: 'home',
-        500: 'error'
+        100: 'error',
+        127: 'test',
     }
     
     BUFFER_SIZE = 4096
@@ -49,6 +51,7 @@ class RPCommunicationNode(Node):
         
         self.test_modes = list(self.MODE_MESSAGES.keys())
         self.current_mode_index = 0
+        # ros2 run hardcarry rp_com_node --ros-args -p test_mode:=true
         self.test_mode = self.declare_parameter('test_mode', False).value
         
         self.loop = asyncio.new_event_loop()
@@ -74,6 +77,12 @@ class RPCommunicationNode(Node):
             10
         )
         self.get_logger().info('RobotMode.msg 구독 시작')
+
+        # Emergency Stop Service Client
+        self.emergency_stop_client = self.create_client(EmergencyStop, 'emergency_stop')
+        while not self.emergency_stop_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Emergency Stop service not available, waiting...')
+        self.get_logger().info('Emergency Stop service client created')
 
     def cleanup(self):
         self.running = False
@@ -309,7 +318,30 @@ class RPCommunicationNode(Node):
 
     def emergency_stop(self):
         self.get_logger().info('!!!!!! Warning !!!!!!: Emergency Stop!')
-        self.send_status_message(500)
+        
+        # Create and send emergency stop request
+        request = EmergencyStop.Request()
+        request.emergency_stop = True
+        
+        try:
+            future = self.emergency_stop_client.call_async(request)
+            
+            # Wait for the response using a separate thread to avoid blocking
+            def handle_emergency_stop_response(future):
+                try:
+                    response = future.result()
+                    if response.success:
+                        self.get_logger().info('Emergency stop request successful')
+                        self.send_status_message(mode=127)
+                    else:
+                        self.get_logger().error(f'Emergency stop failed: {response.message}')
+                except Exception as e:
+                    self.get_logger().error(f'Emergency stop service call failed: {str(e)}')
+            
+            future.add_done_callback(handle_emergency_stop_response)
+            
+        except Exception as e:
+            self.get_logger().error(f'Failed to send emergency stop request: {str(e)}')
 
     def test_timer_callback(self):
         if self.connected and self.client_socket:

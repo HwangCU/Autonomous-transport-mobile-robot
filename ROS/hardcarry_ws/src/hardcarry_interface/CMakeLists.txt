@@ -49,6 +49,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/DrivingControl.srv"
   "srv/FollowingControl.srv"
   "srv/JoyconControl.srv"
+  "srv/EmergencyStop.srv"
 )
 
 
