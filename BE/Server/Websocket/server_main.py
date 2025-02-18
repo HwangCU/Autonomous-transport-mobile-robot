@@ -24,6 +24,7 @@ django.setup()
 
 from users.models import User
 from robots.models import Robot
+from robot_sensor_info import robot_gps
 
 
 @sync_to_async

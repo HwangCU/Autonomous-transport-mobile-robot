@@ -35,7 +35,6 @@ async def handle_footpath(data, user):
 
         payload = {"action": "footpath", "footpath": footpath}
 
-        # 사용자 주소 업데이트 실행
         response = await handle_request_robot(payload, user)
         return response
 
