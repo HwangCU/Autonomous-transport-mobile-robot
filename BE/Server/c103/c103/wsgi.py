@@ -1,16 +1,12 @@
-"""
-WSGI config for c103 project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.1/howto/deployment/wsgi/
-"""
-
 import os
-
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'c103.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "c103.settings")
 
 application = get_wsgi_application()
+
+# Autoreload 등 중복 실행 방지
+if os.environ.get("RUN_MAIN") == "true":
+    from c103 import ws_manager
+
+    ws_manager.start_websocket_server()

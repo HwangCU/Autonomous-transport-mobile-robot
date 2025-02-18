@@ -5,9 +5,9 @@ import requests
 
 from robots.models import Robot
 from users.models import User
-from server_request import handle_request_robot
+from c103.Websocket.server_request import handle_request_robot
 
-from robot_info import (
+from c103.Websocket.robot_info import (
     robot_connections,
     robot_locks,
     robot_ip_list,

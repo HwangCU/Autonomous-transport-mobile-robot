@@ -8,7 +8,7 @@ from users.models import User, LocalUser, KakaoUser, GoogleUser
 from robots.models import Robot  # 로봇 모델 임포트
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
-from SECRET import GOOGLE_CLIENT_ID
+from c103.Websocket.SECRET import GOOGLE_CLIENT_ID
 
 import base64
 import requests
