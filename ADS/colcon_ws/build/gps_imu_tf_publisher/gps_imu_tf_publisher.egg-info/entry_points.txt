@@ -1,5 +1,0 @@
-[console_scripts]
-gps_transform = gps_imu_tf_publisher.gps_transform:main
-imu_to_odom = gps_imu_tf_publisher.imu_to_odom:main
-tf_publisher = gps_imu_tf_publisher.tf_publisher:main
-
