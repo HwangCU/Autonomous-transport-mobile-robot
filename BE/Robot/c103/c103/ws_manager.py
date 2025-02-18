@@ -1,4 +1,5 @@
 import websocket
+from websockets import connect
 import json
 import ssl
 import os
@@ -19,7 +20,7 @@ class WSManager:
     def is_connected(self):
         return self.ws is not None
 
-    def connect(self):
+    async def connect(self):
         """
         - 최초로 호출되면 서버에 연결을 맺고 self.ws에 보관
         - 이미 연결돼 있으면 재연결하지 않음
@@ -38,19 +39,19 @@ class WSManager:
 
             # 3) WebSocket 연결
             print(f"[WSManager] Connecting to {self.url}...")
-            self.ws = websocket.WebSocket()
-            self.ws.connect(self.url, ssl=ssl_context)
-            print("[WSManager] Connected.")
+            async with connect(self.url, ssl=ssl_context) as websocket:
+                self.ws = websocket
+                print("[WSManager] Connected.")
 
-            # ✅ 메시지 수신을 위한 별도 스레드 실행
-            self.running = True
-            threading.Thread(target=self.receive_messages, daemon=True).start()
+                # ✅ 메시지 수신을 위한 별도 스레드 실행
+                self.running = True
+                threading.Thread(target=self.receive_messages, daemon=True).start()
 
-    def receive_messages(self):
+    async def receive_messages(self):
         """서버에서 메시지를 지속적으로 수신하는 함수"""
         while self.running:
             try:
-                message = self.ws.recv()  # 서버로부터 메시지 수신
+                message = await self.ws.recv()  # 서버로부터 메시지 수신
                 self.message_queue.put(message)  # 🔹 메시지를 큐에 저장
                 print(f"[WSManager] Received and stored message: {message}")
             except Exception as e:
@@ -66,7 +67,8 @@ class WSManager:
             self.ws.close()
             self.ws = None
 
-    def send_login(self, payload, timeout=5):
+    # await websocket.send(json.dumps(payload))
+    async def send_login(self, payload, timeout=5):
         """
         - 로그인 메시지를 보내고, 로그인 응답을 기다림
         - 응답이 올 때까지 `queue`에서 메시지를 대기함
@@ -76,7 +78,7 @@ class WSManager:
             return None
 
         try:
-            self.ws.send(json.dumps(payload))  # 🔹 로그인 요청 전송
+            await self.ws.send(json.dumps(payload))  # 🔹 로그인 요청 전송
             print("[WSManager] Sent login request, waiting for response...")
 
             # 🔹 지정된 timeout 동안 메시지 대기

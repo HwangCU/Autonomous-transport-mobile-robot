@@ -35,6 +35,7 @@ async def handle_mode_change(data, user):
             return {
                 "status": "success",
                 "message": f"Mode successfully changed to {new_mode}",
+                "mode": new_mode,
             }
         else:
             return {
