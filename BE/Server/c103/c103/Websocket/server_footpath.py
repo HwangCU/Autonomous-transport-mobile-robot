@@ -6,10 +6,9 @@ from django.contrib.auth import get_user_model
 from users.models import User
 import asyncio
 
-from server_request import handle_request_robot
+from c103.Websocket.server_request import handle_request_robot
 
-from robot_info import robot_connections, robot_locks
-from server_request import handle_request_robot
+from c103.Websocket.robot_info import robot_connections, robot_locks
 
 
 @sync_to_async

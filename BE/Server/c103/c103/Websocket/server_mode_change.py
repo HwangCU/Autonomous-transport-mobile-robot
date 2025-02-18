@@ -4,8 +4,8 @@ from asgiref.sync import sync_to_async
 from users.models import User
 from robots.models import Robot
 
-from robot_info import robot_connections, robot_locks, robot_ip_list
-from client_info import client_connections, client_locks, client_ip_list
+from c103.Websocket.robot_info import robot_connections, robot_locks, robot_ip_list
+from c103.Websocket.client_info import client_connections, client_locks, client_ip_list
 
 
 @sync_to_async

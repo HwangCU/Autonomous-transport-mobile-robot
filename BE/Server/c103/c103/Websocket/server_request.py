@@ -1,6 +1,6 @@
 import json
 import asyncio
-from robot_info import robot_connections, robot_locks
+from c103.Websocket.robot_info import robot_connections, robot_locks
 
 
 async def handle_request_robot(payload, user):
