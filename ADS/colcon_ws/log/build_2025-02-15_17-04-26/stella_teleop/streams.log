@@ -1,0 +1,21 @@
+[0.641s] Invoking command in '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_teleop': PYTHONPATH=/home/yun/colcon_ws/build/stella_teleop/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/stella_teleop build --build-base /home/yun/colcon_ws/build/stella_teleop/build install --record /home/yun/colcon_ws/build/stella_teleop/install.log --single-version-externally-managed install_data
+[0.801s] running egg_info
+[0.802s] writing ../../../build/stella_teleop/stella_teleop.egg-info/PKG-INFO
+[0.802s] writing dependency_links to ../../../build/stella_teleop/stella_teleop.egg-info/dependency_links.txt
+[0.802s] writing entry points to ../../../build/stella_teleop/stella_teleop.egg-info/entry_points.txt
+[0.802s] writing requirements to ../../../build/stella_teleop/stella_teleop.egg-info/requires.txt
+[0.802s] writing top-level names to ../../../build/stella_teleop/stella_teleop.egg-info/top_level.txt
+[0.803s] reading manifest file '../../../build/stella_teleop/stella_teleop.egg-info/SOURCES.txt'
+[0.804s] writing manifest file '../../../build/stella_teleop/stella_teleop.egg-info/SOURCES.txt'
+[0.804s] running build
+[0.804s] running build_py
+[0.804s] running install
+[0.804s] running install_lib
+[0.805s] running install_data
+[0.805s] running install_egg_info
+[0.806s] removing '/home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages/stella_teleop-2.1.2-py3.10.egg-info' (and everything under it)
+[0.806s] Copying ../../../build/stella_teleop/stella_teleop.egg-info to /home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages/stella_teleop-2.1.2-py3.10.egg-info
+[0.806s] running install_scripts
+[0.821s] Installing teleop_keyboard script to /home/yun/colcon_ws/install/stella_teleop/lib/stella_teleop
+[0.821s] writing list of installed files to '/home/yun/colcon_ws/build/stella_teleop/install.log'
+[0.837s] Invoked command in '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_teleop' returned '0': PYTHONPATH=/home/yun/colcon_ws/build/stella_teleop/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/stella_teleop build --build-base /home/yun/colcon_ws/build/stella_teleop/build install --record /home/yun/colcon_ws/build/stella_teleop/install.log --single-version-externally-managed install_data

@@ -1,0 +1,327 @@
+[0.089s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[0.089s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=20, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x72e138cdb9a0>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x72e138cdb400>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x72e138cdb400>>)
+[0.246s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.246s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.246s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.246s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.246s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.246s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.246s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/yun/colcon_ws'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.247s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.247s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.247s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.247s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[0.255s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2) by extensions ['ignore', 'ignore_ament_install']
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2) by extension 'ignore'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2) by extension 'ignore_ament_install'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2) by extensions ['colcon_pkg']
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2) by extension 'colcon_pkg'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2) by extensions ['colcon_meta']
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2) by extension 'colcon_meta'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2) by extensions ['ros']
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2) by extension 'ros'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2) by extensions ['cmake', 'python']
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2) by extension 'cmake'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2) by extension 'python'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2) by extensions ['python_setup_py']
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2) by extension 'python_setup_py'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_cartographer) by extensions ['ignore', 'ignore_ament_install']
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_cartographer) by extension 'ignore'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_cartographer) by extension 'ignore_ament_install'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_cartographer) by extensions ['colcon_pkg']
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_cartographer) by extension 'colcon_pkg'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_cartographer) by extensions ['colcon_meta']
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_cartographer) by extension 'colcon_meta'
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_cartographer) by extensions ['ros']
+[0.256s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_cartographer) by extension 'ros'
+[0.259s] DEBUG:colcon.colcon_core.package_identification:Package 'src/STELLA_REMOTE_PC_ROS2/stella_cartographer' with type 'ros.ament_cmake' and name 'stella_cartographer'
+[0.259s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_description) by extensions ['ignore', 'ignore_ament_install']
+[0.259s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_description) by extension 'ignore'
+[0.259s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_description) by extension 'ignore_ament_install'
+[0.259s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_description) by extensions ['colcon_pkg']
+[0.259s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_description) by extension 'colcon_pkg'
+[0.259s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_description) by extensions ['colcon_meta']
+[0.259s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_description) by extension 'colcon_meta'
+[0.259s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_description) by extensions ['ros']
+[0.259s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_description) by extension 'ros'
+[0.259s] DEBUG:colcon.colcon_core.package_identification:Package 'src/STELLA_REMOTE_PC_ROS2/stella_description' with type 'ros.ament_cmake' and name 'stella_description'
+[0.259s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_navigation2) by extensions ['ignore', 'ignore_ament_install']
+[0.259s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_navigation2) by extension 'ignore'
+[0.259s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_navigation2) by extension 'ignore_ament_install'
+[0.260s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_navigation2) by extensions ['colcon_pkg']
+[0.260s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_navigation2) by extension 'colcon_pkg'
+[0.260s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_navigation2) by extensions ['colcon_meta']
+[0.260s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_navigation2) by extension 'colcon_meta'
+[0.260s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_navigation2) by extensions ['ros']
+[0.260s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_navigation2) by extension 'ros'
+[0.260s] DEBUG:colcon.colcon_core.package_identification:Package 'src/STELLA_REMOTE_PC_ROS2/stella_navigation2' with type 'ros.ament_cmake' and name 'stella_navigation2'
+[0.260s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_teleop) by extensions ['ignore', 'ignore_ament_install']
+[0.260s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_teleop) by extension 'ignore'
+[0.260s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_teleop) by extension 'ignore_ament_install'
+[0.260s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_teleop) by extensions ['colcon_pkg']
+[0.260s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_teleop) by extension 'colcon_pkg'
+[0.260s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_teleop) by extensions ['colcon_meta']
+[0.260s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_teleop) by extension 'colcon_meta'
+[0.260s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_teleop) by extensions ['ros']
+[0.260s] Level 1:colcon.colcon_core.package_identification:_identify(src/STELLA_REMOTE_PC_ROS2/stella_teleop) by extension 'ros'
+[0.261s] DEBUG:colcon.colcon_core.package_identification:Package 'src/STELLA_REMOTE_PC_ROS2/stella_teleop' with type 'ros.ament_python' and name 'stella_teleop'
+[0.261s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.261s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.261s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.261s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.261s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.285s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.285s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.287s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 4 installed packages in /home/yun/colcon_ws/install
+[0.288s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 319 installed packages in /opt/ros/humble
+[0.289s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.313s] Level 5:colcon.colcon_core.verb:set package 'stella_cartographer' build argument 'cmake_args' from command line to 'None'
+[0.313s] Level 5:colcon.colcon_core.verb:set package 'stella_cartographer' build argument 'cmake_target' from command line to 'None'
+[0.313s] Level 5:colcon.colcon_core.verb:set package 'stella_cartographer' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.313s] Level 5:colcon.colcon_core.verb:set package 'stella_cartographer' build argument 'cmake_clean_cache' from command line to 'False'
+[0.313s] Level 5:colcon.colcon_core.verb:set package 'stella_cartographer' build argument 'cmake_clean_first' from command line to 'False'
+[0.313s] Level 5:colcon.colcon_core.verb:set package 'stella_cartographer' build argument 'cmake_force_configure' from command line to 'False'
+[0.313s] Level 5:colcon.colcon_core.verb:set package 'stella_cartographer' build argument 'ament_cmake_args' from command line to 'None'
+[0.313s] Level 5:colcon.colcon_core.verb:set package 'stella_cartographer' build argument 'catkin_cmake_args' from command line to 'None'
+[0.313s] Level 5:colcon.colcon_core.verb:set package 'stella_cartographer' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.313s] DEBUG:colcon.colcon_core.verb:Building package 'stella_cartographer' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/yun/colcon_ws/build/stella_cartographer', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/yun/colcon_ws/install/stella_cartographer', 'merge_install': False, 'path': '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_cartographer', 'symlink_install': False, 'test_result_base': None}
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_description' build argument 'cmake_args' from command line to 'None'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_description' build argument 'cmake_target' from command line to 'None'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_description' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_description' build argument 'cmake_clean_cache' from command line to 'False'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_description' build argument 'cmake_clean_first' from command line to 'False'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_description' build argument 'cmake_force_configure' from command line to 'False'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_description' build argument 'ament_cmake_args' from command line to 'None'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_description' build argument 'catkin_cmake_args' from command line to 'None'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_description' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.314s] DEBUG:colcon.colcon_core.verb:Building package 'stella_description' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/yun/colcon_ws/build/stella_description', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/yun/colcon_ws/install/stella_description', 'merge_install': False, 'path': '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_description', 'symlink_install': False, 'test_result_base': None}
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_navigation2' build argument 'cmake_args' from command line to 'None'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_navigation2' build argument 'cmake_target' from command line to 'None'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_navigation2' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_navigation2' build argument 'cmake_clean_cache' from command line to 'False'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_navigation2' build argument 'cmake_clean_first' from command line to 'False'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_navigation2' build argument 'cmake_force_configure' from command line to 'False'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_navigation2' build argument 'ament_cmake_args' from command line to 'None'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_navigation2' build argument 'catkin_cmake_args' from command line to 'None'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_navigation2' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.314s] DEBUG:colcon.colcon_core.verb:Building package 'stella_navigation2' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/yun/colcon_ws/build/stella_navigation2', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/yun/colcon_ws/install/stella_navigation2', 'merge_install': False, 'path': '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_navigation2', 'symlink_install': False, 'test_result_base': None}
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_teleop' build argument 'cmake_args' from command line to 'None'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_teleop' build argument 'cmake_target' from command line to 'None'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_teleop' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_teleop' build argument 'cmake_clean_cache' from command line to 'False'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_teleop' build argument 'cmake_clean_first' from command line to 'False'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_teleop' build argument 'cmake_force_configure' from command line to 'False'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_teleop' build argument 'ament_cmake_args' from command line to 'None'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_teleop' build argument 'catkin_cmake_args' from command line to 'None'
+[0.314s] Level 5:colcon.colcon_core.verb:set package 'stella_teleop' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.314s] DEBUG:colcon.colcon_core.verb:Building package 'stella_teleop' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/yun/colcon_ws/build/stella_teleop', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/yun/colcon_ws/install/stella_teleop', 'merge_install': False, 'path': '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_teleop', 'symlink_install': False, 'test_result_base': None}
+[0.315s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.315s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.315s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_cartographer' with build type 'ament_cmake'
+[0.316s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_cartographer'
+[0.318s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.318s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.318s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.321s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_description' with build type 'ament_cmake'
+[0.321s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_description'
+[0.321s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.321s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.323s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_navigation2' with build type 'ament_cmake'
+[0.323s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_navigation2'
+[0.323s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.323s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.325s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_teleop' with build type 'ament_python'
+[0.325s] Level 1:colcon.colcon_core.shell:create_environment_hook('stella_teleop', 'ament_prefix_path')
+[0.325s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_teleop/share/stella_teleop/hook/ament_prefix_path.ps1'
+[0.326s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/yun/colcon_ws/install/stella_teleop/share/stella_teleop/hook/ament_prefix_path.dsv'
+[0.326s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_teleop/share/stella_teleop/hook/ament_prefix_path.sh'
+[0.326s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.326s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.332s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/yun/colcon_ws/build/stella_cartographer': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --build /home/yun/colcon_ws/build/stella_cartographer -- -j20 -l20
+[0.334s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/yun/colcon_ws/build/stella_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --build /home/yun/colcon_ws/build/stella_description -- -j20 -l20
+[0.336s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/yun/colcon_ws/build/stella_navigation2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --build /home/yun/colcon_ws/build/stella_navigation2 -- -j20 -l20
+[0.495s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_teleop'
+[0.496s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.496s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.500s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/yun/colcon_ws/build/stella_navigation2' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --build /home/yun/colcon_ws/build/stella_navigation2 -- -j20 -l20
+[0.509s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/yun/colcon_ws/build/stella_navigation2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --install /home/yun/colcon_ws/build/stella_navigation2
+[0.509s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/yun/colcon_ws/build/stella_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --build /home/yun/colcon_ws/build/stella_description -- -j20 -l20
+[0.510s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/yun/colcon_ws/build/stella_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --install /home/yun/colcon_ws/build/stella_description
+[0.511s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/yun/colcon_ws/build/stella_cartographer' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --build /home/yun/colcon_ws/build/stella_cartographer -- -j20 -l20
+[0.513s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/yun/colcon_ws/build/stella_cartographer': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --install /home/yun/colcon_ws/build/stella_cartographer
+[0.531s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(stella_description)
+[0.531s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/yun/colcon_ws/build/stella_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --install /home/yun/colcon_ws/build/stella_description
+[0.535s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_description' for CMake module files
+[0.535s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_description' for CMake config files
+[0.535s] Level 1:colcon.colcon_core.shell:create_environment_hook('stella_description', 'cmake_prefix_path')
+[0.535s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_description/share/stella_description/hook/cmake_prefix_path.ps1'
+[0.536s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/yun/colcon_ws/install/stella_description/share/stella_description/hook/cmake_prefix_path.dsv'
+[0.536s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_description/share/stella_description/hook/cmake_prefix_path.sh'
+[0.536s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_description/bin'
+[0.536s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_description/lib/pkgconfig/stella_description.pc'
+[0.537s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_description/lib/python3.10/site-packages'
+[0.537s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_description/bin'
+[0.537s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_description/share/stella_description/package.ps1'
+[0.538s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/yun/colcon_ws/install/stella_description/share/stella_description/package.dsv'
+[0.538s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_description/share/stella_description/package.sh'
+[0.539s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_description/share/stella_description/package.bash'
+[0.539s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_description/share/stella_description/package.zsh'
+[0.540s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/yun/colcon_ws/install/stella_description/share/colcon-core/packages/stella_description)
+[0.540s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(stella_description)
+[0.540s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_description' for CMake module files
+[0.541s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_description' for CMake config files
+[0.541s] Level 1:colcon.colcon_core.shell:create_environment_hook('stella_description', 'cmake_prefix_path')
+[0.541s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_description/share/stella_description/hook/cmake_prefix_path.ps1'
+[0.541s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/yun/colcon_ws/install/stella_description/share/stella_description/hook/cmake_prefix_path.dsv'
+[0.541s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_description/share/stella_description/hook/cmake_prefix_path.sh'
+[0.541s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_description/bin'
+[0.542s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_description/lib/pkgconfig/stella_description.pc'
+[0.542s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_description/lib/python3.10/site-packages'
+[0.542s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_description/bin'
+[0.542s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_description/share/stella_description/package.ps1'
+[0.542s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/yun/colcon_ws/install/stella_description/share/stella_description/package.dsv'
+[0.543s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_description/share/stella_description/package.sh'
+[0.543s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_description/share/stella_description/package.bash'
+[0.543s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_description/share/stella_description/package.zsh'
+[0.543s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/yun/colcon_ws/install/stella_description/share/colcon-core/packages/stella_description)
+[0.544s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(stella_navigation2)
+[0.544s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_navigation2' for CMake module files
+[0.545s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/yun/colcon_ws/build/stella_navigation2' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --install /home/yun/colcon_ws/build/stella_navigation2
+[0.545s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_navigation2' for CMake config files
+[0.545s] Level 1:colcon.colcon_core.shell:create_environment_hook('stella_navigation2', 'cmake_prefix_path')
+[0.545s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/hook/cmake_prefix_path.ps1'
+[0.545s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/hook/cmake_prefix_path.dsv'
+[0.546s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/hook/cmake_prefix_path.sh'
+[0.546s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_navigation2/bin'
+[0.546s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_navigation2/lib/pkgconfig/stella_navigation2.pc'
+[0.546s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_navigation2/lib/python3.10/site-packages'
+[0.546s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_navigation2/bin'
+[0.546s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/package.ps1'
+[0.547s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/package.dsv'
+[0.547s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/package.sh'
+[0.547s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/package.bash'
+[0.547s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/package.zsh'
+[0.548s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/yun/colcon_ws/install/stella_navigation2/share/colcon-core/packages/stella_navigation2)
+[0.548s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(stella_navigation2)
+[0.548s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_navigation2' for CMake module files
+[0.548s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_navigation2' for CMake config files
+[0.548s] Level 1:colcon.colcon_core.shell:create_environment_hook('stella_navigation2', 'cmake_prefix_path')
+[0.548s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/hook/cmake_prefix_path.ps1'
+[0.549s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/hook/cmake_prefix_path.dsv'
+[0.549s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/hook/cmake_prefix_path.sh'
+[0.549s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_navigation2/bin'
+[0.549s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_navigation2/lib/pkgconfig/stella_navigation2.pc'
+[0.549s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_navigation2/lib/python3.10/site-packages'
+[0.549s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_navigation2/bin'
+[0.550s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/package.ps1'
+[0.550s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/package.dsv'
+[0.550s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/package.sh'
+[0.550s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/package.bash'
+[0.551s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/package.zsh'
+[0.551s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/yun/colcon_ws/install/stella_navigation2/share/colcon-core/packages/stella_navigation2)
+[0.551s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(stella_cartographer)
+[0.551s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_cartographer' for CMake module files
+[0.552s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/yun/colcon_ws/build/stella_cartographer' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --install /home/yun/colcon_ws/build/stella_cartographer
+[0.552s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_cartographer' for CMake config files
+[0.552s] Level 1:colcon.colcon_core.shell:create_environment_hook('stella_cartographer', 'cmake_prefix_path')
+[0.552s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/hook/cmake_prefix_path.ps1'
+[0.552s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/hook/cmake_prefix_path.dsv'
+[0.552s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/hook/cmake_prefix_path.sh'
+[0.553s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_cartographer/bin'
+[0.553s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_cartographer/lib/pkgconfig/stella_cartographer.pc'
+[0.553s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_cartographer/lib/python3.10/site-packages'
+[0.553s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_cartographer/bin'
+[0.553s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/package.ps1'
+[0.553s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/package.dsv'
+[0.554s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/package.sh'
+[0.554s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/package.bash'
+[0.554s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/package.zsh'
+[0.554s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/yun/colcon_ws/install/stella_cartographer/share/colcon-core/packages/stella_cartographer)
+[0.554s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(stella_cartographer)
+[0.555s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_cartographer' for CMake module files
+[0.555s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_cartographer' for CMake config files
+[0.555s] Level 1:colcon.colcon_core.shell:create_environment_hook('stella_cartographer', 'cmake_prefix_path')
+[0.555s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/hook/cmake_prefix_path.ps1'
+[0.555s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/hook/cmake_prefix_path.dsv'
+[0.555s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/hook/cmake_prefix_path.sh'
+[0.556s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_cartographer/bin'
+[0.556s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_cartographer/lib/pkgconfig/stella_cartographer.pc'
+[0.556s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_cartographer/lib/python3.10/site-packages'
+[0.556s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_cartographer/bin'
+[0.556s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/package.ps1'
+[0.556s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/package.dsv'
+[0.557s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/package.sh'
+[0.557s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/package.bash'
+[0.557s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/package.zsh'
+[0.557s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/yun/colcon_ws/install/stella_cartographer/share/colcon-core/packages/stella_cartographer)
+[0.729s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_teleop': PYTHONPATH=/home/yun/colcon_ws/build/stella_teleop/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/stella_teleop build --build-base /home/yun/colcon_ws/build/stella_teleop/build install --record /home/yun/colcon_ws/build/stella_teleop/install.log --single-version-externally-managed install_data
+[0.919s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_teleop' for CMake module files
+[0.919s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/yun/colcon_ws/src/STELLA_REMOTE_PC_ROS2/stella_teleop' returned '0': PYTHONPATH=/home/yun/colcon_ws/build/stella_teleop/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/stella_teleop build --build-base /home/yun/colcon_ws/build/stella_teleop/build install --record /home/yun/colcon_ws/build/stella_teleop/install.log --single-version-externally-managed install_data
+[0.919s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_teleop' for CMake config files
+[0.920s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_teleop/lib'
+[0.920s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_teleop/bin'
+[0.920s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_teleop/lib/pkgconfig/stella_teleop.pc'
+[0.920s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_teleop/lib/python3.10/site-packages'
+[0.920s] Level 1:colcon.colcon_core.shell:create_environment_hook('stella_teleop', 'pythonpath')
+[0.920s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_teleop/share/stella_teleop/hook/pythonpath.ps1'
+[0.921s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/yun/colcon_ws/install/stella_teleop/share/stella_teleop/hook/pythonpath.dsv'
+[0.921s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/yun/colcon_ws/install/stella_teleop/share/stella_teleop/hook/pythonpath.sh'
+[0.921s] Level 1:colcon.colcon_core.environment:checking '/home/yun/colcon_ws/install/stella_teleop/bin'
+[0.921s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(stella_teleop)
+[0.921s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_teleop/share/stella_teleop/package.ps1'
+[0.922s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/yun/colcon_ws/install/stella_teleop/share/stella_teleop/package.dsv'
+[0.922s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_teleop/share/stella_teleop/package.sh'
+[0.922s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_teleop/share/stella_teleop/package.bash'
+[0.922s] INFO:colcon.colcon_core.shell:Creating package script '/home/yun/colcon_ws/install/stella_teleop/share/stella_teleop/package.zsh'
+[0.923s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/yun/colcon_ws/install/stella_teleop/share/colcon-core/packages/stella_teleop)
+[0.923s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[0.923s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[0.923s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[0.923s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[0.927s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[0.927s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[0.927s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[0.938s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[0.938s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/yun/colcon_ws/install/local_setup.ps1'
+[0.940s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/yun/colcon_ws/install/_local_setup_util_ps1.py'
+[0.941s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/yun/colcon_ws/install/setup.ps1'
+[0.943s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/yun/colcon_ws/install/local_setup.sh'
+[0.944s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/yun/colcon_ws/install/_local_setup_util_sh.py'
+[0.944s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/yun/colcon_ws/install/setup.sh'
+[0.946s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/yun/colcon_ws/install/local_setup.bash'
+[0.947s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/yun/colcon_ws/install/setup.bash'
+[0.948s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/yun/colcon_ws/install/local_setup.zsh'
+[0.949s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/yun/colcon_ws/install/setup.zsh'

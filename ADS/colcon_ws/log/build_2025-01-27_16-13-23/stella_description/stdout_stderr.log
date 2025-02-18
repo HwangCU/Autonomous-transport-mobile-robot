@@ -1,0 +1,41 @@
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 1.3.11 (/opt/ros/humble/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+-- Found urdf: 2.6.1 (/opt/ros/humble/share/urdf/cmake)
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/yun/colcon_ws/build/stella_description
+-- Install configuration: ""
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/meshes
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/meshes/bases
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/meshes/bases/STELLA-N1.stl
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/rviz
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/rviz/model.rviz
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/urdf
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/urdf/stella.urdf
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/ament_index/resource_index/package_run_dependencies/stella_description
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/ament_index/resource_index/parent_prefix_path/stella_description
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/environment/ament_prefix_path.sh
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/environment/ament_prefix_path.dsv
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/environment/path.sh
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/environment/path.dsv
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/local_setup.bash
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/local_setup.sh
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/local_setup.zsh
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/local_setup.dsv
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/package.dsv
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/ament_index/resource_index/packages/stella_description
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/cmake/stella_descriptionConfig.cmake
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/cmake/stella_descriptionConfig-version.cmake
+-- Installing: /home/yun/colcon_ws/install/stella_description/share/stella_description/package.xml

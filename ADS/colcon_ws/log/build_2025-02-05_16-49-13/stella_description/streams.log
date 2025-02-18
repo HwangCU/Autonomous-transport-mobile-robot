@@ -1,0 +1,24 @@
+[0.015s] Invoking command in '/home/yun/colcon_ws/build/stella_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --build /home/yun/colcon_ws/build/stella_description -- -j20 -l20
+[0.197s] Invoked command in '/home/yun/colcon_ws/build/stella_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --build /home/yun/colcon_ws/build/stella_description -- -j20 -l20
+[0.198s] Invoking command in '/home/yun/colcon_ws/build/stella_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --install /home/yun/colcon_ws/build/stella_description
+[0.206s] -- Install configuration: ""
+[0.206s] -- Execute custom install script
+[0.207s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/meshes/bases/STELLA-N1.stl
+[0.207s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/rviz/model.rviz
+[0.208s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/urdf/stella.urdf
+[0.208s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/ament_index/resource_index/package_run_dependencies/stella_description
+[0.208s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/ament_index/resource_index/parent_prefix_path/stella_description
+[0.209s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/environment/ament_prefix_path.sh
+[0.209s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/environment/ament_prefix_path.dsv
+[0.209s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/environment/path.sh
+[0.209s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/environment/path.dsv
+[0.209s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/local_setup.bash
+[0.209s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/local_setup.sh
+[0.209s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/local_setup.zsh
+[0.209s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/local_setup.dsv
+[0.210s] -- Symlinking: /home/yun/colcon_ws/install/stella_description/share/stella_description/package.dsv
+[0.216s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/ament_index/resource_index/packages/stella_description
+[0.216s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/cmake/stella_descriptionConfig.cmake
+[0.217s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/cmake/stella_descriptionConfig-version.cmake
+[0.217s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_description/share/stella_description/package.xml
+[0.219s] Invoked command in '/home/yun/colcon_ws/build/stella_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/opt/ros/humble /usr/bin/cmake --install /home/yun/colcon_ws/build/stella_description
