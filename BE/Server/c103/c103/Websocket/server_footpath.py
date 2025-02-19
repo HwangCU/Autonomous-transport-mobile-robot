@@ -39,3 +39,21 @@ async def handle_footpath(data, user):
 
     except Exception as e:
         return {"status": "error", "message": f"Internal server error: {e}"}
+
+
+async def handle_send_footpath(data, user):
+    """WebSocket으로 받은 데이터를 처리하여 사용자 주소 업데이트"""
+    try:
+        footpath = data.get("footpath")
+
+        if not footpath:
+            return {"status": "error", "message": "email and address are required"}
+
+        payload = {"action": "footpath", "footpath": footpath}
+
+        response = await handle_request_robot(payload, user)
+
+        return response
+
+    except Exception as e:
+        return {"status": "error", "message": f"Internal server error: {e}"}

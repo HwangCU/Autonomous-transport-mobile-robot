@@ -8,10 +8,14 @@ from websockets import connect  # pip install websockets
 import urllib.parse
 import requests
 from rest_framework.response import Response
+from asgiref.sync import sync_to_async
+
+from c103.ws_manager import send_to_client
+from robots.models import Robot
 
 
 @csrf_exempt
-def weight_view(request):
+async def weight_view(request):
     if request.method != "POST":
         return JsonResponse(
             {"status": "error", "message": "Only POST method allowed."}, status=405
@@ -19,25 +23,33 @@ def weight_view(request):
 
     try:
         data = json.loads(request.body)
-        print(data)
         weight = data.get("weight")
         robot_id = data.get("robot_id")
     except json.JSONDecodeError:
         return JsonResponse({"status": "error", "message": "Invalid JSON."}, status=400)
 
-    access_token = data.get("access_token")
-
     payload = {
-        "action": "request_location",
-        "access_token": access_token,
+        "action": "robot_weight",
+        "weight": weight,
     }
-    print(payload)
+    try:
+        # ORM 호출을 비동기 컨텍스트에서 실행
+        robot = await sync_to_async(Robot.objects.get)(robot_id=robot_id)
+    except Robot.DoesNotExist:
+        return JsonResponse(
+            {"status": "error", "message": "Robot not found"}, status=404
+        )
+
+    user_id = robot.user_id
+
+    # send_to_client는 비동기 함수이므로 await 사용
+    await send_to_client(user_id, payload)
 
     return JsonResponse(payload)
 
 
 @csrf_exempt
-def get_gps_view(request):
+async def get_gps_view(request):
     if request.method != "POST":
         return JsonResponse(
             {"status": "error", "message": "Only POST method allowed."}, status=405
@@ -62,10 +74,18 @@ def get_gps_view(request):
         "robot_id": robot_id,
     }
 
-    # print("gps payload : ", payload)
-    # print("latitude: ", latitude, "  longitude : ", longitude)
+    try:
+        # ORM 호출을 비동기 컨텍스트에서 실행
+        robot = await sync_to_async(Robot.objects.get)(robot_id=robot_id)
+    except Robot.DoesNotExist:
+        return JsonResponse(
+            {"status": "error", "message": "Robot not found"}, status=404
+        )
 
-    # (2) WebSocket 서버에 "login" 패킷 전송
+    user_id = robot.user_id
+
+    # send_to_client는 비동기 함수이므로 await 사용
+    await send_to_client(user_id, payload)
 
     return JsonResponse(payload)
 
