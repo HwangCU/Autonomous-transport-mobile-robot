@@ -8,6 +8,8 @@ from loadhorize import LoadHorize, LoadHorizeTest
 from jetsoncommunication import JetsonCommunication
 import threading
 import json
+import os
+import pathlib
 
 # 비동기 작업을 처리하기 위한 스레드
 class AsyncThread(QThread):
@@ -46,11 +48,10 @@ class RobotUI(QMainWindow):
 
         # 기본 설정 메시지
         self.default_message = "standard"
-        self.error_message = "error"
-        self.connection_error_message = "connection_error"
-        self.emergency_stop_message = "emergency_stop"
         
         self.loop = None  # loop를 None으로 초기화
+        
+        self.shutdown_script = str(pathlib.Path(__file__).parent / 'shutdown.sh')
         
         self.initUI()
         self.update_ui_state(self.default_message)
@@ -63,17 +64,52 @@ class RobotUI(QMainWindow):
     
     # Jetson으로부터 받은 메시지 처리
     def handle_jetson_message(self, message: str) -> None:
-        self.update_ui_state(message)
+        if message == 'emergency_stop':
+            # self.handle_emergency_stop()
+            self.update_ui_state(message)
+        else:
+            self.update_ui_state(message)
     
+    # 비상정지 처리
+    def handle_emergency_stop(self) -> None:
+        try:
+            print(f"{self.logger_prefix} 비상정지 신호 수신. 프로그램을 종료합니다.")
+            self.update_ui_state('emergency_stop')
+            
+            # 비동기 작업 정리
+            if self.loop and self.loop.is_running():
+                self.loop.call_soon_threadsafe(self.cleanup)
+            
+            # Qt 애플리케이션 종료
+            QApplication.instance().quit()
+            
+            # 라즈베리파이 종료
+            print(f"{self.logger_prefix} 라즈베리파이를 종료합니다...")
+            os.system(f'sudo {self.shutdown_script}')
+            
+        except Exception as e:
+            print(f"{self.logger_prefix} 비상정지 처리 중 오류: {e}")
+            # 오류가 발생하더라도 강제 종료
+            try:
+                # 라즈베리파이 강제 종료 시도
+                os.system(f'sudo {self.shutdown_script}')
+            except:
+                pass
+            sys.exit(1)
+
     # 비상 정지 버튼 클릭 시 실행
     def emergency_stop(self) -> None:
         try:
+            # 비상정지 신호 전송
             asyncio.run_coroutine_threadsafe(
                 self.jetson.emergency_stop(), 
                 self.loop
             )
+            # 프로그램 종료 처리
+            # self.handle_emergency_stop()
         except Exception as e:
             print(f"{self.logger_prefix} 비상정지 명령 처리 중 오류: {e}")
+            # sys.exit(1)
 
     # 로봇 잠금 해제 메시지 전송
     async def unlock_robot(self) -> None:
@@ -81,39 +117,39 @@ class RobotUI(QMainWindow):
 
     def update_ui_state(self, signal: str) -> None:
         # 분기 처리
-        if signal == 'standard': # 대기 모드
+        if signal == 'standard': # 대기 모드 (mode: 0)
             self.status_label.setText("안녕하세요")
             self.unlock_button.hide()
             self.caution_widget.show()
-        elif signal == 'joycon': # 조이콘 모드
+        elif signal == 'joycon': # 조이콘 모드 (mode: 1)
             self.status_label.setText("조이콘 모드가 실행 중이에요")
             self.unlock_button.hide()
             self.caution_widget.show()
-        elif signal == 'follow': # 팔로잉 모드
+        elif signal == 'follow': # 팔로잉 모드 (mode: 2)
             self.status_label.setText("팔로잉 모드가 실행 중이에요")
             self.unlock_button.hide()
             self.caution_widget.show()
-        elif signal == 'gohome': # 집으로 돌아가기 중일 때
+        elif signal == 'gohome': # 집으로 돌아가기 중일 때 (mode: 4)
             self.status_label.setText("집으로 돌아가고 있어요")
             self.unlock_button.hide()
             self.caution_widget.show()
-        elif signal == 'home': # 집에 도착했을 때
+        elif signal == 'home': # 집에 도착했을 때 (mode: 41)
             self.status_label.setText("집에 도착했어요")
             self.unlock_button.hide()
             self.caution_widget.show()
-        elif signal == 'delivery': # 배달 모드 - 배달 중
+        elif signal == 'delivery': # 배달 모드 - 배달 중 (mode: 3)
             self.status_label.setText("로봇이 배달 중이에요")
             self.unlock_button.hide()
             self.caution_widget.show()
-        elif signal == 'delivery-stopover': # 배달 모드 - 주문한 가게 도착
+        elif signal == 'delivery-stopover': # 배달 모드 - 주문한 가게 도착 (mode: 31)
             self.status_label.setText("로봇이 목적지에 도착했어요")
             self.unlock_button.show()
             self.caution_widget.show()
-        elif signal == 'delivery-arrived': # 배달 모드 - 배달 완료
+        elif signal == 'delivery-arrived': # 배달 모드 - 배달 완료 (mode: 32)
             self.status_label.setText("배달을 완료했어요")
             self.unlock_button.hide()
             self.caution_widget.show()
-        elif signal == 'error': # 에러 상태
+        elif signal == 'error': # 에러 상태 (mode: 100)
             self.status_label.setText("로봇에 문제가 발생했습니다")
             self.unlock_button.hide()
             self.caution_widget.hide()
@@ -121,11 +157,11 @@ class RobotUI(QMainWindow):
             self.status_label.setText(f"로봇과 연결 중입니다... (시도 횟수: {self.connection_retry_count})")
             self.unlock_button.hide()
             self.caution_widget.hide()
-        elif signal == 'emergency_stop': # 비상정지
+        elif signal == 'emergency_stop': # 비상정지 (mode: 999)
             self.status_label.setText("비상정지 중 입니다")
             self.unlock_button.hide()
             self.caution_widget.hide()
-        elif signal == 'test': # 테스트 모드
+        elif signal == 'test': # 테스트 모드 (mode: 127)
             self.status_label.setText("테스트 모드가 실행 중이에요")
             self.unlock_button.hide()
             self.caution_widget.hide()
@@ -137,7 +173,7 @@ class RobotUI(QMainWindow):
         else:
             self.connection_retry_count += 1
             print(f"{self.logger_prefix} 연결 재시도... (시도 횟수: {self.connection_retry_count})")
-            self.update_ui_state(self.connection_error_message)
+            self.update_ui_state("connection_error")
 
     def initUI(self) -> None:
         # 화면 설정
@@ -272,17 +308,17 @@ class RobotUI(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    rb = RobotUI()
-    rb.show()
+    ui = RobotUI()
+    ui.show()
     
     # 비동기 초기화를 위한 별도 스레드
     async def init_async():
-        await rb.init_jetson()
+        await ui.init_jetson()
     
     # 새로운 이벤트 루프 생성 및 설정
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    rb.loop = loop
+    ui.loop = loop
     
     # 백그라운드 태스크로 실행
     def run_async_loop():
@@ -305,4 +341,4 @@ if __name__ == "__main__":
     try:
         sys.exit(app.exec_())
     finally:
-        rb.cleanup()
+        ui.cleanup()
