@@ -166,9 +166,11 @@ async def send_to_client(user_id, payload):
 
     try:
         await ws.send(json.dumps(payload))
-        return JsonResponse(f"[send_to_client] Sent to user {user_id}: {payload}")
+        return JsonResponse(
+            {"message": f"[send_to_client] Sent to user {user_id}: {payload}"}
+        )
     except Exception as e:
-        return JsonResponse(f"[send_to_client] Error: {e}")
+        return JsonResponse({"message": f"[send_to_client] Error: {e}"})
 
 
 # --------------------------------------------------------

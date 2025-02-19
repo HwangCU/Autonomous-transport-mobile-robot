@@ -61,9 +61,17 @@ class WSManager:
                     LAST_GPS = {"latitude": latitude, "longitude": longitude}
 
                     print("LAST_GPS IS ", LAST_GPS)
+                    broadcast_to_tcp_clients(message)
 
-                # 2) TCP로 전달
-                broadcast_to_tcp_clients(message)
+                elif json_message.get("action") == "robot_weight":
+                    weight = json_message.get("weight")
+
+                    # 2) TCP로 전달
+                    broadcast_to_tcp_clients(message)
+
+                    # 할거
+                    # elif json_message.get("actio") == "robot_camera":
+                    # image = json_message.get("image")
 
             except Exception as e:
                 print(f"[WSManager] Error in receive_messages: {e}")
