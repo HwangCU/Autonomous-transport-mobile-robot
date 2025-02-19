@@ -6,6 +6,15 @@ import threading
 import queue
 import socket
 import time
+import os
+import base64
+
+# 이미지 저장할 디렉토리 (실제 경로로 수정)
+IMAGES_DIR = "./camera_images"
+
+# 만약 디렉토리가 없으면 생성
+if not os.path.exists(IMAGES_DIR):
+    os.makedirs(IMAGES_DIR)
 
 # 예: 서버 주소/포트를 vars에서 가져온다고 가정
 from vars import SERVER_ADDR, SERVER_PORT, LAST_GPS
@@ -69,9 +78,22 @@ class WSManager:
                     # 2) TCP로 전달
                     broadcast_to_tcp_clients(message)
 
-                    # 할거
-                    # elif json_message.get("actio") == "robot_camera":
-                    # image = json_message.get("image")
+                elif json_message.get("action") == "camera__image":
+                    image_base64 = json_message.get("image")
+                    if not image_base64:
+                        print("Missing filename or image data in camera__image action.")
+                    else:
+                        try:
+                            # Base64 문자열을 디코딩하여 바이트 데이터로 변환
+                            image_bytes = base64.b64decode(image_base64)
+                            # 파일 경로 구성
+                            filepath = os.path.join(IMAGES_DIR, "a.jpg")
+                            # 파일 저장 (바이너리 모드)
+                            with open(filepath, "wb") as f:
+                                f.write(image_bytes)
+                            print(f"Image saved to {filepath}")
+                        except Exception as e:
+                            print("Error saving image:", e)
 
             except Exception as e:
                 print(f"[WSManager] Error in receive_messages: {e}")

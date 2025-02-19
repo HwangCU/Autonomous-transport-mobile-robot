@@ -1,13 +1,15 @@
 # footpath/views.py
 import json
-import asyncio
-import ssl
+import os
+import json
+import base64
+from PIL import Image
+from io import BytesIO
+
+# 모델과 WebSocket 연결 정보 임포트
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from websockets import connect  # pip install websockets
-import urllib.parse
-import requests
-from rest_framework.response import Response
 from asgiref.sync import sync_to_async
 
 from c103.ws_manager import send_to_client
@@ -112,50 +114,77 @@ os.makedirs(IMAGES_DIR, exist_ok=True)
 
 
 @csrf_exempt
-def camera_view(request):
-    if request.method == "POST" and "frame" in request.FILES:
-        # 현재 시간을 기준으로 파일명 생성
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-        filename = f"frame_{timestamp}.jpg"
-        filepath = os.path.join(IMAGES_DIR, filename)
+async def camera_view(request):
+    if request.method == "POST":
+        print("camera request: ", request)
+        # 파일 받기
+        file = request.FILES.get("frame")
+        if not file:
+            return JsonResponse(
+                {"status": "error", "message": "No frame file provided."}, status=400
+            )
 
-        # 파일 저장
-        with open(filepath, "wb+") as destination:
-            for chunk in request.FILES["frame"].chunks():
-                destination.write(chunk)
+        # POST 데이터에 포함된 JSON 문자열 읽기
+        json_data = request.POST.get("json")
+        if json_data:
+            try:
+                json_data = json.loads(json_data)
+            except json.JSONDecodeError:
+                return JsonResponse({"error": "Invalid JSON format"}, status=400)
+        else:
+            return JsonResponse({"error": "No JSON data provided"}, status=400)
 
-        # 최신 이미지 경로 업데이트
-        latest_image_path = f"/media/camera_images/{filename}"
+        robot_id = json_data.get("robot_id")
+        if not robot_id:
+            return JsonResponse(
+                {"status": "error", "message": "robot_id is required in JSON"},
+                status=400,
+            )
 
-        """
-        이미지 실험 예정
-        robot = await sync_to_async(Robot.objects.get)(robot_id=robot_id)
+        try:
+            robot = await sync_to_async(Robot.objects.get)(robot_id=robot_id)
+        except Robot.DoesNotExist:
+            return JsonResponse(
+                {"status": "error", "message": "Robot not found."}, status=404
+            )
         user_id = robot.user_id
-        ws = client_connections[user_id]
-        ws.send(json.dump(request))
-        """
 
-        return JsonResponse(
+        if user_id not in client_connections:
+            return JsonResponse(
+                {"status": "error", "message": "Client not connected."}, status=400
+            )
+        ws = client_connections[user_id]
+
+        # 파일의 바이너리 데이터를 읽어서 Base64 인코딩
+        file_data = file.read()  # InMemoryUploadedFile의 내용을 읽음
+        camera_image = base64.b64encode(file_data).decode(
+            "utf-8"
+        )  # Base64로 인코딩하여 문자열로 변환
+
+        # Base64로 인코딩된 이미지를 디코딩하여 이미지 객체로 변환
+        image_data = base64.b64decode(camera_image)  # 다시 디코딩
+        image = Image.open(BytesIO(image_data))
+        image.show()  # 이미지를 화면에 출력
+
+        # 전송할 패킷 구성
+        payload = json.dumps(
             {
-                "status": "success",
-                "message": "Image received and saved",
-                "filename": filename,
+                "action": "camera_image",
+                "image": camera_image,  # Base64 인코딩된 이미지
             }
         )
 
-    return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
+        print("WebSocket object:", ws)
 
-    # TODO: footpath 가공해서 로봇에서 받을 수 있게 수정하
+        try:
+            await ws.send(payload)
+            return JsonResponse(
+                {"status": "success", "message": f"Successfully send image"}, status=200
+            )
 
-    # payload = {
-    #     "action": "get_gps",
-    #     "latitude": latitude,
-    #     "longitude": longitude,
-    #     "robot_id": robot_id,
-    # }
-
-    print("camera_frame : ", frame)
-
-    # (2) WebSocket 서버에 "login" 패킷 전송
-
-    return JsonResponse({"status": "success"})
+        except Exception as e:
+            print("Error sending via WebSocket:", e)
+            return JsonResponse(
+                {"status": "error", "message": f"Failed to send image: {e}"}, status=500
+            )
+    return JsonResponse({"error": "Invalid request"}, status=405)
