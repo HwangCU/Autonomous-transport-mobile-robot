@@ -65,16 +65,52 @@ def footpath_view(request):
         )
 
     des_x, des_y = get_cord_by_road(dest)
+    # lg = json.loads(LAST_GPS)
+    start_x = LAST_GPS.get("longitude")
+    start_y = LAST_GPS.get("latitude")
 
-    """
-    gps 수정 필요
+    print("\n 데이터 검증 : ", start_x, start_y)
+
+    return get_path(start_x, start_y, des_x, des_y)
+
+
+@csrf_exempt
+def home_sweet_home_view(request):
+    print("lon lat: ", request)
+    if request.method != "POST":
+        return JsonResponse(
+            {"status": "error", "message": "Only POST method allowed."}, status=405
+        )
+
+    try:
+        data = json.loads(request.body)
+        print(data)
+    except json.JSONDecodeError:
+        return JsonResponse({"status": "error", "message": "Invalid JSON."}, status=400)
+
+    access_token = data.get("access_token")
+
+    if not access_token:
+        return JsonResponse(
+            {"status": "error", "message": "dest and access_token are required."},
+            status=400,
+        )
+
+    # WebSocket 서버에 전송할 패킷 구성
     payload = {
-        "action": "request_location",
+        "action": "get_profile",
         "access_token": access_token,
     }
+
+    from c103.ws_manager import ws_manager  # 위에서 만든 매니저 임포트
+
     # (2) WebSocket 서버에 "login" 패킷 전송
     resp = ws_manager.send_login(payload)
-    """
+
+    print(resp)
+    dest = resp.get("profile").get("address")
+
+    des_x, des_y = get_cord_by_road(dest)
     # lg = json.loads(LAST_GPS)
     start_x = LAST_GPS.get("longitude")
     start_y = LAST_GPS.get("latitude")
@@ -124,8 +160,8 @@ def get_path(start_x, start_y, des_x, des_y):
         " 좌표 검증 ",
         start_x,
         start_y,
-        des_x,
         des_y,
+        des_x,
     )
 
     payload = {

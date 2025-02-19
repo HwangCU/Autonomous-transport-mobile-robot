@@ -70,6 +70,7 @@ async def get_gps_view(request):
     # TODO: footpath 가공해서 로봇에서 받을 수 있게 수정하
 
     payload = {
+        "status": "fucking get_gps",
         "action": "get_gps",
         "latitude": latitude,
         "longitude": longitude,
@@ -95,11 +96,12 @@ async def get_gps_view(request):
         resp = await client_connections[user_id].send(json.dumps(payload))
         print(resp)
         return JsonResponse(
-            {"status": "success", "message": f"Send GPS {latitude} {longitude}"},
-            status=200,
+            {"status": "success", "message": f"Send GPS {latitude} {longitude}"}
         )
+        # print("success")
     except Exception as e:
         return JsonResponse({"status": "error", "message": f"Send GPS Faile: {e}"})
+        # print(f"error: {e}")
 
 
 from datetime import datetime
@@ -111,18 +113,6 @@ os.makedirs(IMAGES_DIR, exist_ok=True)
 
 @csrf_exempt
 def camera_view(request):
-    # if request.method != "POST":
-    #     return JsonResponse(
-    #         {"status": "error", "message": "Only POST method allowed."}, status=405
-    #     )
-
-    # try:
-    #     data = json.loads(request.body)
-    #     print(data)
-    # except json.JSONDecodeError:
-    #     return JsonResponse({"status": "error", "message": "Invalid JSON."}, status=400)
-
-    # frame = data.get("frame")
     if request.method == "POST" and "frame" in request.FILES:
         # 현재 시간을 기준으로 파일명 생성
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
@@ -136,6 +126,14 @@ def camera_view(request):
 
         # 최신 이미지 경로 업데이트
         latest_image_path = f"/media/camera_images/{filename}"
+
+        """
+        이미지 실험 예정
+        robot = await sync_to_async(Robot.objects.get)(robot_id=robot_id)
+        user_id = robot.user_id
+        ws = client_connections[user_id]
+        ws.send(json.dump(request))
+        """
 
         return JsonResponse(
             {
