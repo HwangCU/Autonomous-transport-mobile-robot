@@ -68,13 +68,26 @@ class JetsonCommunication(QObject):
                     data = json.loads(data.decode('utf-8'))
                     if not isinstance(data, dict):
                         raise ValueError("메시지가 JSON 객체 형식이 아닙니다")
+
+                    action = data.get('action')
+                    mode = data.get('mode')
+                    message = data.get('message')
+
+                    if not all([action, mode is not None, message]):
+                        raise ValueError("필수 필드가 누락되었습니다")
+
+                    if action == 'camera':
+                        # 카메라 데이터 처리는 별도로 구현
+                        continue
+                    elif action == 'echo':
+                        print(f'{self.logger_prefix} Echo received: {message}')
+                        if message == 'emergency_stop':
+                            self.message_received.emit(message)
+                        continue
+                    elif action == 'change_mode':
+                        self.message_received.emit(message)
                     
-                    message = data.get('status')
-                    if message is None:
-                        raise ValueError("status 필드가 없습니다")
-                    
-                    print(f'{self.logger_prefix} Received from server: {message}')
-                    self.message_received.emit(message)
+                    print(f'{self.logger_prefix} Received: action={action}, mode={mode}, message={message}')
 
                 except (ConnectionError, json.JSONDecodeError) as e:
                     print(f'{self.logger_prefix} Connection/Data error: {e}')
@@ -92,7 +105,7 @@ class JetsonCommunication(QObject):
                     self.socket = None
                 await asyncio.sleep(1)
 
-    async def send_data(self, message: str, retries: int = 0) -> bool:
+    async def send_data(self, action: str, mode: int, message: str, retries: int = 0) -> bool:
         if not self.is_connected:
             print(f"{self.logger_prefix} Not connected to server")
             return False
@@ -100,12 +113,12 @@ class JetsonCommunication(QObject):
         try:
             async with asyncio.timeout(self.operation_timeout):
                 payload = json.dumps({
-                    "action": "send_message",
-                    "mode": 700,
-                    "status": message
+                    "action": action,
+                    "mode": mode,
+                    "message": message
                 }).encode('utf-8')
                 await asyncio.get_event_loop().sock_sendall(self.socket, payload)
-                print(f"{self.logger_prefix} Message sent: {message}")
+                print(f"{self.logger_prefix} Message sent: {payload}")
                 return True
         except asyncio.TimeoutError:
             print(f"{self.logger_prefix} Send timeout: {message}")
@@ -114,12 +127,12 @@ class JetsonCommunication(QObject):
             if retries < self.max_retries:
                 print(f'{self.logger_prefix} Retrying... ({retries + 1}/{self.max_retries})')
                 await asyncio.sleep(1)
-                return await self.send_data(message, retries + 1)
+                return await self.send_data(action, mode, message, retries + 1)
         return False
 
     async def emergency_stop(self) -> bool:
         print("Emergency_stop")
-        return await self.send_data('emergency_stop')
+        return await self.send_data('emergency_stop', 999, 'emergency_stop')
 
     async def close(self) -> None:
         self._update_connection_status(False)
