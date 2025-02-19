@@ -22,7 +22,7 @@ async def handle_mode_change(data, user):
     try:
         new_mode = data.get("mode")
 
-        if not new_mode:
+        if new_mode == None:
             return {
                 "status": "error",
                 "message": "New mode is required",

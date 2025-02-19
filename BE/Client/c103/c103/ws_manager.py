@@ -8,7 +8,7 @@ import socket
 import time
 
 # 예: 서버 주소/포트를 vars에서 가져온다고 가정
-from vars import SERVER_ADDR, SERVER_PORT
+from vars import SERVER_ADDR, SERVER_PORT, LAST_GPS
 
 
 ########################################################################
@@ -49,7 +49,18 @@ class WSManager:
                 message = self.ws.recv()
                 # 1) 이 메시지를 큐에 넣거나, 바로 TCP로 전달
                 self.message_queue.put(message)
-                print(f"[WSManager] Received from WS: {message}")
+                print(f"[WSManager] Received from WS: {message} {type(message)}")
+
+                json_message = json.loads(message)
+
+                if json_message.get("action") == "get_gps":
+                    # 최신 GPS 정보를 전역 변수에 저장
+                    latitude = json_message.get("latitude")
+                    longitude = json_message.get("longitude")
+                    robot_id = json_message.get("robot_id")
+                    LAST_GPS = {"latitude": latitude, "longitude": longitude}
+
+                    print("LAST_GPS IS ", LAST_GPS)
 
                 # 2) TCP로 전달
                 broadcast_to_tcp_clients(message)
@@ -149,8 +160,9 @@ def broadcast_to_tcp_clients(message):
         for conn in connected_tcp_clients:
             try:
                 # 단순히 문자열을 전송한다고 가정
-                print("send message to client: ", message)
-                conn.sendall(message.encode())
+                print("send message to client: ", conn)
+                conn.sendall((message + "\n").encode())
+                print("sended message: ", message.encode())
             except Exception as e:
                 print("[TCP] Error sending to client:", e)
 

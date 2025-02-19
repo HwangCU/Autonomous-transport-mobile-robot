@@ -51,4 +51,5 @@ async def login_view(request):
 
 
 async def send_packet(payload):
-    resp = await ws_manager.send_login(payload)
+    resp = ws_manager.send_login(payload)
+    return resp
