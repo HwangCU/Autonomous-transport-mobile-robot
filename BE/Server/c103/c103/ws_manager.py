@@ -48,7 +48,7 @@ from c103.Websocket.server_robot import (
     handle_request_robot_location,
 )
 from c103.Websocket.server_address import handle_address_update
-from c103.Websocket.server_footpath import handle_footpath
+from c103.Websocket.server_footpath import handle_footpath, handle_send_footpath
 
 from c103.Websocket.server_profile import handle_get_profile, handle_edit_profile
 
@@ -144,6 +144,32 @@ async def verify_access_token(token, expected_requester_type):
         return {"status": "error", "message": f"Token verification failed: {e}"}
 
 
+main_loop = None  # 웹소켓 서버 이벤트 루프를 담아둘 예정
+
+
+async def send_to_client(user_id, payload):
+    """
+    Django(동기) 뷰에서 이 함수를 호출해,
+    user_id에게 WebSocket 메시지를 보낼 수 있게 함.
+    """
+    print(client_connections)
+    if user_id not in client_connections:
+        print(f"[send_to_client] user_id={user_id} not connected.")
+        return
+
+    print(client_connections[user_id])
+
+    ws = client_connections[user_id]
+
+    print("\n\nready to send\n\n")
+
+    try:
+        await ws.send(json.dumps(payload))
+        print(f"[send_to_client] Sent to user {user_id}: {payload}")
+    except Exception as e:
+        print(f"[send_to_client] Error: {e}")
+
+
 # --------------------------------------------------------
 # 5) WebSocket 핸들러
 # --------------------------------------------------------
@@ -209,7 +235,7 @@ async def handler(websocket):
                 elif action == "edit_profile":
                     response = await handle_edit_profile(data, user)
                 elif action == "send_footpath":
-                    response = await handle_footpath(data, user)
+                    response = await handle_send_footpath(data, user)
 
             elif action == "register":
                 response = await handle_registration(data)
@@ -222,6 +248,7 @@ async def handler(websocket):
                     client_ip_list[user_id], _ = client_connections[
                         user_id
                     ].remote_address
+                    print("연결된 클라이언트 확인: ", client_connections)
                     if user_id not in client_locks:
                         client_locks[user_id] = asyncio.Lock()
 
@@ -253,6 +280,7 @@ async def handler(websocket):
                 response = {"status": "error", "message": "Invalid action"}
 
             # 응답 전송
+            print(response)
             await websocket.send(json.dumps(response))
 
         except Exception as e:

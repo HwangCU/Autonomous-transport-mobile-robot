@@ -5,10 +5,11 @@ import ssl
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from websockets import connect  # pip install websockets
+from c103.ws_manager import ws_manager  # 위에서 만든 매니저 임포트
 
 
 @csrf_exempt
-def login_view(request):
+async def login_view(request):
     # print("login debug: ", request)
     """
     FE에서 JSON 형식으로 email, password를 POST로 전송하면,
@@ -22,7 +23,7 @@ def login_view(request):
     try:
         print("1")
         data = json.loads(request.body)
-        print("2")
+        print("2: ", data)
         # print(data)
     except json.JSONDecodeError:
         return JsonResponse({"status": "error", "message": "Invalid JSON."}, status=400)
@@ -42,10 +43,12 @@ def login_view(request):
         "password": password,
     }
 
-    from c103.ws_manager import ws_manager  # 위에서 만든 매니저 임포트
-
-    print("3")
+    print("3: ", payload)
     # (2) WebSocket 서버에 "login" 패킷 전송
-    resp = ws_manager.send_login(payload)
-    print("4")
+    resp = await send_packet(payload)
+    print("4: ", resp)
     return JsonResponse(resp)
+
+
+async def send_packet(payload):
+    resp = await ws_manager.send_login(payload)

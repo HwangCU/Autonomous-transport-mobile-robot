@@ -1,74 +1,72 @@
 import websocket
-from websockets import connect
 import json
 import ssl
 import os
 import threading
+import queue
+import socket
 import time
-import queue  # 🔹 메시지 큐를 사용하여 동기화
+
+# 예: 서버 주소/포트를 vars에서 가져온다고 가정
 from vars import SERVER_ADDR, SERVER_PORT
 
 
+########################################################################
+# 1) WebSocket 클라이언트 매니저
+########################################################################
 class WSManager:
     def __init__(self, url):
         self.url = url
-        self.ws = None  # 아직 연결되지 않은 상태
-        self.cert_path = "./fullchain.pem"  # 서버 인증서 경로 (예: './cert.pem')
+        self.ws = None
+        self.cert_path = "./fullchain.pem"
         self.running = False
-        self.message_queue = queue.Queue()  # 🔹 메시지를 저장할 큐 생성
+        self.message_queue = queue.Queue()
 
     def is_connected(self):
         return self.ws is not None
 
-    async def connect(self):
-        """
-        - 최초로 호출되면 서버에 연결을 맺고 self.ws에 보관
-        - 이미 연결돼 있으면 재연결하지 않음
-        """
+    def connect(self):
         if not self.ws:
-            # 1) TLS 클라이언트 모드 SSLContext 생성
+            # TLS 클라이언트 모드 SSLContext
             ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-
-            # 2) 서버 인증서를 신뢰 목록으로 등록
             if os.path.exists(self.cert_path):
                 ssl_context.load_verify_locations(cafile=self.cert_path)
             else:
-                print(
-                    f"WARNING: {self.cert_path} not found. Will fail if cert is required."
-                )
+                print(f"WARNING: {self.cert_path} not found.")
 
-            # 3) WebSocket 연결
             print(f"[WSManager] Connecting to {self.url}...")
-            async with connect(self.url, ssl=ssl_context) as websocket:
-                self.ws = websocket
-                print("[WSManager] Connected.")
+            self.ws = websocket.WebSocket()
+            self.ws.connect(self.url, ssl=ssl_context)
+            print("[WSManager] Connected.")
+            self.running = True
+            # 메시지 수신 스레드 시작
+            threading.Thread(target=self.receive_messages, daemon=True).start()
 
-                # ✅ 메시지 수신을 위한 별도 스레드 실행
-                self.running = True
-                threading.Thread(target=self.receive_messages, daemon=True).start()
-
-    async def receive_messages(self):
-        """서버에서 메시지를 지속적으로 수신하는 함수"""
+    def receive_messages(self):
+        """WebSocket 서버에서 오는 메시지를 계속 수신"""
         while self.running:
             try:
-                message = await self.ws.recv()  # 서버로부터 메시지 수신
-                self.message_queue.put(message)  # 🔹 메시지를 큐에 저장
-                print(f"[WSManager] Received and stored message: {message}")
+                message = self.ws.recv()
+                # 1) 이 메시지를 큐에 넣거나, 바로 TCP로 전달
+                self.message_queue.put(message)
+                print(f"[WSManager] Received from WS: {message}")
+
+                # 2) TCP로 전달
+                broadcast_to_tcp_clients(message)
+
             except Exception as e:
                 print(f"[WSManager] Error in receive_messages: {e}")
                 self.running = False
-                break  # 오류 발생 시 루프 종료
+                break
 
     def close(self):
-        """웹소켓 연결 종료"""
         self.running = False
         if self.ws:
-            print("[WSManager] Closing connection.")
+            print("[WSManager] Closing WS connection.")
             self.ws.close()
             self.ws = None
 
-    # await websocket.send(json.dumps(payload))
-    async def send_login(self, payload, timeout=5):
+    def send_login(self, payload, timeout=5):
         """
         - 로그인 메시지를 보내고, 로그인 응답을 기다림
         - 응답이 올 때까지 `queue`에서 메시지를 대기함
@@ -78,7 +76,7 @@ class WSManager:
             return None
 
         try:
-            await self.ws.send(json.dumps(payload))  # 🔹 로그인 요청 전송
+            self.ws.send(json.dumps(payload))  # 🔹 로그인 요청 전송
             print("[WSManager] Sent login request, waiting for response...")
 
             # 🔹 지정된 timeout 동안 메시지 대기
@@ -94,5 +92,87 @@ class WSManager:
             return None
 
 
-# 전역 싱글톤 인스턴스
+########################################################################
+# 2) TCP 소켓 서버
+########################################################################
+HOST = "0.0.0.0"
+TCP_PORT = 9999
+
+# 🔹 여러 클라이언트가 동시에 연결될 수 있으므로, 연결 목록을 전역 관리
+connected_tcp_clients = []
+lock = threading.Lock()
+
+
+def handle_client(conn, addr):
+    print(f"[TCP] Connected by {addr}")
+    with lock:
+        connected_tcp_clients.append(conn)
+
+    try:
+        while True:
+            data = conn.recv(1024)
+            if not data:
+                break
+            # TODO: TCP 클라이언트 → WebSocket 으로 보낼 수도 있음 (원하면)
+            print(f"[TCP] Received from {addr}: {data.decode()}")
+            # 여기서는 Echo 예시:
+            conn.sendall(b"Server ack: " + data)
+    except Exception as e:
+        print("[TCP] Client error:", e)
+    finally:
+        conn.close()
+        print(f"[TCP] Disconnected {addr}")
+        with lock:
+            connected_tcp_clients.remove(conn)
+
+
+def run_tcp_server():
+    print(f"[TCP] Starting TCP server on {HOST}:{TCP_PORT}")
+    server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_sock.bind((HOST, TCP_PORT))
+    server_sock.listen()
+
+    while True:
+        conn, addr = server_sock.accept()
+        t = threading.Thread(target=handle_client, args=(conn, addr), daemon=True)
+        t.start()
+
+
+def broadcast_to_tcp_clients(message):
+    """
+    WebSocket에서 받은 메시지를
+    연결된 모든 TCP 클라이언트에게 전송
+    """
+    print("연결된 클라이언트들에게 메시지 전송: ", message)
+    with lock:
+        for conn in connected_tcp_clients:
+            try:
+                # 단순히 문자열을 전송한다고 가정
+                print("send message to client: ", message)
+                conn.sendall(message.encode())
+            except Exception as e:
+                print("[TCP] Error sending to client:", e)
+
+
+########################################################################
+# 3) 전역 객체: WebSocket 매니저
+########################################################################
 ws_manager = WSManager(f"wss://{SERVER_ADDR}:{SERVER_PORT}")
+
+########################################################################
+# 4) 파일 단독 실행 시
+########################################################################
+if __name__ == "__main__":
+    # 1) WebSocket 연결
+    t_ws = threading.Thread(target=ws_manager.connect, daemon=True)
+    t_ws.start()
+
+    # 2) TCP 서버 실행
+    t_tcp = threading.Thread(target=run_tcp_server, daemon=True)
+    t_tcp.start()
+
+    print("[MAIN] Both threads started. Press Ctrl+C to exit.")
+    # 3) 메인 스레드 유지를 위해 대기
+    while True:
+        time.sleep(60)
