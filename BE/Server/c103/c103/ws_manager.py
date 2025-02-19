@@ -12,6 +12,7 @@ import threading
 
 from asgiref.sync import sync_to_async
 from datetime import datetime, timedelta
+from django.http import JsonResponse
 
 
 # --------------------------------------------------------
@@ -165,9 +166,9 @@ async def send_to_client(user_id, payload):
 
     try:
         await ws.send(json.dumps(payload))
-        print(f"[send_to_client] Sent to user {user_id}: {payload}")
+        return JsonResponse(f"[send_to_client] Sent to user {user_id}: {payload}")
     except Exception as e:
-        print(f"[send_to_client] Error: {e}")
+        return JsonResponse(f"[send_to_client] Error: {e}")
 
 
 # --------------------------------------------------------
@@ -279,8 +280,6 @@ async def handler(websocket):
             else:
                 response = {"status": "error", "message": "Invalid action"}
 
-            # 응답 전송
-            print(response)
             await websocket.send(json.dumps(response))
 
         except Exception as e:

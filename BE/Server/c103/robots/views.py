@@ -13,6 +13,8 @@ from asgiref.sync import sync_to_async
 from c103.ws_manager import send_to_client
 from robots.models import Robot
 
+from c103.Websocket.client_info import client_connections, client_locks, client_ip_list
+
 
 @csrf_exempt
 async def weight_view(request):
@@ -81,13 +83,23 @@ async def get_gps_view(request):
         return JsonResponse(
             {"status": "error", "message": "Robot not found"}, status=404
         )
-
+        # 로봇에게 전송
     user_id = robot.user_id
 
-    # send_to_client는 비동기 함수이므로 await 사용
-    await send_to_client(user_id, payload)
-
-    return JsonResponse(payload)
+    try:
+        print(
+            "connection info is ",
+            client_connections[user_id],
+            client_connections[user_id].remote_address,
+        )
+        resp = await client_connections[user_id].send(json.dumps(payload))
+        print(resp)
+        return JsonResponse(
+            {"status": "success", "message": f"Send GPS {latitude} {longitude}"},
+            status=200,
+        )
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": f"Send GPS Faile: {e}"})
 
 
 from datetime import datetime

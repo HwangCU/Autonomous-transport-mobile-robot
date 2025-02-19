@@ -9,6 +9,10 @@ import urllib.parse
 import requests
 from rest_framework.response import Response
 from c103.ws_manager import ws_manager  # 위에서 만든 매니저 임포트
+import math
+import json
+
+from vars import LAST_GPS
 
 
 @csrf_exempt
@@ -62,14 +66,22 @@ def footpath_view(request):
 
     des_x, des_y = get_cord_by_road(dest)
 
+    """
+    gps 수정 필요
     payload = {
         "action": "request_location",
         "access_token": access_token,
     }
     # (2) WebSocket 서버에 "login" 패킷 전송
     resp = ws_manager.send_login(payload)
+    """
+    # lg = json.loads(LAST_GPS)
+    start_x = LAST_GPS.get("longitude")
+    start_y = LAST_GPS.get("latitude")
 
-    return get_path(resp, des_x, des_y)
+    print("\n 데이터 검증 : ", start_x, start_y)
+
+    return get_path(start_x, start_y, des_x, des_y)
 
 
 def url_encode(text):
@@ -91,6 +103,7 @@ def get_cord_by_road(dest):
     print(response)
 
     coordinate_data = response["coordinateInfo"]["coordinate"][0]  # 첫 번째 요소
+    print("\ncoordi data is ", coordinate_data)
     lat = coordinate_data["newLat"]
     lon = coordinate_data["newLon"]
     return (
@@ -99,7 +112,7 @@ def get_cord_by_road(dest):
     )
 
 
-def get_path(response_data, des_x, des_y):
+def get_path(start_x, start_y, des_x, des_y):
     origin = url_encode("출발지")
     destination = url_encode("도착지")
 
@@ -109,15 +122,15 @@ def get_path(response_data, des_x, des_y):
 
     print(
         " 좌표 검증 ",
-        response_data["latitude"],
-        response_data["longitude"],
+        start_x,
+        start_y,
         des_x,
         des_y,
     )
 
     payload = {
-        "startX": response_data["longitude"],
-        "startY": response_data["latitude"],
+        "startX": start_x,
+        "startY": start_y,
         "endX": des_y,
         "endY": des_x,
         "startName": origin,
@@ -177,16 +190,44 @@ def send_footpath_view(request):
         return JsonResponse({"status": "error", "message": "Invalid JSON."}, status=400)
 
     access_token = data.get("access_token")
-    footpath = data.get("footpath")
+    path_list = data.get("path_list")
 
     # TODO: footpath 가공해서 로봇에서 받을 수 있게 수정하
+    def convert_path_list_to_waypoints(path_list):
+        """
+        path_list: [[경도, 위도], [경도, 위도], ...]
+        출력: [{"latitude": 위도, "longitude": 경도, "yaw": yaw}, ...]
+        """
+        waypoints = []
+        for i, point in enumerate(path_list):
+            # point[0]: 경도, point[1]: 위도
+            if i < len(path_list) - 1:
+                # 다음 점과의 차이로 yaw(라디안)를 계산
+                dx = path_list[i + 1][0] - point[0]
+                dy = path_list[i + 1][1] - point[1]
+                yaw = math.atan2(dy, dx)
+            else:
+                yaw = 0.0  # 마지막 점은 0.0으로 설정 (원하는 값으로 조정 가능)
+
+            waypoint = {"latitude": point[1], "longitude": point[0], "yaw": yaw}
+            waypoints.append(waypoint)
+        return waypoints
+
+    # 변환 실행
+    waypoints = convert_path_list_to_waypoints(path_list)
+
+    # YAML 형식과 유사하게 출력 (여기서는 JSON으로 출력)
+    output_data = {"waypoints": waypoints}
+    print(json.dumps(output_data, indent=2))
+    #
 
     payload = {
         "action": "send_footpath",
         "access_token": access_token,
-        "footpath": footpath,
+        "footpath": waypoints,
     }
 
+    print("send footpath : ", payload)
     # (2) WebSocket 서버에 "login" 패킷 전송
     resp = ws_manager.send_login(payload)
 
