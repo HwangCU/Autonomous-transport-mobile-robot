@@ -9,7 +9,7 @@ async def handle_request_robot(payload, user):
         return {"status": "error", "message": f"Robot {user.id} not connected"}
 
     # robot_connections[user.id]가 리스트라면 첫 번째 연결 사용
-    connection = robot_connections[user.id]
+    connection, _ = robot_connections[user.id]
     if isinstance(connection, list):
         if not connection:
             return {
