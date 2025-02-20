@@ -160,7 +160,7 @@ async def send_to_client(user_id, payload):
 
     print(client_connections[user_id])
 
-    ws = client_connections[user_id]
+    ws, _ = client_connections[user_id]
 
     print("\n\nready to send\n\n")
 
@@ -171,7 +171,6 @@ async def send_to_client(user_id, payload):
         )
     except Exception as e:
         return JsonResponse({"message": f"[send_to_client] Error: {e}"})
-
 
 
 # --------------------------------------------------------
@@ -248,10 +247,13 @@ async def handler(websocket):
                 response = await handle_login(data)
                 user_id = await get_user_by_email(data)
                 if user_id:
-                    client_connections[user_id] = websocket
-                    client_ip_list[user_id], _ = client_connections[
-                        user_id
-                    ].remote_address
+                    client_connections[user_id] = (
+                        websocket,
+                        asyncio.get_running_loop(),
+                    )
+                    ws, ws_loop = client_connections[user_id]
+
+                    client_ip_list[user_id], _ = ws.remote_address
                     print("연결된 클라이언트 확인: ", client_connections)
                     if user_id not in client_locks:
                         client_locks[user_id] = asyncio.Lock()
@@ -260,10 +262,12 @@ async def handler(websocket):
                 response = await handle_social_login(data)
                 user_id = await get_user_by_email(data)
                 if user_id:
-                    client_connections[user_id] = websocket
-                    client_ip_list[user_id], _ = client_connections[
-                        user_id
-                    ].remote_address
+                    client_connections[user_id] = (
+                        websocket,
+                        asyncio.get_running_loop(),
+                    )
+                    ws, ws_loop = client_connections[user_id]
+                    client_ip_list[user_id], _ = ws.remote_address
                     if user_id not in client_locks:
                         client_locks[user_id] = asyncio.Lock()
 
@@ -271,10 +275,9 @@ async def handler(websocket):
                 response = await handle_robot_login(data)
                 user_id = await get_user_by_robot_id(data)
                 if user_id:
-                    robot_connections[user_id] = websocket
-                    robot_ip_list[user_id], _ = robot_connections[
-                        user_id
-                    ].remote_address
+                    robot_connections[user_id] = (websocket, asyncio.get_running_loop())
+                    ws, ws_loop = robot_connections[user_id]
+                    robot_ip_list[user_id], _ = ws.remote_address
                     if user_id not in robot_locks:
                         robot_locks[user_id] = asyncio.Lock()
                 else:

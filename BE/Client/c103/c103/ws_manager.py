@@ -78,10 +78,11 @@ class WSManager:
                     # 2) TCP로 전달
                     broadcast_to_tcp_clients(message)
 
-                elif json_message.get("action") == "camera__image":
+                elif json_message.get("action") == "camera_image":
+                    print("\n\n camera image received \n\n")
                     image_base64 = json_message.get("image")
                     if not image_base64:
-                        print("Missing filename or image data in camera__image action.")
+                        print("Missing filename or image data in camera_image action.")
                     else:
                         try:
                             # Base64 문자열을 디코딩하여 바이트 데이터로 변환
@@ -92,6 +93,8 @@ class WSManager:
                             with open(filepath, "wb") as f:
                                 f.write(image_bytes)
                             print(f"Image saved to {filepath}")
+
+                            broadcast_to_tcp_clients(message)
                         except Exception as e:
                             print("Error saving image:", e)
 
@@ -185,14 +188,14 @@ def broadcast_to_tcp_clients(message):
     WebSocket에서 받은 메시지를
     연결된 모든 TCP 클라이언트에게 전송
     """
-    print("연결된 클라이언트들에게 메시지 전송: ", message)
+    print("연결된 클라이언트들에게 메시지 전송", connected_tcp_clients)
     with lock:
         for conn in connected_tcp_clients:
             try:
                 # 단순히 문자열을 전송한다고 가정
                 print("send message to client: ", conn)
                 conn.sendall((message + "\n").encode())
-                print("sended message: ", message.encode())
+                print("sended message: ")
             except Exception as e:
                 print("[TCP] Error sending to client:", e)
 
