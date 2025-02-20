@@ -186,7 +186,8 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier,
                             navController = navController,
                             robotViewModel = robotViewModel,
-                            addressSearchViewModel = addressSearchViewModel
+                            addressSearchViewModel = addressSearchViewModel,
+                            userViewModel = userViewModel
                         )
                     }
                     composable("LiveDeliveryScreen") {

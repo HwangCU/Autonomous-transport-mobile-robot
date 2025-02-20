@@ -123,6 +123,8 @@ class AddressSearchViewModel(
                     }
                     userViewModel.setPath(coordinates) // StateFlow 업데이트
                     userViewModel.setTime(body.time)
+                    userViewModel.setHome(body.home)
+                    Log.d("TAG", "출발지: ${body.home}")
                     Log.d("TAG", "시간: ${body.time}초")
                     Log.d("TAG", "경로 저장 성공: ${userViewModel.path.value.size}개 좌표")
                 }
@@ -147,6 +149,7 @@ class AddressSearchViewModel(
                     }
                     userViewModel.setPath(coordinates) // StateFlow 업데이트
                     userViewModel.setTime(body.time)
+                    userViewModel.setHome(body.home)
                     Log.d("TAG", "시간: ${body.time}초")
                     Log.d("TAG", "경로 저장 성공: ${userViewModel.path.value.size}개 좌표")
                 } else {

@@ -432,8 +432,6 @@ fun HomeScreen(
                 Button(
                     colors = ButtonDefaults.buttonColors(my_blue),
                     onClick = {
-                        robotViewModel.modeChange(0)
-                        robotViewModel.modeChange(3)
                         navController.navigate("DeliverySceen")
                     }
                 ) {

@@ -55,7 +55,7 @@
     <string name="liveCamera">라이브 카메라</string>
     <string name="move">남은 주행 가능 거리</string>
     <string name="comeBackHome">집으로 보내기</string>
-    <string name="comeBackHome2">수행 중인 기능을 멈추 집으로 보내시겠습니까?</string>
+    <string name="comeBackHome2">수행 중인 기능을 멈추고 집으로 보내시겠습니까?</string>
     <string name="comeBackHomeToggle">배달모드 종료 시 집으로 돌아가기</string>
     <string name="userUpdate">정보 수정</string>
     <string name="robotStorage">로봇 내역 확인</string>
