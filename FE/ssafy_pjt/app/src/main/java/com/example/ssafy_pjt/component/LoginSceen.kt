@@ -109,35 +109,36 @@ fun LoginSceen(
     ) { innerPadding ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
             modifier = modifier
-                .padding(start = 20.dp)
+                .fillMaxSize()
                 .padding(innerPadding)
         ) {
             Image(
                 painter = painterResource(R.drawable.star_filled),
                 modifier = modifier
-                    .padding(top = 119.dp, start = 255.dp)
+                    .padding(top = 90.dp, start = 240.dp)
                     .size(75.dp),
                 contentDescription = "login_title"
             )
             Text(
                 text = stringResource(R.string.login_title),
                 style = loginTitle,
-                modifier = modifier.padding(top = 5.dp, start = 20.dp),
+                modifier = modifier.padding(top = 5.dp),
                 color = colorResource(R.color.white)
             )
             Image(
                 painter = painterResource(R.drawable.delivery_robot),
                 contentDescription = "deliver_robot",
                 modifier = modifier
-                    .padding(top = 100.dp, start = 35.dp)
+                    .padding(top = 80.dp)
                     .size(250.dp)
             )
             Spacer(modifier = modifier.height(25.dp))
             Button(
                 modifier = modifier
                     .height(45.dp)
-                    .padding(start = 25.dp)
+                    .padding()
                     .fillMaxWidth(0.8f),
                 onClick = {
                     navController.navigate("accountLogin")
@@ -152,7 +153,7 @@ fun LoginSceen(
             Button(
                 modifier = modifier
                     .height(45.dp)
-                    .padding(start = 25.dp, top = 10.dp)
+                    .padding( top = 10.dp)
                     .fillMaxWidth(0.8f),
                 onClick = {
                     kakaoviewModel.snsLogin()
@@ -176,7 +177,7 @@ fun LoginSceen(
             Button(
                 modifier = modifier
                     .height(45.dp)
-                    .padding(start = 25.dp, top = 10.dp)
+                    .padding( top = 10.dp)
                     .fillMaxWidth(0.8f),
                 onClick = {
                     googleViewModel.signInWithRevoke(context, authResultLauncher)
@@ -200,7 +201,7 @@ fun LoginSceen(
             Button(
                 modifier = modifier
                     .height(45.dp)
-                    .padding(start = 25.dp, top = 10.dp)
+                    .padding( top = 10.dp)
                     .fillMaxWidth(0.8f),
                 onClick = { OnSignupclicked() },
                 colors = ButtonDefaults.buttonColors(
@@ -216,7 +217,7 @@ fun LoginSceen(
                     + stringResource(R.string.copyright_rights),
                 fontSize = 14.sp,
                 color = Color.Black,
-                modifier = modifier.padding(start = 25.dp)
+                modifier = modifier.padding()
             )
         }
     }

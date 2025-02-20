@@ -52,11 +52,20 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.io.File
 import com.example.ssafy_pjt.network.RetrofitClient
 import androidx.activity.result.ActivityResultLauncher
+import com.example.ssafy_pjt.ViewModel.RobotViewModel
+import com.example.ssafy_pjt.ViewModel.RobotViewModelFactory
 import com.example.ssafy_pjt.ViewModel.socketViewModel
 import com.example.ssafy_pjt.component.DeviceItem
+import com.example.ssafy_pjt.component.LiveDeliveryScreen
+import com.example.ssafy_pjt.network.SocketService
 
 class MainActivity : ComponentActivity() {
+    private val userViewModel: UserViewModel by viewModels()
     private val socketViewModel: socketViewModel by viewModels()
+
+    private val robotViewModel: RobotViewModel by viewModels {
+    RobotViewModelFactory(userViewModel)
+}
 
     private val kakaoAuthViewModel: KakaoAuthViewModel by viewModels{
         KakaoLoginViewModelFactory(userViewModel,application)
@@ -64,7 +73,6 @@ class MainActivity : ComponentActivity() {
     private val GoogleLoginViewModel: GoogleLoginViewModel by viewModels{
         GoogleLoginViewModelFactory(userViewModel)
     }
-    private val userViewModel: UserViewModel by viewModels()
     private val accountLoginViewModel: AccountLoginViewModel by viewModels {
         AccountLoginViewModelFactory(userViewModel)
     }
@@ -96,6 +104,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        SocketService.getInstance().setRobotViewModel(robotViewModel)
         
         imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let { selectedImageUri ->
@@ -108,7 +117,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = "Setting"
+                    startDestination = "login"
                 ){
                     composable("login") {
                         LoginSceen(
@@ -137,7 +146,9 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier,
                             navController = navController,
                             userViewModel = userViewModel,
-                            socketViewModel = socketViewModel
+                            socketViewModel = socketViewModel,
+                            adressViewModel = addressSearchViewModel,
+                            robotViewModel = robotViewModel
                         )
                     }
                     composable("DeliverySceen") {
@@ -145,7 +156,8 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier,
                             navController = navController,
                             viewModel = addressSearchViewModel,
-                            userViewModel = userViewModel
+                            userViewModel = userViewModel,
+                            robotViewModel = robotViewModel
                         )
                     }
                     composable("RobotRegistration"){
@@ -172,20 +184,35 @@ class MainActivity : ComponentActivity() {
                     composable("FollowingScreen") {
                         FollowingScreen(
                             modifier = Modifier,
-                            navController = navController
+                            navController = navController,
+                            robotViewModel = robotViewModel,
+                            addressSearchViewModel = addressSearchViewModel
+                        )
+                    }
+                    composable("LiveDeliveryScreen") {
+                        LiveDeliveryScreen(
+                            modifier = Modifier,
+                            navController = navController,
+                            robotViewModel = robotViewModel,
+                            userViewModel = userViewModel,
+                            addressSearchViewModel =  addressSearchViewModel
                         )
                     }
                     composable("Setting") {
                         Setting(
                             modifier = Modifier,
                             navController = navController,
-                            profileViewModel=profileViewModel
+                            profileViewModel=profileViewModel,
+                            robotViewModel = robotViewModel
                         )
                     }
                     composable("SendHomeScreen") {
                         SendHomeScreen(
                             modifier = Modifier,
-                            navController = navController
+                            navController = navController,
+                            userViewModel = userViewModel,
+                            addressviewModel = addressSearchViewModel,
+                            robotViewModel = robotViewModel
                         )
                     }
                     composable("GameController") {

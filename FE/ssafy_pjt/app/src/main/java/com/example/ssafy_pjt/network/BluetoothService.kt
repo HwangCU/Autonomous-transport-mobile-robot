@@ -53,8 +53,24 @@ class BluetoothService private constructor(private val context: Context) {
 
     @SuppressLint("MissingPermission")
     fun connect(device: BluetoothDevice) {
+        Log.d("TAG", "연결 시작: 이름=${device.name}, 주소=${device.address}")
+        Log.d("TAG", "블루투스 장치 본딩 상태: ${
+            when(device.bondState) {
+                BluetoothDevice.BOND_NONE -> "연결 안됨"
+                BluetoothDevice.BOND_BONDING -> "연결 중"
+                BluetoothDevice.BOND_BONDED -> "연결됨"
+                else -> "알 수 없음"
+            }
+        }")
+
         // 블루투스 어댑터 상태 확인
-        if (bluetoothAdapter == null || !bluetoothAdapter!!.isEnabled) {
+        if (bluetoothAdapter == null) {
+            Log.e("TAG", "블루투스 어댑터가 null입니다")
+            _isConnected.value = false
+            return
+        }
+
+        if (!bluetoothAdapter!!.isEnabled) {
             Log.e("TAG", "블루투스가 비활성화되었습니다")
             _isConnected.value = false
             return
@@ -68,49 +84,79 @@ class BluetoothService private constructor(private val context: Context) {
         }
 
         disconnect() // 기존 연결 정리
+        Log.d("TAG", "기존 연결 정리 완료")
 
         try {
+            Log.d("TAG", "검색 취소 중...")
             bluetoothAdapter?.cancelDiscovery()
+            Log.d("TAG", "소켓 생성 중...")
 
             bluetoothSocket = device.createRfcommSocketToServiceRecord(UUID_SPP)
+            Log.d("TAG", "소켓 생성됨: $bluetoothSocket")
+
             bluetoothSocket?.let { socket ->
                 try {
-                    // 타임아웃 구현을 위한 스레드 사용
-                    Thread {
+                    // 개선된 연결 로직 - 별도의 타임아웃 처리
+                    val connectionThread = Thread {
                         try {
+                            Log.d("TAG", "소켓 연결 시작 - 스레드 ID: ${Thread.currentThread().id}")
                             socket.connect()
+                            Log.d("TAG", "소켓 연결 성공 - 스레드 ID: ${Thread.currentThread().id}")
 
-                            // UI 스레드에서 상태 업데이트
+                            if (Thread.currentThread().isInterrupted) {
+                                Log.e("TAG", "연결은 성공했으나 스레드가 중단됨")
+                                socket.close()
+                                return@Thread
+                            }
+
                             outputStream = socket.outputStream
                             _isConnected.value = true
                             Log.d("TAG", "연결 성공: ${device.name}")
                         } catch (e: IOException) {
-                            Log.e("TAG", "연결 실패: ${e.message}", e)
+                            Log.e("TAG", "연결 실패 상세: ${e.message}, 스레드 ID: ${Thread.currentThread().id}", e)
+                            if (e.message?.contains("read failed") == true) {
+                                Log.e("TAG", "읽기 실패 - 기기 응답 없음")
+                            } else if (e.message?.contains("timeout") == true) {
+                                Log.e("TAG", "연결 시간 초과 - 기기 응답 지연")
+                            }
+                            _isConnected.value = false
+                            try {
+                                socket.close()
+                            } catch (closeEx: IOException) {
+                                Log.e("TAG", "소켓 닫기 실패", closeEx)
+                            }
+                        } catch (e: InterruptedException) {
+                            Log.e("TAG", "연결 스레드 중단됨", e)
                             _isConnected.value = false
                             socket.close()
                         }
-                    }.apply {
-                        // 데몬 스레드로 설정
-                        isDaemon = true
-                        // 10초 후 인터럽트
-                        start()
-                        join(10000)
-
-                        // 여전히 연결되지 않았다면 인터럽트
-                        if (!_isConnected.value) {
-                            interrupt()
-                            socket.close()
-                            Log.e("TAG", "연결 시간 초과")
-                        }
                     }
+
+                    connectionThread.isDaemon = true
+                    connectionThread.start()
+
+                    // 타임아웃 별도 처리
+                    Thread {
+                        try {
+                            Thread.sleep(10000)
+                            if (!_isConnected.value && connectionThread.isAlive) {
+                                Log.e("TAG", "연결 시간 초과 - 스레드 중단")
+                                connectionThread.interrupt()
+                                bluetoothSocket?.close()
+                            }
+                        } catch (e: Exception) {
+                            Log.e("TAG", "타임아웃 처리 중 오류", e)
+                        }
+                    }.start()
+
                 } catch (e: Exception) {
-                    Log.e("TAG", "연결 시도 중 오류", e)
+                    Log.e("TAG", "연결 시도 중 오류: ${e.message}", e)
                     _isConnected.value = false
                     socket.close()
                 }
             }
         } catch (e: Exception) {
-            Log.e("TAG", "연결 프로세스 오류", e)
+            Log.e("TAG", "연결 프로세스 오류: ${e.message}", e)
             _isConnected.value = false
             bluetoothSocket?.close()
             bluetoothSocket = null

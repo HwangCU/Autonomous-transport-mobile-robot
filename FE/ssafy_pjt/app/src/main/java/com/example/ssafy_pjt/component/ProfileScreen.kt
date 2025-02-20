@@ -45,6 +45,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.AccountCircle
 import coil.compose.AsyncImage
+import com.example.ssafy_pjt.ui.theme.my_blue
 
 @Composable
 private fun ProfileContent(
@@ -150,7 +151,7 @@ private fun ProfileContent(
                     modifier = Modifier
                         .size(120.dp)
                         .clip(CircleShape)
-                        .background(Color(0xff5e77e1))
+                        .border(2.dp, my_blue, CircleShape)
                         .clickable(enabled = isEditing.value, onClick = onImageClick),
                     contentAlignment = Alignment.Center
                 ) {
@@ -167,7 +168,7 @@ private fun ProfileContent(
                         )
                     } else {
                         Icon(
-                            Icons.Default.AccountCircle,
+                            painter = painterResource(R.drawable.usericon),
                             contentDescription = "Profile Image",
                             modifier = Modifier.fillMaxSize(),
                             tint = Color.White
@@ -212,7 +213,7 @@ private fun ProfileContent(
                         onValueChange = { editedAddress = it },
                         height = 120.dp
                     )
-                    ProfileInfoItem(label = "로봇ID", value = userProfile.robotId)
+                    ProfileInfoItem(label = "로봇ID", value = userProfile.robot_id)
                 } else {
                     // 기존 표시 UI
                     ProfileInfoItem(label = "이름", value = userProfile.username)
@@ -222,7 +223,7 @@ private fun ProfileContent(
                         value = userProfile.address,
                         height = 120.dp
                     )
-                    ProfileInfoItem(label = "로봇ID", value = userProfile.robotId)
+                    ProfileInfoItem(label = "로봇ID", value = userProfile.robot_id)
                 }
             }
 

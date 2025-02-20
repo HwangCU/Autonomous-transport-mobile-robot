@@ -2,6 +2,7 @@ package com.example.ssafy_pjt.component
 
 import android.widget.ToggleButton
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -59,6 +60,7 @@ import coil.compose.AsyncImage
 import com.example.ssafy_pjt.R
 import com.example.ssafy_pjt.ViewModel.JourneyHistoryViewModel
 import com.example.ssafy_pjt.ViewModel.ProfileViewModel
+import com.example.ssafy_pjt.ViewModel.RobotViewModel
 import com.example.ssafy_pjt.ViewModel.UserViewModel
 import com.example.ssafy_pjt.ui.theme.loginTitle
 import com.example.ssafy_pjt.ui.theme.my_blue
@@ -72,7 +74,8 @@ import java.text.SimpleDateFormat
 fun Setting(
     modifier: Modifier,
     navController: NavController,
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,
+    robotViewModel: RobotViewModel
 
 ) {
     val (deliveryMode, setDeliveryMode) = remember { mutableStateOf(false) }
@@ -125,6 +128,8 @@ fun Setting(
                 IconButton(
                     modifier = Modifier.size(60.dp),
                     onClick = {
+                        robotViewModel.modeChange(0)
+                        robotViewModel.modeChange(1)
                         navController.navigate("GameController")
                     }
                 ) {
@@ -150,7 +155,7 @@ fun Setting(
                         modifier = Modifier
                             .size(45.dp)
                             .clip(CircleShape)
-                            .background(Color(0xff5e77e1)),
+                            .border(2.dp, my_blue, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         if (profileImage != null) {
@@ -162,11 +167,12 @@ fun Setting(
                             )
                         } else {
                             Icon(
-                                Icons.Default.AccountCircle,
+                                painter = painterResource(R.drawable.usericon),
                                 contentDescription = "user",
                                 modifier = Modifier.fillMaxSize(),
-                                tint = Color.White
-                            )
+                                tint = Color.Unspecified,
+
+                                )
                         }
                     }
                     Spacer(modifier = Modifier.width(10.dp))
