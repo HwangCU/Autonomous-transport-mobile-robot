@@ -1,7 +1,6 @@
 package com.example.ssafy_pjt.component
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.IntentSender
@@ -19,6 +18,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,20 +27,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +47,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -66,36 +66,33 @@ import com.example.ssafy_pjt.ui.theme.loginTitle
 import com.example.ssafy_pjt.ui.theme.my_blue
 import com.example.ssafy_pjt.ui.theme.my_red
 import com.example.ssafy_pjt.ui.theme.my_white
-import com.example.ssafy_pjt.ui.theme.my_yellow
-import com.example.ssafy_pjt.ui.theme.nomalBold
 import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
-import com.skt.tmap.TMapPoint
 import com.skt.tmap.TMapView
-import com.skt.tmap.overlay.TMapMarkerItem
 
 @Composable
-fun SendHomeScreen(
-    modifier: Modifier,
+fun LiveDeliveryScreen(
+    modifier: Modifier = Modifier,
     navController: NavController,
     userViewModel: UserViewModel,
-    addressviewModel: AddressSearchViewModel,
-    robotViewModel: RobotViewModel
+    robotViewModel: RobotViewModel,
+    addressSearchViewModel: AddressSearchViewModel
 ) {
+    val (followingMode,setFollowingMode) = remember { mutableStateOf(false) }
+    val (offMode,setOffMode) = remember { mutableStateOf(false) }
     val skKey = BuildConfig.SK_app_key
-    val context = LocalContext.current
-    var isPermissionGranted by remember { mutableStateOf(false) }
     var tMapView by remember { mutableStateOf<TMapView?>(null) }
-    var locationCallback by remember { mutableStateOf<LocationCallback?>(null) }
-    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
-    var (deliveryMode, setDeliveryMode) = remember { mutableStateOf(false) }
-    var (offMode, setOffMode) = remember { mutableStateOf(false) }
     var mapInitialized by remember { mutableStateOf(false) }
+    var isPermissionGranted by remember { mutableStateOf(false) }
+    var locationCallback by remember { mutableStateOf<LocationCallback?>(null) }
+    val (liveMode,setLiveMode) = remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+
 
     // 위치 권한 요청 런처
     val locationPermissionLauncher = rememberLauncherForActivityResult(
@@ -109,13 +106,14 @@ fun SendHomeScreen(
             requestLocationSettings(context)
         }
     }
-
-    LaunchedEffect(mapInitialized,userViewModel.path) {
-        userViewModel.path.collect {pathList ->
-            addressviewModel.drawDeliveryPath(tMapView,userViewModel)
+    //path 상탱 변화 감지
+    LaunchedEffect(userViewModel.path, mapInitialized) {
+        if (mapInitialized) {
+            userViewModel.path.collect {pathList ->
+                addressSearchViewModel.drawDeliveryPath(tMapView,userViewModel)
+            }
         }
     }
-
     // 권한 확인 및 요청
     LaunchedEffect(Unit) {
         val requiredPermissions = arrayOf(
@@ -145,138 +143,154 @@ fun SendHomeScreen(
     }
 
     Scaffold(
-        bottomBar = { CustomAppBar(navController = navController, setFollowingMode = {}, setDeliveryMode = setDeliveryMode) }
+        bottomBar = {
+            CustomAppBar(navController, {},setFollowingMode)
+        },
     ) { paddingValues ->
-        Box(
-            modifier = modifier
+        Column(
+            modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
+                .padding()
         ) {
-            // 지도 표시
+            Row(
+                modifier = modifier.fillMaxWidth()
+                    .padding(top=7.dp, start = 14.dp, end = 14.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(
+                    onClick = {},
+                    modifier = Modifier.width(270.dp),
+                    colors = ButtonDefaults.buttonColors(my_blue),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.deliveryMode2),
+                            color = my_white,
+                            style = loginTitle
+                        )
+                        Icon(
+                            painter = painterResource(R.drawable.delivery),
+                            contentDescription = "user",
+                            Modifier
+                                .size(45.dp)
+                                .padding(start = 8.dp)
+                        )
+                    }
+                }
+
+                Button(
+                    onClick = {
+                        setOffMode(true)
+                    },
+                    modifier = Modifier.width(100.dp).height(60.dp),
+                    colors = ButtonDefaults.buttonColors(my_red),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Column {
+                        Icon(
+                            painter = painterResource(R.drawable.power),
+                            contentDescription = "power",
+                            Modifier.size(24.dp),
+                            tint = my_white
+                        )
+                        Text(
+                            text = stringResource(R.string.end)
+                        )
+                    }
+                }
+            }
+
+            Box(
+                modifier = modifier.fillMaxWidth()
+                    .fillMaxHeight(.5f)
+                    .padding(top = 5.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .clickable {
+                        setLiveMode(!liveMode)
+                    },
+            ) {
+                val currentImage by robotViewModel.imageBitmap.collectAsState()
+                if (liveMode && currentImage != null) {
+                    Image(
+                        bitmap = currentImage!!.asImageBitmap(),
+                        contentDescription = "Camera Feed",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit
+                    )
+                } else {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+
+                        ) {
+                        Icon(
+                            painter = painterResource(R.drawable.liveicon),
+                            contentDescription = "No Camera Feed",
+                            tint = my_blue.copy(alpha = 0.5f),
+                            modifier = Modifier.size(64.dp)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(R.string.touchScreen),
+                            color = my_blue.copy(alpha = 0.7f)
+                        )
+                    }
+                }
+            }
             AndroidView(
                 factory = { ctx ->
                     TMapView(ctx).apply {
                         setSKTMapApiKey(skKey)
                         tMapView = this
-                        // 지도 로드 완료 리스너 설정
                         setOnMapReadyListener {
-                            mapInitialized = true
+                            mapInitialized=true
                         }
                     }
                 },
-                modifier = Modifier.fillMaxSize()
+                modifier = modifier.fillMaxSize()
             )
-
-            // 상단 바
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Transparent)
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        modifier = modifier.fillMaxWidth()
-                            .padding(top=7.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Button(
-                            onClick = {},
-                            modifier = Modifier.width(250.dp),
-                            colors = ButtonDefaults.buttonColors(my_blue),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.comeBackHome),
-                                    color = my_white,
-                                    style = nomalBold
-                                )
-                                Icon(
-                                    Icons.Default.Home,
-                                    contentDescription = "home",
-                                    Modifier
-                                        .size(45.dp)
-                                        .padding(start = 8.dp)
-                                )
-                            }
-                        }
-
-                        Button(
-                            onClick = {
-                                setOffMode(true)
-                            },
-                            modifier = Modifier.width(100.dp).height(60.dp),
-                            colors = ButtonDefaults.buttonColors(my_red),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Column {
-                                Icon(
-                                    painter = painterResource(R.drawable.power),
-                                    contentDescription = "power",
-                                    Modifier.size(24.dp),
-                                    tint = my_white
-                                )
-                                Text(
-                                    text = stringResource(R.string.end)
-                                )
-                            }
-                        }
-                    }
-                    Spacer(modifier = modifier.size(15.dp))
-                    Button (
+        }
+        if (followingMode){
+            AlertDialog(
+                title = { Text(text= stringResource(R.string.followingMode)) },
+                text = { Text(text = stringResource(R.string.followingModeContent)) },
+                confirmButton = {
+                    Button(
+                        colors = ButtonDefaults.buttonColors(my_blue),
                         onClick = {
-                            navController.popBackStack()
-                        },
-                        modifier = modifier.size(80.dp)
-                            .padding(bottom = 5.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(my_yellow)
+                            robotViewModel.modeChange(2)
+                            navController.navigate("FollowingScreen")
+                        }
+                    ) {
+                        Text(text= stringResource(R.string.execution))
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        border = BorderStroke(1.dp, colorResource(R.color.black)),
+                        colors = ButtonDefaults.buttonColors(my_white),
+                        onClick = {
+                            setFollowingMode(false)
+                        }
                     ) {
                         Text(
-                            text = stringResource(R.string.back),
+                            text= stringResource(R.string.cancle),
                             color = colorResource(R.color.black)
                         )
-                        }
                     }
+                },
+                onDismissRequest = {
+                    setFollowingMode(false)
                 }
+            )
         }
-    if (deliveryMode) {
-        AlertDialog(
-            title = { Text(text = stringResource(R.string.deliveryMode)) },
-            text = { Text(text = stringResource(R.string.deliveryModeContent)) },
-            confirmButton = {
-                Button(
-                    colors = ButtonDefaults.buttonColors(my_blue),
-                    onClick = {
-                        navController.navigate("DeliverySceen")
-                    }
-                ) {
-                    Text(text = stringResource(R.string.execution))
-                }
-            },
-            dismissButton = {
-                Button(
-                    border = BorderStroke(1.dp, colorResource(R.color.black)),
-                    colors = ButtonDefaults.buttonColors(my_white),
-                    onClick = {
-                        setDeliveryMode(false)
-                    }
-                ) {
-                    Text(
-                        text= stringResource(R.string.cancle),
-                        color = colorResource(R.color.black)
-                    )
-                }
-            },
-            onDismissRequest = {
-                setDeliveryMode(false)
-            }
-        )
-    }
+
         if (offMode){
             AlertDialog(
                 title = { Text(text= stringResource(R.string.followingModeEnd)) },
@@ -297,6 +311,7 @@ fun SendHomeScreen(
                         border = BorderStroke(1.dp, colorResource(R.color.black)),
                         colors = ButtonDefaults.buttonColors(my_white),
                         onClick = {
+                            robotViewModel.modeChange(0)
                             setOffMode(false)
                         }
                     ) {
@@ -311,8 +326,9 @@ fun SendHomeScreen(
                 }
             )
         }
-    }
 
+    }
+}
 
 /**
  * 위치 서비스 활성화 여부 확인
@@ -344,66 +360,12 @@ private fun requestLocationSettings(context: Context) {
             try {
                 exception.startResolutionForResult(context as Activity, REQUEST_CHECK_SETTINGS)
             } catch (e: IntentSender.SendIntentException) {
-                Log.e("DeliveryScreen", "위치 설정 요청 실패", e)
+                Log.e("TAG", "위치 설정 요청 실패", e)
             }
         }
     }
 }
 
-/**
- * 현재 위치 요청
- */
-@SuppressLint("MissingPermission")
-fun requestCurrentLocation(
-    fusedLocationClient: FusedLocationProviderClient,
-    onLocationReceived: (Double, Double) -> Unit
-) {
-    fusedLocationClient.getCurrentLocation(
-        Priority.PRIORITY_HIGH_ACCURACY, null
-    ).addOnSuccessListener { location ->
-        location?.let {
-            onLocationReceived(it.latitude, it.longitude)
-        }
-    }.addOnFailureListener { e ->
-        Log.e("DeliveryScreen", "위치 가져오기 실패", e)
-    }
-}
-
-/**
- * 지도에 현재 위치 마커 추가
- */
-fun updateMapLocation(mapView: TMapView?, lat: Double, lng: Double) {
-    mapView?.let { view ->
-        // 현재 줌 레벨 저장
-        val currentZoom = view.getZoomLevel()
-
-        val tMapPoint = TMapPoint(lat, lng)
-
-        // 마커 생성 및 추가
-        val marker = TMapMarkerItem().apply {
-            id = "currentLocation"
-            this.tMapPoint = tMapPoint
-            visible = true
-            name = "현재 위치"
-        }
-
-        try {
-            view.setCenterPoint(lat, lng)
-            Log.d("TAG","${lng},${lat}")
-            // 기존 마커 삭제 및 새 마커 추가
-            view.removeAllTMapMarkerItem()
-            view.addTMapMarkerItem(marker)
-
-            // 마커 위치로 지도 중심 이동
-            // 사용자가 수동으로 줌을 조절한 경우 그 레벨 유지
-            if (currentZoom == 0) {  // 초기 상태일 때만 기본 줌 레벨 설정
-                view.setZoomLevel(17)
-            } else {}
-        } catch (e: Exception) {
-            Log.e("DeliveryScreen", "마커 추가 실패", e)
-        }
-    }
-}
 
 // 상수
 private const val REQUEST_CHECK_SETTINGS = 100

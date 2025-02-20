@@ -1,5 +1,6 @@
 package com.example.ssafy_pjt.repository
 
+import android.util.Log
 import com.example.ssafy_pjt.network.ApiService
 import com.example.ssafy_pjt.network.UserProfile
 import com.example.ssafy_pjt.network.getProfileRequest
@@ -13,6 +14,7 @@ class ProfileRepository(private val apiService: ApiService) {
         return withContext(Dispatchers.IO) {
             val response = apiService.getProfile(getProfileRequest(accessToken)).execute()
             if (response.isSuccessful) {
+                Log.d("TAG","${response.body()?.profile}")
                 response.body()?.profile ?: throw Exception("프로필 정보가 없습니다.")
             } else {
                 throw Exception("프로필 정보를 불러오는데 실패했습니다.")

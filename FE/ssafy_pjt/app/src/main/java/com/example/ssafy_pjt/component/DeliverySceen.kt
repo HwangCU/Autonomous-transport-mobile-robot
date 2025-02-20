@@ -33,6 +33,7 @@ import com.example.ssafy_pjt.BuildConfig
 import com.example.ssafy_pjt.R
 import com.example.ssafy_pjt.ViewModel.AddressSearchViewModel
 import com.example.ssafy_pjt.ViewModel.JourneyHistoryViewModel
+import com.example.ssafy_pjt.ViewModel.RobotViewModel
 import com.example.ssafy_pjt.ViewModel.UserViewModel
 import com.example.ssafy_pjt.component.CustomAppBar
 import com.example.ssafy_pjt.ui.theme.modeType
@@ -57,7 +58,8 @@ fun DeliverySceen(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: AddressSearchViewModel,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    robotViewModel: RobotViewModel
 ) {
     val time by userViewModel.time.collectAsState()
     val skKey = BuildConfig.SK_app_key
@@ -86,7 +88,7 @@ fun DeliverySceen(
         }
     }
     //path 상탱 변화 감지
-    LaunchedEffect(userViewModel.path) {
+    LaunchedEffect(mapInitialized,userViewModel.path) {
         userViewModel.path.collect {pathList ->
             if (viewModel.drawDeliveryPath(tMapView,userViewModel)){
                 setStart(true)
@@ -222,6 +224,8 @@ fun DeliverySceen(
                         border = BorderStroke(1.dp, colorResource(R.color.black)),
                         colors = ButtonDefaults.buttonColors(my_white),
                         onClick = {
+                            robotViewModel.modeChange(0)
+                            robotViewModel.modeChange(2)
                             setFollowingMode(false)
                         }
                     ) {
@@ -267,7 +271,10 @@ fun DeliverySceen(
                         }
                         Button (
                             onClick = {
+                                robotViewModel.modeChange(0)
+                                robotViewModel.modeChange(3)
                                 historyViewModel.addJourney(destination = viewModel.address.value ?: "", mode ="배달 모드", startPoint = "삼성전자 광주사업장" )
+                                navController.navigate("LiveDeliveryScreen")
                             },
                             modifier = modifier.size(80.dp)
                                 .padding(bottom = 5.dp),

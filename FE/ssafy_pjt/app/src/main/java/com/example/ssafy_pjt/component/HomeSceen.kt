@@ -11,11 +11,13 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,6 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,6 +67,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.ssafy_pjt.BuildConfig
 import com.example.ssafy_pjt.R
+import com.example.ssafy_pjt.ViewModel.AddressSearchViewModel
+import com.example.ssafy_pjt.ViewModel.RobotViewModel
 import com.example.ssafy_pjt.ViewModel.UserViewModel
 import com.example.ssafy_pjt.ViewModel.socketViewModel
 import com.example.ssafy_pjt.network.SocketService
@@ -72,6 +77,7 @@ import com.example.ssafy_pjt.ui.theme.modeType
 import com.example.ssafy_pjt.ui.theme.my_blue
 import com.example.ssafy_pjt.ui.theme.my_white
 import com.example.ssafy_pjt.ui.theme.my_yellow
+import com.example.ssafy_pjt.ui.theme.nomalBold
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
@@ -79,13 +85,16 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import com.skt.tmap.TMapView
+import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     userViewModel: UserViewModel,
-    socketViewModel:socketViewModel
+    socketViewModel:socketViewModel,
+    adressViewModel: AddressSearchViewModel,
+    robotViewModel:RobotViewModel
 ) {
     val skKey = BuildConfig.SK_app_key
     var (deliveryMode, setDeliveryMode) = remember { mutableStateOf(false) }
@@ -93,14 +102,35 @@ fun HomeScreen(
     var tMapView by remember { mutableStateOf<TMapView?>(null) }
     var isPermissionGranted by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val (lat,lng) = userViewModel.loaction.value
     val socketService = remember { SocketService.getInstance() }
-    socketViewModel.connectToSocket()
     val isConnected by socketService.isConnected.collectAsState()
     val serverResponses by socketViewModel.serverResponses.collectAsState()
+    val location by robotViewModel.location.collectAsState()
+    val (lats, lngs) = location
+    var mapReady by remember { mutableStateOf(false) }
+    val weight by robotViewModel.weight.collectAsState()
+    val battery by robotViewModel.bettery.collectAsState()
+    val ableToMove = (battery/100.0) * 1
+
+    LaunchedEffect(location, mapReady) {
+        if (mapReady && tMapView != null) {
+            Log.d("TAG", "지도 위치 업데이트 시도: lat=$lats, lng=$lngs")
+            adressViewModel.updateMapLocation(tMapView, lat = lats, lng = lngs)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        // 지도 초기화를 위한 충분한 시간 대기
+        delay(5000) // 5초 대기
+        mapReady = true
+        Log.d("TAG", "지도 초기화 타이머 완료")
+    }
 
     LaunchedEffect(serverResponses) {
-        Log.d("TAG","${serverResponses}")
+        if (serverResponses.isNotEmpty()) {
+            val lastResponse = serverResponses.last()
+            Log.d("socket", "최신 응답: $lastResponse")
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -109,9 +139,9 @@ fun HomeScreen(
 
     LaunchedEffect(isConnected) {
         if (!isConnected) {
-            Log.d("TAG","연결 끊김")
+            Log.d("socket","연결 끊김")
         } else {
-            Log.d("TAG","연결 됨")
+            Log.d("socket","연결 됨")
         }
     }
 
@@ -173,7 +203,7 @@ fun HomeScreen(
                         modifier = Modifier
                             .size(45.dp)
                             .clip(CircleShape)
-                            .background(Color(0xff5e77e1)),
+                            .border(2.dp, my_blue, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         if (profileImage != null) {
@@ -185,10 +215,11 @@ fun HomeScreen(
                             )
                         } else {
                             Icon(
-                                Icons.Default.AccountCircle,
+                                painter = painterResource(R.drawable.usericon),
                                 contentDescription = "user",
                                 modifier = Modifier.fillMaxSize(),
-                                tint = Color.White
+                                tint = Color.Unspecified,
+
                             )
                         }
                     }
@@ -284,10 +315,18 @@ fun HomeScreen(
                         shape = RoundedCornerShape(16.dp),
                         onClick = {}
                     ){
-                        Text(
-                            text = stringResource(R.string.weight),
-                            color = my_white,
-                        )
+                        Column {
+                            Text(
+                                text = stringResource(R.string.weight),
+                                color = my_white,
+                            )
+                            Spacer(modifier = modifier.size(10.dp))
+                            Text(
+                                text = stringResource(R.string.realWeight,weight),
+                                style = nomalBold,
+                                color = my_white
+                            )
+                        }
                     }
 
                     Button (
@@ -298,10 +337,18 @@ fun HomeScreen(
                         onClick = {},
                         shape = RoundedCornerShape(16.dp)
                     ){
-                        Text(
-                            text = stringResource(R.string.move),
-                            color = my_white,
-                        )
+                        Column {
+                            Text(
+                                text = stringResource(R.string.move),
+                                color = my_white,
+                            )
+                            Spacer(modifier = modifier.size(10.dp))
+                            Text(
+                                text = stringResource(R.string.realMove,ableToMove),
+                                style = nomalBold,
+                                color = my_white
+                            )
+                        }
                     }
                 }
             }
@@ -313,16 +360,48 @@ fun HomeScreen(
                     .clip(RoundedCornerShape(16.dp)),
             ) {
                 Row(
-                    modifier = modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
+                    val battery by robotViewModel.bettery.collectAsState()
+                    val batteryColor = when {
+                        battery > 70 -> Color.Green
+                        battery > 30 -> Color.Yellow
+                        else -> Color.Red
+                    }
+
                     Text(
                         text = stringResource(R.string.bettery),
-                        color = my_white)
-                     }
+                        color = my_white
+                    )
 
+                    Spacer(modifier = Modifier.size(15.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .width(120.dp)
+                            .height(20.dp)
+                            .background(Color.DarkGray.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
+                            .clip(RoundedCornerShape(10.dp))
+                    ) {
+                        // 배터리 레벨 표시
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(120.dp * battery / 100)
+                                .background(batteryColor)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(15.dp))
+
+                    Text(
+                        text = stringResource(R.string.realPersent, battery),
+                        color = my_white
+                    )
                 }
+            }
             Text(
                 text = stringResource(R.string.robotLotation),
                 color = my_blue,
@@ -353,6 +432,8 @@ fun HomeScreen(
                 Button(
                     colors = ButtonDefaults.buttonColors(my_blue),
                     onClick = {
+                        robotViewModel.modeChange(0)
+                        robotViewModel.modeChange(3)
                         navController.navigate("DeliverySceen")
                     }
                 ) {
@@ -386,6 +467,8 @@ fun HomeScreen(
                     Button(
                         colors = ButtonDefaults.buttonColors(my_blue),
                         onClick = {
+                            robotViewModel.modeChange(0)
+                            robotViewModel.modeChange(2)
                             navController.navigate("FollowingScreen")
                         }
                     ) {

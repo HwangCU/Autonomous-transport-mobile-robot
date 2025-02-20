@@ -112,6 +112,28 @@ class AddressSearchViewModel(
 
         })
     }
+    fun homeSweetHome(){
+        val request = roadRequest(_address.value ?: "", access_token = userViewModel.accessToken.value)
+        RetrofitClient.instance.homeSweetHome(request).enqueue(object : Callback<roadResponse> {
+            override fun onResponse(call: Call<roadResponse>, response: Response<roadResponse>) {
+                val body = response.body()
+                if (body?.status == "success") {
+                    val coordinates = body.path_list.map { coordinate ->
+                        Pair(coordinate[0], coordinate[1])  // (경도, 위도)
+                    }
+                    userViewModel.setPath(coordinates) // StateFlow 업데이트
+                    userViewModel.setTime(body.time)
+                    Log.d("TAG", "시간: ${body.time}초")
+                    Log.d("TAG", "경로 저장 성공: ${userViewModel.path.value.size}개 좌표")
+                }
+            }
+
+            override fun onFailure(call: Call<roadResponse>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+
+        })
+    }
 
     fun destination(){
         val request = roadRequest(_address.value ?: "", access_token = userViewModel.accessToken.value)
@@ -180,8 +202,13 @@ class AddressSearchViewModel(
 
                 // 마커 위치로 지도 중심 이동
                 // 사용자가 수동으로 줌을 조절한 경우 그 레벨 유지
-                if (currentZoom == 0) {  // 초기 상태일 때만 기본 줌 레벨 설정
-                    view.setZoomLevel(17)
+                if (currentZoom == 0) {
+                    // 초기 상태일 때만 기본 줌 레벨 설정
+                    try {
+                        view.setZoomLevel(19)
+                    } catch (e: Exception) {
+                        Log.e("AddressSearchViewModel", "setZoomLevel failed: ${e.message}")
+                    }
                 } else {}
             } catch (e: Exception) {
                 Log.e("DeliveryScreen", "마커 추가 실패", e)
@@ -210,6 +237,8 @@ class AddressSearchViewModel(
             try {
                 val coordinates = userViewModel.path.value
 
+                view.removeAllTMapMarkerItem() // 모든 마커 제거
+                view.removeAllTMapPolyLine() // 모든 폴리라인 제거 - 중요!
                 // 출발지와 도착지 좌표
                 val startPoint = coordinates.first()
                 val endPoint = coordinates.last()

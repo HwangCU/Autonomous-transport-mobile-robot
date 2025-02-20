@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.ssafy_pjt.R
 import com.example.ssafy_pjt.ui.theme.menu_style
+import com.example.ssafy_pjt.ui.theme.my_blue
 
 
 @Composable
@@ -32,6 +33,10 @@ fun CustomAppBar(
     setDeliveryMode: (Boolean) -> Unit,
     setFollowingMode: (Boolean) -> Unit,
 ){
+    // 현재 경로 가져오기
+    val currentRoute = navController.currentDestination?.route ?: "HomeSceen"
+    val blueColor = my_blue // 파란색 정의
+
     BottomAppBar(
         modifier = Modifier.fillMaxHeight(0.09f),
         containerColor = Color(0xFFFFE082)
@@ -40,48 +45,57 @@ fun CustomAppBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween  ,
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
+            // 홈 버튼
             IconButton(
                 modifier = Modifier.fillMaxHeight(),
-                onClick = { navController.navigate("HomeSceen")  }
+                onClick = { navController.navigate("HomeSceen") }
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
+                    val isSelected = currentRoute == "HomeSceen"
                     Icon(
                         Icons.Default.Home,
                         contentDescription = "홈",
-                        modifier = Modifier.fillMaxSize(0.6f)
+                        modifier = Modifier.fillMaxSize(0.6f),
+                        tint = if (isSelected) blueColor else Color.Black
                     )
                     Text(
-                        text= stringResource(R.string.menu_main),
-                        style = menu_style
+                        text = stringResource(R.string.menu_main),
+                        style = menu_style,
+                        color = if (isSelected) blueColor else Color.Black
                     )
                 }
             }
 
+            // 팔로잉 버튼
             IconButton(
-                onClick = { setFollowingMode(true)},
+                onClick = { setFollowingMode(true) },
                 modifier = Modifier.fillMaxHeight(),
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
+                    val isSelected = currentRoute == "FollowingScreen"
                     Icon(
                         painter = painterResource(R.drawable.footprint),
                         contentDescription = "팔로잉 모드",
-                        modifier = Modifier.fillMaxSize(.6f)
+                        modifier = Modifier.fillMaxSize(.6f),
+                        tint = if (isSelected) blueColor else Color.Black
                     )
                     Text(
                         text = stringResource(R.string.menu_following),
-                        style = menu_style
+                        style = menu_style,
+                        color = if (isSelected) blueColor else Color.Black
                     )
                 }
             }
 
+            // 배달 버튼
             IconButton(
                 modifier = Modifier.fillMaxHeight(),
                 onClick = { setDeliveryMode(true) },
@@ -90,36 +104,41 @@ fun CustomAppBar(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
+                    val isSelected = currentRoute == "DeliverySceen"
                     Icon(
                         painter = painterResource(R.drawable.delivery),
                         contentDescription = "배달 모드",
-                        modifier = Modifier.fillMaxSize(.7f)
+                        modifier = Modifier.fillMaxSize(.7f),
+                        tint = if (isSelected) blueColor else Color.Black
                     )
                     Text(
-                        text= stringResource(R.string.menu_delivery),
-                        style = menu_style
+                        text = stringResource(R.string.menu_delivery),
+                        style = menu_style,
+                        color = if (isSelected) blueColor else Color.Black
                     )
                 }
             }
 
+            // 설정 버튼
             IconButton(
                 modifier = Modifier.fillMaxHeight(),
-                onClick = {
-                    navController.navigate("Setting")
-                }
+                onClick = { navController.navigate("Setting") }
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
+                    val isSelected = currentRoute == "Setting"
                     Icon(
                         Icons.Default.Settings,
                         contentDescription = "설정",
-                        modifier = Modifier.fillMaxSize(.6f)
+                        modifier = Modifier.fillMaxSize(.6f),
+                        tint = if (isSelected) blueColor else Color.Black
                     )
                     Text(
                         text = stringResource(R.string.menu_setting),
-                        style = menu_style
+                        style = menu_style,
+                        color = if (isSelected) blueColor else Color.Black
                     )
                 }
             }

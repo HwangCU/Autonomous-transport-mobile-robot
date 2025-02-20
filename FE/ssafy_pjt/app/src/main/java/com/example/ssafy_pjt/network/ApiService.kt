@@ -8,7 +8,7 @@ data class UserProfile(
     val username: String,
     val email: String,
     val address: String,
-    val robotId: String?,
+    val robot_id: String?,
     val profileImage: String? = null
 )
 
@@ -116,6 +116,15 @@ data class updateProfileResponse(
     val profile: UserProfile
 )
 
+data class modeChangeReqeust(
+    val robot_id:String,
+    val access_token:String,
+    val mode:Int
+)
+data class modeChangeResponse(
+    val status: String,
+    val message: String
+)
 
 interface ApiService{
     @POST("/api/login/")
@@ -132,8 +141,12 @@ interface ApiService{
     fun robotRegistration(@Body request: robotRegistRequest): Call<robotRegistResponse>
     @POST("/api/footpath/")
     fun RoadSearch(@Body request: roadRequest): Call<roadResponse>
+    @POST("/api/home_sweet_home/")
+    fun homeSweetHome(@Body request: roadRequest): Call<roadResponse>
     @POST("/api/get_profile/")
     fun getProfile(@Body request: getProfileRequest): Call<getProfileResponse>
     @POST("/api/edit_profile/")
     fun updateProfile(@Body request: updateProfileRequest): Call<updateProfileResponse>
+    @POST("/api/robot_mode_change/")
+    fun modeChange(@Body request: modeChangeReqeust): Call<modeChangeResponse>
 }
