@@ -223,7 +223,8 @@ async def handler(websocket):
                             "mode": data.get("mode"),
                         }
                         # 로봇에게 전송
-                        await robot_connections[user.id].send(json.dumps(payload))
+                        ws, _ = robot_connections[user.id]
+                        await ws.send(json.dumps(payload))
 
                 elif action == "regist_robot":
                     response = await handle_robot_registration(data, user)
