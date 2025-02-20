@@ -3,6 +3,7 @@ import json
 import os
 import json
 import base64
+import asyncio
 from PIL import Image
 from io import BytesIO
 
@@ -90,12 +91,13 @@ async def get_gps_view(request):
     user_id = robot.user_id
 
     try:
+        ws, _ = client_connections[user_id]
         print(
             "connection info is ",
-            client_connections[user_id],
-            client_connections[user_id].remote_address,
+            ws,
+            ws.remote_address,
         )
-        resp = await client_connections[user_id].send(json.dumps(payload))
+        resp = await ws.send(json.dumps(payload))
         print(resp)
         return JsonResponse(
             {"status": "success", "message": f"Send GPS {latitude} {longitude}"}
@@ -153,7 +155,7 @@ async def camera_view(request):
             return JsonResponse(
                 {"status": "error", "message": "Client not connected."}, status=400
             )
-        ws = client_connections[user_id]
+        ws, ws_loop = client_connections[user_id]
 
         # 파일의 바이너리 데이터를 읽어서 Base64 인코딩
         file_data = file.read()  # InMemoryUploadedFile의 내용을 읽음
@@ -177,7 +179,8 @@ async def camera_view(request):
         print("WebSocket object:", ws)
 
         try:
-            await ws.send(payload)
+            future = asyncio.run_coroutine_threadsafe(ws.send(payload), ws_loop)
+            await asyncio.wrap_future(future)
             return JsonResponse(
                 {"status": "success", "message": f"Successfully send image"}, status=200
             )
