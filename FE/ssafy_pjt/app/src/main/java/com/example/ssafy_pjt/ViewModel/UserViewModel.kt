@@ -9,6 +9,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class UserViewModel:ViewModel(){
+    private val _home = MutableStateFlow("")
+    val home : StateFlow<String> = _home.asStateFlow()
+
     private  val _path = MutableStateFlow<List<Pair<Double,Double>>>(emptyList())
     val path : StateFlow<List<Pair<Double,Double>>> = _path.asStateFlow()
 
@@ -25,6 +28,10 @@ class UserViewModel:ViewModel(){
 
     private  var _time = MutableStateFlow(0)
     val time: StateFlow<Int> = _time.asStateFlow()
+
+    fun setHome(it :String) {
+        _home.value = it
+    }
 
     fun setTime(it:Int){
         _time.value=it

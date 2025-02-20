@@ -273,7 +273,7 @@ fun DeliverySceen(
                             onClick = {
                                 robotViewModel.modeChange(0)
                                 robotViewModel.modeChange(3)
-                                historyViewModel.addJourney(destination = viewModel.address.value ?: "", mode ="배달 모드", startPoint = "삼성전자 광주사업장" )
+                                historyViewModel.addJourney(destination = viewModel.address.value ?: "", mode ="배달 모드", startPoint = userViewModel.home.value)
                                 navController.navigate("LiveDeliveryScreen")
                             },
                             modifier = modifier.size(80.dp)

@@ -90,6 +90,7 @@ data class roadRequest(
 )
 
 data class roadResponse(
+    val home: String,
     val status: String,
     val message: String,
     val path_list: List<List<Double>>,

@@ -42,10 +42,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.ssafy_pjt.R
 import com.example.ssafy_pjt.ViewModel.AddressSearchViewModel
+import com.example.ssafy_pjt.ViewModel.JourneyHistoryViewModel
 import com.example.ssafy_pjt.ViewModel.RobotViewModel
+import com.example.ssafy_pjt.ViewModel.UserViewModel
 import com.example.ssafy_pjt.ui.theme.loginTitle
 import com.example.ssafy_pjt.ui.theme.modeType
 import com.example.ssafy_pjt.ui.theme.my_blue
@@ -60,7 +63,8 @@ fun FollowingScreen(
     modifier: Modifier,
     navController: NavController,
     robotViewModel: RobotViewModel,
-    addressSearchViewModel: AddressSearchViewModel
+    addressSearchViewModel: AddressSearchViewModel,
+    userViewModel:UserViewModel
 ) {
     var (deliveryMode, setDeliveryMode) = remember { mutableStateOf(false) }
     val (offMode,setOffMode) = remember { mutableStateOf(false) }
@@ -68,6 +72,7 @@ fun FollowingScreen(
     val (liveMode,setLiveMode) = remember { mutableStateOf(false) }
     val weight by robotViewModel.weight.collectAsState()
     val bettery by robotViewModel.bettery.collectAsState()
+    val historyViewModel: JourneyHistoryViewModel = viewModel()
     val ableToMove = (bettery/100.0) * 1
 
     Scaffold(
@@ -367,6 +372,7 @@ fun FollowingScreen(
                                 robotViewModel.modeChange(4)
                                 addressSearchViewModel.homeSweetHome()
                                 navController.navigate("SendHomeScreen")
+                                historyViewModel.addJourney(destination = addressSearchViewModel.address.value ?: "", mode ="배달 모드", startPoint = userViewModel.home.value)
                             }
                         ) {
                             Text(text = stringResource(R.string.execution))
