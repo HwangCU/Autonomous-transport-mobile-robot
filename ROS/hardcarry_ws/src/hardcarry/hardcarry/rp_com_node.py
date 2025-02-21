@@ -3,25 +3,14 @@ import time
 import rclpy
 from rclpy.node import Node
 import threading
-import errno
 import json
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
+import errno
 from hardcarry_interface.msg import RobotMode
 from hardcarry_interface.srv import EmergencyStop
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
+
 
 class RPCommunicationNode(Node):
-    # 메시지 모드 종류
-    # mode : 0   대기 모드
-    # mode : 1   조이콘 모드
-    # mode : 2   팔로잉 모드
-    # mode : 4   집으로 돌아가기 중일 때
-    # mode : 41  집에 도착했을 때
-    # mode : 3   배달 모드 - 배달 중
-    # mode : 31  배달 모드 - 주문한 가게 도착
-    # mode : 32  배달 모드 - 배달 완료
-    # mode : 100 에러 상태
-    # mode : 127 테스트 모드    
     MODE_MESSAGES = {
         0: 'standard',
         1: 'joycon',
@@ -34,183 +23,84 @@ class RPCommunicationNode(Node):
         100: 'error',
         127: 'test',
     }
-    
-    BUFFER_SIZE = 4096
-    MAX_QUEUE_SIZE = 100
-    
+    BUFFER_SIZE = 1024
+
     def __init__(self):
         super().__init__('rp_communication_node')
+        # 로그 레벨 설정
+        self.get_logger().set_level(rclpy.logging.LoggingSeverity.DEBUG)
         self.host = '192.168.1.101'
         self.port = 8081
         self.server_socket = None
         self.client_socket = None
         self.client_address = None
-        self.connected = False
         self.running = True
-        self.lock = threading.Lock()
+        self.connected = False
         
+        # 테스트 모드 설정
         self.test_modes = list(self.MODE_MESSAGES.keys())
         self.current_mode_index = 0
-        # ros2 run hardcarry rp_com_node --ros-args -p test_mode:=true
         self.test_mode = self.declare_parameter('test_mode', False).value
+        self.get_logger().warn(f'테스트 모드 파라미터: {self.test_mode}')  # 파라미터 값 확인
         
-        self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
+        # 서버 초기화
+        if self.init_server():
+            self.get_logger().info('서버 초기화 성공')
+        else:
+            self.get_logger().error('서버 초기화 실패')
+            return
         
-        self.thread_pool = ThreadPoolExecutor(max_workers=3)
-        self.message_queue = asyncio.Queue(maxsize=self.MAX_QUEUE_SIZE)
-        
-        self.init_server()
-        self.process_task = self.loop.create_task(self.process_message_queue())
-        
+        # 테스트 타이머 설정
         if self.test_mode:
-            # 테스트용
-            self.create_timer(1.0, self.test_timer_callback)
+            self.get_logger().warn('테스트 모드가 활성화되었습니다')
+            # 스레드 기반 타이머 사용
+            self.test_thread = threading.Thread(target=self.test_loop)
+            self.test_thread.daemon = True
+            self.test_thread.start()
+        else:
+            self.get_logger().info('테스트 모드가 비활성화되어 있습니다')
         
-        self.get_logger().info('RP Communication Server Node has been started.')
-        
-        # RobotMode 토픽 $구독$
+        # QoS 프로파일 설정을 시스템 기본값으로
         self.subscription = self.create_subscription(
             RobotMode,
             'RobotMode',
             self.robot_mode_callback,
-            10
+            10  # QoSProfile 대신 depth만 지정
         )
-        self.get_logger().info('RobotMode.msg 구독 시작')
-
-        # Emergency Stop Service Client
+        self.get_logger().info('RobotMode 토픽 구독 완료')
+        
         self.emergency_stop_client = self.create_client(EmergencyStop, 'emergency_stop')
+        
+        # Emergency Stop 서비스 대기
         while not self.emergency_stop_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('Emergency Stop service not available, waiting...')
-        self.get_logger().info('Emergency Stop service client created')
-
-    def cleanup(self):
-        self.running = False
+            pass 
         
-        # 태스크 취소 먼저
-        if hasattr(self, 'process_task'):
-            self.process_task.cancel()
-        
-        # 스레드 정리
-        if hasattr(self, 'accept_thread'):
-            self.accept_thread.join(timeout=1.0)
-        if hasattr(self, 'loop_thread'):
-            self.loop_thread.join(timeout=1.0)
-        
-        # 나머지 리소스 정리
-        self.cleanup_client()
-        
-        # 메시지 큐 정리
-        if not self.message_queue.empty():
-            self.get_logger().warning('메시지 큐에 처리되지 않은 메시지가 있습니다')
-        
-        if self.server_socket:
-            try:
-                self.server_socket.close()
-            except Exception as e:
-                self.get_logger().error(f'서버 소켓 정리 중 오류: {str(e)}')
-                
-        self.server_socket = None
-        
-        # 스레드 풀 정리
-        try:
-            self.thread_pool.shutdown(wait=True)
-        except Exception as e:
-            self.get_logger().error(f'스레드 풀 정리 중 오류: {str(e)}')
-
-    def cleanup_client(self):
-        with self.lock:
-            if self.client_socket:
-                try:
-                    self.client_socket.close()
-                except Exception as e:
-                    self.get_logger().error(f'클라이언트 소켓 닫기 중 오류: {str(e)}')
-            self.client_socket = None
-            self.client_address = None
-            self.connected = False
+        self.get_logger().info('Emergency Stop 서비스가 준비되었습니다.')
 
     def init_server(self):
         try:
-            # 기존 소켓이 있다면 정리
-            if self.server_socket:
-                self.server_socket.close()
-                self.server_socket = None
-            
-            self.get_logger().info('소켓 생성 시작...')
             self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            
-            # 블로킹 모드 확인
-            self.get_logger().info(f'소켓 블로킹 모드: {self.server_socket.getblocking()}')
-            
-            # 추가 디버그 정보
-            self.get_logger().info('현재 서버 설정:')
-            self.get_logger().info(f'- Host: {self.host}')
-            self.get_logger().info(f'- Port: {self.port}')
-            
-            # 바인드 전 소켓 상태 확인
-            try:
-                self.server_socket.getsockopt(socket.SOL_SOCKET, socket.SO_ERROR)
-                self.get_logger().info('소켓 상태: 정상')
-            except socket.error as e:
-                self.get_logger().error(f'소켓 상태 확인 실패: {e}')
-            
-            self.get_logger().info('바인딩 시도...')
-            try:
-                self.server_socket.bind((self.host, self.port))
-                self.get_logger().info('바인딩 성공')
-            except socket.error as e:
-                if e.errno == errno.EADDRINUSE:
-                    self.get_logger().error('포트가 이미 사용 중입니다!')
-                raise e
-            
-            self.get_logger().info('리스닝 시작...')
+            self.server_socket.bind((self.host, self.port))
             self.server_socket.listen(1)
-            self.get_logger().info('서버가 성공적으로 시작되었습니다.')
+            self.get_logger().info(f'서버가 {self.host}:{self.port}에서 시작되었습니다')
             
-            # 소켓 정보 출력
-            sock_name = self.server_socket.getsockname()
-            self.get_logger().info(f'서버 소켓 정보: {sock_name}')
-            
-            # 클라이언트 연결을 기다리는 스레드 시작
-            self.accept_thread = threading.Thread(target=self.accept_connections)
-            self.accept_thread.daemon = True
-            self.accept_thread.start()
-            
-            # 비동기 이벤트 루프 처리 스레드 실행
-            self.loop_thread = threading.Thread(target=self._run_event_loop)
-            self.loop_thread.daemon = True
-            self.loop_thread.start()
-            
-            self.server_socket.settimeout(60)  # 60초 타임아웃
+            # 클라이언트 연결을 처리할 스레드 시작
+            accept_thread = threading.Thread(target=self.accept_connections)
+            accept_thread.daemon = True
+            accept_thread.start()
             
             return True
-            
         except Exception as e:
             self.get_logger().error(f'서버 초기화 실패: {str(e)}')
-            self.get_logger().error(f'에러 타입: {type(e).__name__}')
-            self.get_logger().error(f'상세 에러: {str(e)}')
-            
-            if self.server_socket:
-                try:
-                    self.server_socket.close()
-                except:
-                    pass
-                self.server_socket = None
-            
             return False
 
-    def _run_event_loop(self):
-        self.loop.run_forever()
-
     def accept_connections(self):
-        self.get_logger().info('클라이언트 연결 대기를 시작합니다...')
         while self.running:
             try:
                 client_socket, client_address = self.server_socket.accept()
-                self.get_logger().info(f'새로운 클라이언트가 연결됨: {client_address}')
+                self.get_logger().warn(f'새로운 클라이언트가 연결됨: {client_address}')
                 
-                # 기존 클라이언트 정리
                 if self.client_socket:
                     self.cleanup_client()
                 
@@ -218,171 +108,191 @@ class RPCommunicationNode(Node):
                 self.client_address = client_address
                 self.connected = True
                 
-                # 메시지 수신 스레드 시작
-                receive_thread = threading.Thread(target=self.handle_client)
+                # 클라이언트 메시지를 처리할 스레드 시작
+                receive_thread = threading.Thread(target=self.receive_message)
                 receive_thread.daemon = True
                 receive_thread.start()
                 
             except Exception as e:
-                if self.running:  # 정상 종료가 아닌 경우만 에러 출력
-                    self.get_logger().error(f'클라이언트 연결 수락 중 오류: {str(e)}')
+                self.get_logger().error(f'클라이언트 연결 수락 중 오류: {str(e)}')
                 time.sleep(1)
 
-    def handle_client(self):
-        buffer = b''
-        try:
-            while self.connected and self.client_socket:
-                try:
-                    chunk = self.client_socket.recv(self.BUFFER_SIZE)
-                    if not chunk:
-                        self.get_logger().info('클라이언트가 연결을 종료했습니다.')
-                        break
-                    
-                    buffer += chunk
-                    try:
-                        data = json.loads(buffer.decode('utf-8'))
-                        buffer = b''
-                        
-                        if not isinstance(data, dict):
-                            raise ValueError("메시지가 JSON 객체 형식이 아닙니다")
-                        
-                        message = data.get('status')
-                        if message is None:
-                            raise ValueError("status 필드가 없습니다")
-                        
-                        self.get_logger().info(f'수신된 데이터: {data}')
-                        
-                        if message == 'emergency_stop':
-                            self.emergency_stop()
-                        
-                        asyncio.run_coroutine_threadsafe(
-                            self.message_queue.put({
-                                "action": "echo",
-                                "mode": 800,
-                                "status": message
-                            }),
-                            self.loop
-                        )
-                        
-                    except json.JSONDecodeError:
-                        # 완전한 JSON 메시지가 아직 수신되지 않았으면 계속 수신
-                        continue
-                    except Exception as e:
-                        self.get_logger().error(f'메시지 파싱 오류: {str(e)}')
-                        buffer = b''
-                        
-                except Exception as e:
-                    self.get_logger().error(f'메시지 수신 중 오류: {str(e)}')
+    def receive_message(self):
+        while self.running and self.connected:
+            try:
+                data = self.client_socket.recv(self.BUFFER_SIZE)
+                if not data:
+                    self.get_logger().warn('클라이언트가 연결을 종료했습니다')
                     break
-            
-            self.cleanup_client()
-        except Exception as e:
-            self.get_logger().error(f'클라이언트 메시지 수신 중 오류: {str(e)}')
-        finally:
-            self.cleanup_client()
+                
+                try:
+                    message = json.loads(data.decode('utf-8'))
+                    self.get_logger().info(f'수신된 메시지: {message}')
+                    self.process_message(message)
+                except json.JSONDecodeError:
+                    self.get_logger().warning('잘못된 JSON 형식')
+                    
+            except ConnectionResetError:
+                self.get_logger().warn('클라이언트가 강제로 연결을 종료했습니다')
+                break
+            except ConnectionAbortedError:
+                self.get_logger().warn('연결이 중단되었습니다')
+                break
+            except Exception as e:
+                self.get_logger().error(f'메시지 수신 중 오류: {str(e)}')
+                break
+        
+        self.get_logger().info('클라이언트 연결 종료, 정리 작업 시작')
+        self.cleanup_client()
+        self.get_logger().info('클라이언트 연결 정리 완료')
 
     def send_message(self, payload):
-        with self.lock:
-            if not self.connected or not self.client_socket:
-                self.get_logger().error('클라이언트가 연결되어 있지 않습니다')
-                return False
-                
-            try:
-                message = json.dumps(payload).encode('utf-8')
-                self.client_socket.send(message)
-                self.get_logger().info(f'전송된 메시지: {payload}')
-                return True
-            except Exception as e:
-                self.get_logger().error(f'메시지 전송 중 오류: {str(e)}')
-                self.cleanup_client()
-                return False
+        if not self.connected or not self.client_socket:
+            return False
+        try:
+            message = json.dumps(payload).encode('utf-8')
+            self.client_socket.send(message)
+            return True
+        except Exception as e:
+            self.get_logger().error(f'메시지 전송 중 오류: {str(e)}')
+            self.cleanup_client()
+            return False
+    
+    def make_payload(self, action, mode, message):
+        payload = {
+            "action": action,
+            "mode": mode,
+            "message": message
+        }
+        return payload
+
+    def process_message(self, formatted_message):
+        try:
+            action = formatted_message.get('action')
+            mode = formatted_message.get('mode')
+            message = formatted_message.get('message')
+            
+            if action == 'emergency_stop':
+                self.emergency_stop()
+            elif action == 'camera':
+                self.camera_data(message)
+
+        except Exception as e:
+            self.get_logger().error(f'메시지 처리 중 오류: {str(e)}')
+
+    def camera_data(self, image_data):
+        self.get_logger().info(f'카메라 데이터 수신: {image_data}')
 
     def send_status_message(self, mode=0):
-        message = self.MODE_MESSAGES.get(mode, 'unknown')
-        if message == 'unknown':
-            self.get_logger().error(f'알 수 없는 모드: [{mode}]')
-            return
-        
-        payload = {
-            "action": "change_status",
-            "mode": mode,
-            "status": message,
-            "robot_id": "user"
-        }
-        
-        asyncio.run_coroutine_threadsafe(
-            self.message_queue.put(payload),
-            self.loop
-        )
-        self.get_logger().info(f'상태 메시지 [{mode}] 큐에 추가됨')
+        try:
+            mode = int(mode)
+            message = self.MODE_MESSAGES.get(mode, 'unknown')
+            if message == 'unknown':
+                self.get_logger().error(f'잘못된 모드 값: {mode}')
+                return False
+            
+            payload = self.make_payload("change_mode", mode, self.MODE_MESSAGES[mode])
+            return self.send_message(payload)
+            
+        except ValueError:
+            self.get_logger().error(f'잘못된 모드 값: {mode}')
+            return False
 
     def emergency_stop(self):
-        self.get_logger().info('!!!!!! Warning !!!!!!: Emergency Stop!')
-        
-        # Create and send emergency stop request
         request = EmergencyStop.Request()
         request.emergency_stop = True
+        future = self.emergency_stop_client.call_async(request)
+        future.add_done_callback(self.handle_emergency_stop_response)
+
+    def handle_emergency_stop_response(self, future):
+        try:
+            response = future.result()
+            if response.success:
+                self.get_logger().info('Emergency stop successful')
+            else:
+                self.get_logger().error('Emergency stop failed')
+        except Exception as e:
+            self.get_logger().error(f'Emergency stop service call failed: {str(e)}')
+
+    def robot_mode_callback(self, msg):
+        """RobotMode 토픽 콜백 함수"""
+        self.get_logger().info('--------------------')  # 구분선 추가
+        self.get_logger().info('RobotMode 콜백이 호출되었습니다')
+        self.get_logger().info(f'수신된 모드: {msg.mode}')
         
         try:
-            future = self.emergency_stop_client.call_async(request)
-            
-            # Wait for the response using a separate thread to avoid blocking
-            def handle_emergency_stop_response(future):
-                try:
-                    response = future.result()
-                    if response.success:
-                        self.get_logger().info('Emergency stop request successful')
-                        self.send_status_message(mode=127)
-                    else:
-                        self.get_logger().error(f'Emergency stop failed: {response.message}')
-                except Exception as e:
-                    self.get_logger().error(f'Emergency stop service call failed: {str(e)}')
-            
-            future.add_done_callback(handle_emergency_stop_response)
-            
+            self.get_logger().info(f'모드 변경 메시지 전송 시도: {msg.mode}')
+            if self.send_status_message(msg.mode):
+                self.get_logger().info(f'모드 {msg.mode} 전송 성공')
+            else:
+                self.get_logger().error(f'모드 {msg.mode} 전송 실패')
         except Exception as e:
-            self.get_logger().error(f'Failed to send emergency stop request: {str(e)}')
+            self.get_logger().error(f'RobotMode 콜백 처리 중 오류: {str(e)}')
+            import traceback
+            self.get_logger().error(traceback.format_exc())
+        
+        self.get_logger().info('--------------------')  # 구분선 추가
+
+    def test_loop(self):
+        """테스트 루프 함수"""
+        while self.running:
+            if self.connected:
+                self.test_timer_callback()
+            time.sleep(3.0)  # 3초 대기
 
     def test_timer_callback(self):
-        if self.connected and self.client_socket:
+        """테스트 타이머 콜백 함수"""
+        self.get_logger().info('테스트 타이머 콜백 시작')
+        
+        if not self.connected:
+            self.get_logger().warn('클라이언트 연결 없음')
+            return
+        
+        try:
             mode = self.test_modes[self.current_mode_index]
-            self.send_status_message(mode)
-            self.current_mode_index = (self.current_mode_index + 1) % len(self.test_modes)
+            self.get_logger().info(f'현재 테스트 모드: {mode}, 인덱스: {self.current_mode_index}')
+            
+            if self.send_status_message(mode):
+                self.get_logger().info(f'테스트 모드 {mode} 전송 성공')
+                self.current_mode_index = (self.current_mode_index + 1) % len(self.test_modes)
+            else:
+                self.get_logger().error(f'테스트 모드 {mode} 전송 실패')
+            
+        except Exception as e:
+            self.get_logger().error(f'테스트 타이머 콜백 처리 중 오류: {str(e)}')
+            import traceback
+            self.get_logger().error(traceback.format_exc())
 
-    async def process_message_queue(self):
-        while self.running:
+    def cleanup_client(self):
+        if self.client_socket:
             try:
-                message = await self.message_queue.get()
-                try:
-                    # 스레드 풀에서 메시지 전송
-                    await self.loop.run_in_executor(
-                        self.thread_pool,
-                        self.send_message,
-                        message
-                    )
-                finally:
-                    # 메시지 처리 완료 표시
-                    self.message_queue.task_done()
-            except Exception as e:
-                self.get_logger().error(f'메시지 큐 처리 중 오류: {str(e)}')
+                self.client_socket.close()
+            except:
+                pass
+            self.client_socket = None
+            self.client_address = None
+            self.connected = False
 
-    # RobotMode 토픽 메시지 수신 시 콜백 함수
-    def robot_mode_callback(self, msg):
-        self.get_logger().info(f'RobotMode 메시지 수신: mode={msg.mode}')
-        self.send_status_message(msg.mode)
+    def cleanup(self):
+        self.running = False
+        self.cleanup_client()
+        if self.server_socket:
+            self.server_socket.close()
+
 
 def main(args=None):
     rclpy.init(args=args)
     node = RPCommunicationNode()
-    
     try:
         rclpy.spin(node)
-    except (KeyboardInterrupt, SystemExit):
-        pass
+    except KeyboardInterrupt:
+        node.get_logger().warn('키보드 인터럽트 감지. 종료를 시작합니다...')
     finally:
+        node.get_logger().info('정리 작업 시작')
         node.cleanup()
         node.destroy_node()
         rclpy.shutdown()
+        node.get_logger().info('정상 종료 완료')
 
 if __name__ == '__main__':
     main()
