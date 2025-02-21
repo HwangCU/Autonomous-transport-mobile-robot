@@ -35,7 +35,7 @@ class SocketService private constructor() {
 
     fun setRobotViewModel(viewModel: RobotViewModel) {
         this.robotViewModel = viewModel
-        Log.d("socket", "SocketService에 RobotViewModel 설정됨")
+        Log.d("Socket", "SocketService에 RobotViewModel 설정됨")
     }
 
     companion object {
@@ -65,11 +65,11 @@ class SocketService private constructor() {
 
             _isConnected.value = true
             lastMessageTime = System.currentTimeMillis()
-            Log.d("socket", "Connected Successfully")
+            Log.d("Socket", "Connected Successfully")
 
             startMessageListener()
         } catch (e: Exception) {
-            Log.e("socket", "Connection failed: ${e.message}", e)
+            Log.e("Socket", "Connection failed: ${e.message}", e)
             _isConnected.value = false
             disconnect()
         }
@@ -89,7 +89,7 @@ class SocketService private constructor() {
                         if (message == null) {
                             // 읽기 타임아웃이 발생했지만 소켓 상태 확인
                             if (!isSocketAlive()) {
-                                Log.d("socket", "소켓 연결 끊김 감지, 재연결 시도")
+                                Log.d("Socket", "소켓 연결 끊김 감지, 재연결 시도")
                                 reconnect()
                                 continue
                             }
@@ -105,21 +105,21 @@ class SocketService private constructor() {
                             e.message?.contains("closed") == true ||
                             e.message?.contains("reset") == true ||
                             e.message?.contains("종료") == true) {
-                            Log.w("socket", "연결 오류 감지: ${e.message}, 재연결 시도")
+                            Log.w("Socket", "연결 오류 감지: ${e.message}, 재연결 시도")
                             reconnect()
                             continue
                         }
 
                         // 일반적인 읽기 타임아웃은 무시 (과도한 로깅 방지)
                         if (e.message?.contains("timed out") != true) {
-                            Log.w("socket", "읽기 오류: ${e.message}")
+                            Log.w("Socket", "읽기 오류: ${e.message}")
                         }
                     }
 
                     delay(10) // 짧은 딜레이
                 }
             } catch (e: Exception) {
-                Log.e("socket", "리스너 오류: ${e.message}")
+                Log.e("Socket", "리스너 오류: ${e.message}")
                 disconnect()
             }
         }
@@ -133,7 +133,7 @@ class SocketService private constructor() {
                     val json = JSONObject(message)
                     val action = json.optString("action", "")
                     val status = json.optString("status", "")
-                    Log.d("socket",action)
+                    Log.d("Socket",action)
                     // action 기반 처리
                     when (action) {
                         "pong" -> {
@@ -147,14 +147,14 @@ class SocketService private constructor() {
                                 viewModel.saveLocation(latitude, longitude)
                                 viewModel.saveBettery(75)
                                 viewModel.saveRobotId(robotId)
-                                Log.d("socket", "위치: ${viewModel.location.value}, 로봇ID: ${viewModel.robot_id.value}")
+                                Log.d("Socket", "위치: ${viewModel.location.value}, 로봇ID: ${viewModel.robot_id.value}")
                             }
                         }
                         "robot_weight" -> {
                             val weight = json.optDouble("weight")
                             robotViewModel?.let { viewModel->
                                 viewModel.saveWeight(weight.toInt())
-                                Log.d("socket","무게요 ${viewModel.weight.value}")
+                                Log.d("Socket","무게요 ${viewModel.weight.value}")
                             }
                         }
                         "camera_image" -> {
@@ -169,10 +169,10 @@ class SocketService private constructor() {
                     if (status == "success") {
                         val message = json.optString("message", "")
                         val mode = json.optInt("mode", -1)
-                        Log.d("socket", "상태 메시지 수신: status=$status, message=$message, mode=$mode")
+                        Log.d("Socket", "상태 메시지 수신: status=$status, message=$message, mode=$mode")
                     }
                 } catch (e: Exception) {
-                    Log.w("socket", "JSON 파싱 오류: ${e.message}")
+                    Log.w("Socket", "JSON 파싱 오류: ${e.message}")
                 }
             }
 
@@ -181,7 +181,7 @@ class SocketService private constructor() {
                 (currentList + message).takeLast(MAX_MESSAGES)
             }
         } catch (e: Exception) {
-            Log.e("socket", "메시지 처리 오류: ${e.message}")
+            Log.e("Socket", "메시지 처리 오류: ${e.message}")
         }
     }
 
@@ -192,7 +192,7 @@ class SocketService private constructor() {
             delay(1000) // 잠시 대기
             connect()
         } catch (e: Exception) {
-            Log.e("socket", "재연결 실패: ${e.message}")
+            Log.e("Socket", "재연결 실패: ${e.message}")
         }
     }
 
@@ -203,7 +203,7 @@ class SocketService private constructor() {
                         writer != null && reader != null
             } ?: false
         } catch (e: Exception) {
-            Log.w("socket", "소켓 상태 확인 오류: ${e.message}")
+            Log.w("Socket", "소켓 상태 확인 오류: ${e.message}")
             false
         }
     }
@@ -211,15 +211,15 @@ class SocketService private constructor() {
     suspend fun sendMessage(message: String) = withContext(Dispatchers.IO) {
         try {
             if (!isSocketAlive()) {
-                Log.w("socket", "메시지 전송 시 연결 끊김 감지, 재연결 시도")
+                Log.w("Socket", "메시지 전송 시 연결 끊김 감지, 재연결 시도")
                 reconnect()
             }
 
             writer?.println(message)
             writer?.flush() // 즉시 전송 보장
-            Log.d("socket", "전송: $message")
+            Log.d("Socket", "전송: $message")
         } catch (e: Exception) {
-            Log.e("socket", "메시지 전송 실패: ${e.message}")
+            Log.e("Socket", "메시지 전송 실패: ${e.message}")
             reconnect()
         }
     }
@@ -242,9 +242,9 @@ class SocketService private constructor() {
             writer = null
             socket = null
 
-            Log.d("socket", "소켓 연결 해제 완료")
+            Log.d("Socket", "소켓 연결 해제 완료")
         } catch (e: Exception) {
-            Log.e("socket", "연결 해제 중 오류: ${e.message}")
+            Log.e("Socket", "연결 해제 중 오류: ${e.message}")
         }
     }
 
