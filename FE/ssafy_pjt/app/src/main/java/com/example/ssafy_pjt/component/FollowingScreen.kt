@@ -372,12 +372,13 @@ fun FollowingScreen(
                                 robotViewModel.modeChange(4)
                                 addressSearchViewModel.homeSweetHome()
                                 navController.navigate("SendHomeScreen")
-                                historyViewModel.addJourney(destination = addressSearchViewModel.address.value ?: "", mode ="배달 모드", startPoint = userViewModel.home.value)
+                                historyViewModel.addJourney(destination = addressSearchViewModel.address.value ?: "", mode ="홈 모드", startPoint = userViewModel.home.value)
                             }
                         ) {
                             Text(text = stringResource(R.string.execution))
                         }
                     },
+
                     dismissButton = {
                         Button(
                             border = BorderStroke(1.dp, colorResource(R.color.black)),

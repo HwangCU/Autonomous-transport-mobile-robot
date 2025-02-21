@@ -129,7 +129,7 @@ fun HomeScreen(
     LaunchedEffect(serverResponses) {
         if (serverResponses.isNotEmpty()) {
             val lastResponse = serverResponses.last()
-            Log.d("socket", "최신 응답: $lastResponse")
+            Log.d("Socket", "최신 응답: $lastResponse")
         }
     }
 
@@ -139,9 +139,9 @@ fun HomeScreen(
 
     LaunchedEffect(isConnected) {
         if (!isConnected) {
-            Log.d("socket","연결 끊김")
+            Log.d("Socket","연결 끊김")
         } else {
-            Log.d("socket","연결 됨")
+            Log.d("Socket","연결 됨")
         }
     }
 
