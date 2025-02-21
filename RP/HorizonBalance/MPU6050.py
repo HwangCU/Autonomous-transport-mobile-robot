@@ -47,24 +47,25 @@ pre_byte_data = {
 ######################################################
 ######################################################
 
+logger_prefix = "[MPU6050]"
+
+prev_yaw = 90  # 초기값 90도
+
 def safe_MPU_Init():
     try:
         #write to sample rate register
         bus.write_byte_data(Device_Address, SMPLRT_DIV, 7)
-
         #Write to power management register
         bus.write_byte_data(Device_Address, PWR_MGMT_1, 1)
-
         #Write to Configuration register
         bus.write_byte_data(Device_Address, CONFIG, 0)
-
         #Write to Gyro configuration register
         bus.write_byte_data(Device_Address, GYRO_CONFIG, 24)
-
         #Write to interrupt enable register
         bus.write_byte_data(Device_Address, INT_ENABLE, 1)
+        print(f"{logger_prefix} Initialization complete")
     except OSError as e:
-        print(f"MPU6050 Initialization Error: {e}")
+        print(f"{logger_prefix} Initialization Error: {e}")
 
 def safe_read_byte_data(addr):
     try:
@@ -72,7 +73,7 @@ def safe_read_byte_data(addr):
         pre_byte_data[addr] = byte_data
         return byte_data
     except OSError as e:
-        print(f"I2C Read Error at register {addr}: {e}")
+        print(f"{logger_prefix} I2C Read Error at register {addr}: {e}")
         return pre_byte_data[addr]
 
 def safe_read_raw_data(addr):
@@ -104,14 +105,22 @@ def safe_readAcc(axis: str) -> float:
     return A_
 
 def safe_readYaw(axis: str) -> int:
-    in_min = -1
-    in_max = 1
-    out_min = 0
-    out_max = 180
-    value = (safe_readAcc(axis) - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
-    value = int(value)
-
-    return value
+    global prev_yaw
+    try:
+        acc_value = safe_readAcc(axis)
+        
+        in_min = -1
+        in_max = 1
+        out_min = 0
+        out_max = 180
+        value = (acc_value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+        value = int(value)
+        
+        prev_yaw = value
+        return value
+    except Exception as e:
+        print(f"{logger_prefix} Error reading yaw: {e}")
+        return prev_yaw
 
 ######################################################
 ######################################################

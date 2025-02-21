@@ -4,6 +4,8 @@ from time import sleep
 
 class HorizonBalancer:
     def __init__(self):
+        self.logger_prefix = "[HorizonBalancer]"
+        
         # 칼만 필터 변수 초기화
         self.A = 1.0
         self.H = 1.0        # 상태 공간 방정식
@@ -19,40 +21,39 @@ class HorizonBalancer:
         self.level_angle = motor.level_angle
         self.pmotor_degree = self.level_angle
 
-    def kalman(self, value):
+    def kalman(self, value: float) -> float:
         xp = self.A * self.x
         pp = self.A * self.P * self.A + self.Q
         K = pp * self.H / (self.H * pp * self.H + self.R)
         self.x = xp + K*(value - self.H * xp)
         self.P = pp - K * self.H * pp
-
         return self.x
 
-    def balance_step(self):
-        # 센서는 - 회전방향, 서보모터는 + 회전방향
-        angle = sensor.safe_readYaw('x')
+    def balance_step(self) -> None:
+        try:
+            angle = sensor.safe_readYaw('x')
 
-        # kalman
-        angle = self.kalman(angle)
+            # kalman
+            filtered_angle = self.kalman(angle)
+            
+            dtheta = float(filtered_angle - 90)
+            
+            if dtheta > 0.0:
+                dtheta *= 0.7
+            else:
+                dtheta *= 0.8
 
-        dtheta = float(angle - 90)
-        # print(f"Theta: {dtheta:.1f} DEG", end=" / ")
-        
-        # dtheta가 음수일때는 모터 각도 보정 필요
-        if dtheta > 0.0:
-            dtheta *= 0.7
-        else:
-            dtheta *= 0.8
+            motor_degree = self.level_angle + dtheta
+            
+            if abs(motor_degree - self.pmotor_degree) > 2:
+                motor.setServoPos(motor_degree)
+                print(f"motor_degree: {motor_degree}")
+                self.pmotor_degree = motor_degree
+        except Exception as e:
+            print(f"{self.logger_prefix} Error in balance_step: {e}")
 
-        # 센서 측정 값을 서보모터 제어 각도로 변환
-        motor_degree = self.level_angle + dtheta
-        if abs(motor_degree - self.pmotor_degree) > 2:
-            motor.setServoPos(motor_degree)
-            self.pmotor_degree = motor_degree
-            # print(f"Motor: {motor_degree:.1f} DEG")
-
-    def cleanup(self):
-        print("End balance process")
+    def cleanup(self) -> None:
+        print(f"{self.logger_prefix} End balance process")
         motor.endServo()
 
 # 테스트 코드
