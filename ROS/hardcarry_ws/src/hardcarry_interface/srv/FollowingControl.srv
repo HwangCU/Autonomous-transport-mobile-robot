@@ -1,0 +1,6 @@
+#request
+bool enable_following
+---
+#response
+bool success
+string message
