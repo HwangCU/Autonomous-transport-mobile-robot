@@ -1,6 +1,8 @@
 import asyncio
 import aiohttp
 import json
+import sys
+from pathlib import Path
 from LoadScale.scale import LoadScale
 from HorizonBalance.horizebalancer import HorizonBalancer
 from typing import Optional
@@ -35,28 +37,25 @@ class LoadHorize:
             while True:
                 try:
                     kilogram = await self.read_scale()
-                    print(f"Kilogram: {kilogram}")
+                    print(f"{self.logger_prefix} Weight: {kilogram:.1f}kg")
+                    
                     if kilogram is None:
-                        print("Failed to read scale after multiple attempts")
+                        print(f"{self.logger_prefix} Failed to read scale after multiple attempts")
                         await asyncio.sleep(1)
                         continue
                         
                     if abs(kilogram - self.pkilogram) >= 1:
                         self.pkilogram = kilogram
-                        print("send kilogram")
-
                         payload = {
                             "weight": kilogram,
                             "robot_id": "user"
                         }
                         async with session.post(url=self.server_url, data=json.dumps(payload)) as response:
-                            if response.status == 200:
-                                print(f"Kilogram sent: {kilogram}")
-                            else:
-                                print(f"Failed to send data: {response.status}")
-                    await asyncio.sleep(0.7)
+                            if response.status != 200:
+                                print(f"{self.logger_prefix} Failed to send data: {response.status}")
+                    await asyncio.sleep(0.9)
                 except Exception as e:
-                    print(f"Error in send_kilogram: {e}")
+                    print(f"{self.logger_prefix} Error in send_kilogram: {e}")
                     await asyncio.sleep(1)
 
     async def balance_control(self, err_cnt: int = 0) -> None:
@@ -118,7 +117,7 @@ class LoadHorizeTest:
     async def balance_control(self) -> None:
         while True:
             print("balance control: Motor 90 DEG / Sensor 94 DEG")
-            await asyncio.sleep(0.18)
+            await asyncio.sleep(10)
 
     async def main(self) -> None:
         try:
