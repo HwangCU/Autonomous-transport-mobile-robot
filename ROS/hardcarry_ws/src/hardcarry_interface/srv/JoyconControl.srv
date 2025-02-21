@@ -1,0 +1,6 @@
+#request
+bool enable_joycon
+---
+#response
+bool success
+string message
