@@ -1,11 +1,12 @@
 import sys
 import asyncio
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QDesktopWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QDesktopWidget, QLineEdit, QTextEdit
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtSvg import QSvgWidget
 from loadhorize import LoadHorize, LoadHorizeTest
 from jetsoncommunication import JetsonCommunication
+from camera_class import CameraClass
 import threading
 import json
 import os
@@ -30,14 +31,18 @@ class RobotUI(QMainWindow):
         self.unlock_button = None
         self.status_label = None
         self.caution_widget = None
+        self.test_button = None  # 테스트 버튼 참조 추가
         
         # Jetson 연결 설정
         self.jetson = JetsonCommunication(server_ip='192.168.1.101')
         self.jetson.connection_status_changed.connect(self.handle_connection_status)
         
         # LoadHorize 인스턴스 생성
-        # self.load_horize = LoadHorize()
-        self.load_horize = LoadHorizeTest()
+        self.load_horize = LoadHorize()
+        # self.load_horize = LoadHorizeTest()
+        
+        # 카메라 인스턴스 생성
+        # self.camera = CameraClass()
         
         # 비동기 작업을 위한 스레드 설정
         self.async_thread = AsyncThread(self.load_horize)
@@ -52,6 +57,8 @@ class RobotUI(QMainWindow):
         self.loop = None  # loop를 None으로 초기화
         
         self.shutdown_script = str(pathlib.Path(__file__).parent / 'shutdown.sh')
+        
+        self.test_window = None  # 테스트 창 참조 추가
         
         self.initUI()
         self.update_ui_state(self.default_message)
@@ -112,59 +119,82 @@ class RobotUI(QMainWindow):
             # sys.exit(1)
 
     # 로봇 잠금 해제 메시지 전송
-    async def unlock_robot(self) -> None:
-        await self.jetson.send_data('unlock_robot')
+    def unlock_robot(self) -> None:
+        try:
+            # 비동기 함수를 동기적으로 실행
+            asyncio.run_coroutine_threadsafe(
+                self.jetson.send_data('test', 555, 'test'),
+                self.loop
+            )
+            print(f"{self.logger_prefix} 잠금해제 메시지 전송 시도")
+        except Exception as e:
+            print(f"{self.logger_prefix} 잠금해제 명령 처리 중 오류: {e}")
+
+    async def send_camera_image(self, image: bytes) -> None:
+        await self.jetson.send_data('camera_image', image)
 
     def update_ui_state(self, signal: str) -> None:
         # 분기 처리
-        if signal == 'standard': # 대기 모드 (mode: 0)
+        if signal == 'standard':
             self.status_label.setText("안녕하세요")
             self.unlock_button.hide()
             self.caution_widget.show()
+            self.test_button.hide()
         elif signal == 'joycon': # 조이콘 모드 (mode: 1)
             self.status_label.setText("조이콘 모드가 실행 중이에요")
             self.unlock_button.hide()
             self.caution_widget.show()
+            self.test_button.hide()
         elif signal == 'follow': # 팔로잉 모드 (mode: 2)
             self.status_label.setText("팔로잉 모드가 실행 중이에요")
             self.unlock_button.hide()
             self.caution_widget.show()
+            self.test_button.hide()
         elif signal == 'gohome': # 집으로 돌아가기 중일 때 (mode: 4)
             self.status_label.setText("집으로 돌아가고 있어요")
             self.unlock_button.hide()
             self.caution_widget.show()
+            self.test_button.hide()
         elif signal == 'home': # 집에 도착했을 때 (mode: 41)
             self.status_label.setText("집에 도착했어요")
             self.unlock_button.hide()
             self.caution_widget.show()
+            self.test_button.hide()
         elif signal == 'delivery': # 배달 모드 - 배달 중 (mode: 3)
             self.status_label.setText("로봇이 배달 중이에요")
             self.unlock_button.hide()
             self.caution_widget.show()
+            self.test_button.hide()
         elif signal == 'delivery-stopover': # 배달 모드 - 주문한 가게 도착 (mode: 31)
             self.status_label.setText("로봇이 목적지에 도착했어요")
             self.unlock_button.show()
             self.caution_widget.show()
+            self.test_button.hide()
         elif signal == 'delivery-arrived': # 배달 모드 - 배달 완료 (mode: 32)
             self.status_label.setText("배달을 완료했어요")
             self.unlock_button.hide()
             self.caution_widget.show()
+            self.test_button.hide()
         elif signal == 'error': # 에러 상태 (mode: 100)
             self.status_label.setText("로봇에 문제가 발생했습니다")
             self.unlock_button.hide()
             self.caution_widget.hide()
+            self.test_button.hide()
         elif signal == 'connection_error': # 젯슨과 통신 오류
             self.status_label.setText(f"로봇과 연결 중입니다... (시도 횟수: {self.connection_retry_count})")
             self.unlock_button.hide()
             self.caution_widget.hide()
+            self.test_button.hide()
         elif signal == 'emergency_stop': # 비상정지 (mode: 999)
             self.status_label.setText("비상정지 중 입니다")
             self.unlock_button.hide()
             self.caution_widget.hide()
-        elif signal == 'test': # 테스트 모드 (mode: 127)
+            self.test_button.hide()
+        elif signal == 'test':  # 테스트 모드일 때만 테스트 버튼 표시
             self.status_label.setText("테스트 모드가 실행 중이에요")
             self.unlock_button.hide()
             self.caution_widget.hide()
+            self.test_button.show()
         
     def handle_connection_status(self, is_connected: bool) -> None:
         if is_connected:
@@ -271,6 +301,22 @@ class RobotUI(QMainWindow):
         emergency_layout.addWidget(emergency_button)
         main_layout.addWidget(emergency_container)
         
+        # 테스트 모드 버튼 추가
+        self.test_button = QPushButton("테스트 모드")
+        self.test_button.setStyleSheet("""
+            QPushButton {
+                background-color: #5E77E1;
+                border-radius: 15px;
+                color: white;
+                font-size: 24px;
+                font-weight: bold;
+                padding: 10px;
+            }
+        """)
+        self.test_button.clicked.connect(self.show_test_window)
+        self.test_button.hide()
+        main_layout.addWidget(self.test_button)
+        
         # 여백 설정
         main_layout.setContentsMargins(50, 50, 50, 50)
 
@@ -305,6 +351,127 @@ class RobotUI(QMainWindow):
                 
         except Exception as e:
             print(f"Final cleanup error: {e}")
+
+    def show_test_window(self):
+        if not self.test_window:
+            self.test_window = TestWindow(self.jetson, self.loop)
+        self.test_window.show()
+
+class TestWindow(QWidget):
+    def __init__(self, jetson, loop):
+        super().__init__()
+        self.jetson = jetson
+        self.loop = loop
+        self.initUI()
+        
+    def initUI(self):
+        self.setWindowTitle('테스트 모드')
+        self.setStyleSheet("background-color: #E5ECF0;")
+        
+        layout = QVBoxLayout()
+        
+        # 입력 필드들
+        input_widget = QWidget()
+        input_layout = QVBoxLayout(input_widget)
+        
+        # Action 입력
+        action_layout = QHBoxLayout()
+        action_label = QLabel("Action:")
+        self.action_input = QLineEdit()
+        action_layout.addWidget(action_label)
+        action_layout.addWidget(self.action_input)
+        input_layout.addLayout(action_layout)
+        
+        # Mode 입력
+        mode_layout = QHBoxLayout()
+        mode_label = QLabel("Mode:")
+        self.mode_input = QLineEdit()
+        mode_layout.addWidget(mode_label)
+        mode_layout.addWidget(self.mode_input)
+        input_layout.addLayout(mode_layout)
+        
+        # Message 입력
+        message_layout = QHBoxLayout()
+        message_label = QLabel("Message:")
+        self.message_input = QLineEdit()
+        message_layout.addWidget(message_label)
+        message_layout.addWidget(self.message_input)
+        input_layout.addLayout(message_layout)
+        
+        layout.addWidget(input_widget)
+        
+        # 전송 버튼
+        send_button = QPushButton("전송")
+        send_button.setStyleSheet("""
+            QPushButton {
+                background-color: #5E77E1;
+                border-radius: 10px;
+                color: white;
+                font-size: 18px;
+                font-weight: bold;
+                padding: 10px;
+            }
+        """)
+        send_button.clicked.connect(self.send_message)
+        layout.addWidget(send_button)
+        
+        # 수신 메시지 표시
+        receive_label = QLabel("수신된 메시지:")
+        layout.addWidget(receive_label)
+        
+        self.receive_text = QTextEdit()
+        self.receive_text.setReadOnly(True)
+        self.receive_text.setStyleSheet("background-color: white;")
+        layout.addWidget(self.receive_text)
+        
+        # 비상정지 버튼
+        emergency_button = QPushButton("비상정지")
+        emergency_button.setStyleSheet("""
+            QPushButton {
+                background-color: #E23C3C;
+                border-radius: 10px;
+                color: white;
+                font-size: 18px;
+                font-weight: bold;
+                padding: 10px;
+            }
+        """)
+        emergency_button.clicked.connect(self.emergency_stop)
+        layout.addWidget(emergency_button)
+        
+        self.setLayout(layout)
+        self.resize(400, 600)
+        
+        # 메시지 수신 연결
+        self.jetson.message_received.connect(self.handle_received_message)
+    
+    def send_message(self):
+        try:
+            action = self.action_input.text()
+            mode = int(self.mode_input.text())
+            message = self.message_input.text()
+            
+            asyncio.run_coroutine_threadsafe(
+                self.jetson.send_data(action, mode, message),
+                self.loop
+            )
+        except ValueError:
+            self.receive_text.append("Error: Mode must be a number")
+        except Exception as e:
+            self.receive_text.append(f"Error: {str(e)}")
+    
+    def emergency_stop(self):
+        try:
+            asyncio.run_coroutine_threadsafe(
+                self.jetson.emergency_stop(),
+                self.loop
+            )
+            self.receive_text.append("Emergency stop signal sent")
+        except Exception as e:
+            self.receive_text.append(f"Emergency stop error: {str(e)}")
+    
+    def handle_received_message(self, message):
+        self.receive_text.append(f"Received: {message}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

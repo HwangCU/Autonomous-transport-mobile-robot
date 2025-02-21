@@ -6,8 +6,8 @@ import json
 from typing import Optional
 
 class JetsonCommunication(QObject):
-    message_received = pyqtSignal(str)  # 메시지 수신 시그널
-    connection_status_changed = pyqtSignal(bool)  # 통신 연결 상태 변경 시그널
+    message_received = pyqtSignal(str)
+    connection_status_changed = pyqtSignal(bool)
 
     def __init__(self, server_ip: str, server_port: int = 8081) -> None:
         super().__init__()
@@ -107,8 +107,10 @@ class JetsonCommunication(QObject):
 
     async def send_data(self, action: str, mode: int, message: str, retries: int = 0) -> bool:
         if not self.is_connected:
-            print(f"{self.logger_prefix} Not connected to server")
-            return False
+            print(f"{self.logger_prefix} 서버와 연결되어 있지 않습니다. 재연결을 시도합니다.")
+            await self._reconnect()
+            if not self.is_connected:
+                return False
         
         try:
             async with asyncio.timeout(self.operation_timeout):
@@ -123,7 +125,8 @@ class JetsonCommunication(QObject):
         except asyncio.TimeoutError:
             print(f"{self.logger_prefix} Send timeout: {message}")
         except Exception as e:
-            print(f'{self.logger_prefix} Send error: {e}')
+            print(f'{self.logger_prefix} 전송 오류: {e}')
+            self._update_connection_status(False)
             if retries < self.max_retries:
                 print(f'{self.logger_prefix} Retrying... ({retries + 1}/{self.max_retries})')
                 await asyncio.sleep(1)
@@ -131,8 +134,9 @@ class JetsonCommunication(QObject):
         return False
 
     async def emergency_stop(self) -> bool:
-        print("Emergency_stop")
-        return await self.send_data('emergency_stop', 999, 'emergency_stop')
+        print(f"{self.logger_prefix} Emergency stop")
+        result = await self.send_data('emergency_stop', 999, 'emergency_stop')
+        return result
 
     async def close(self) -> None:
         self._update_connection_status(False)
