@@ -69,7 +69,7 @@ class WSManager:
                     robot_id = json_message.get("robot_id")
                     LAST_GPS["latitude"] = latitude
                     LAST_GPS["longitude"] = longitude
-                    print("LAST_GPS IS ", LAST_GPS)
+                    # print("LAST_GPS IS ", LAST_GPS)
                     broadcast_to_tcp_clients(message)
 
                 elif json_message.get("action") == "robot_weight":
@@ -98,7 +98,21 @@ class WSManager:
             except Exception as e:
                 print(f"[WSManager] Error in receive_messages: {e}")
                 self.running = False
+                self.reconnect()
                 break
+
+    def reconnect(self):
+        print("[WSManager] Attempting to reconnect in 5 seconds...")
+        time.sleep(5)  # 5초 대기
+        try:
+            self.close()
+        except Exception as close_err:
+            print("[WSManager] Error during close:", close_err)
+        try:
+            self.connect()
+            print("[WSManager] Reconnected successfully.")
+        except Exception as connect_err:
+            print("[WSManager] Reconnection failed:", connect_err)
 
     def close(self):
         self.running = False
@@ -127,7 +141,7 @@ class WSManager:
 
             # 🔹 지정된 timeout 동안 메시지 대기
             response = self.message_queue.get(timeout=timeout)
-            print(f"[WSManager] Received login response: {response}")
+            print(f"[WSManager] Received login response")
 
             return json.loads(response)  # JSON 응답 반환
         except queue.Empty:
@@ -190,14 +204,14 @@ def broadcast_to_tcp_clients(message):
     WebSocket에서 받은 메시지를
     연결된 모든 TCP 클라이언트에게 전송
     """
-    print("연결된 클라이언트들에게 메시지 전송: ", message)
+    # print("연결된 클라이언트들에게 메시지 전송: ", message)
     with lock:
         for conn in connected_tcp_clients:
             try:
                 # 단순히 문자열을 전송한다고 가정
-                print("send message to client: ", conn)
+                # print("send message to client: ", conn)
                 conn.sendall((message + "\n").encode())
-                print("sended message: ", message.encode())
+                # print("sended message: ", message.encode())
             except Exception as e:
                 print("[TCP] Error sending to client:", e)
 
