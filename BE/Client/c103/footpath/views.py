@@ -12,7 +12,7 @@ from c103.ws_manager import ws_manager  # 위에서 만든 매니저 임포트
 import math
 import json
 
-from vars import LAST_GPS
+from vars import LAST_GPS, APPKEY
 
 
 @csrf_exempt
@@ -24,7 +24,7 @@ def request_location_view(request):
 
     try:
         data = json.loads(request.body)
-        print(data)
+        # print(data)
     except json.JSONDecodeError:
         return JsonResponse({"status": "error", "message": "Invalid JSON."}, status=400)
 
@@ -76,7 +76,7 @@ def footpath_view(request):
 
 @csrf_exempt
 def home_sweet_home_view(request):
-    print("lon lat: ", request)
+    # print("lon lat: ", request)
     if request.method != "POST":
         return JsonResponse(
             {"status": "error", "message": "Only POST method allowed."}, status=405
@@ -107,7 +107,7 @@ def home_sweet_home_view(request):
     # (2) WebSocket 서버에 "login" 패킷 전송
     resp = ws_manager.send_login(payload)
 
-    print(resp)
+    # print(resp)
     dest = resp.get("profile").get("address")
 
     des_x, des_y = get_cord_by_road(dest)
@@ -115,7 +115,7 @@ def home_sweet_home_view(request):
     start_x = LAST_GPS.get("longitude")
     start_y = LAST_GPS.get("latitude")
 
-    print("\n 데이터 검증 : ", start_x, start_y)
+    # print("\n 데이터 검증 : ", start_x, start_y)
 
     return get_path(start_x, start_y, des_x, des_y)
 
@@ -131,15 +131,15 @@ def get_cord_by_road(dest):
 
     headers = {
         "accept": "application/json",
-        "appKey": "5JFV40Cr66417WNN05G5K1bV6AL1BNVEaymIjAbF",
+        "appKey": APPKEY,
     }
 
     response = requests.get(url, headers=headers).json()
 
-    print(response)
+    # print(response)
 
     coordinate_data = response["coordinateInfo"]["coordinate"][0]  # 첫 번째 요소
-    print("\ncoordi data is ", coordinate_data)
+    # print("\ncoordi data is ", coordinate_data)
     lat = coordinate_data["newLat"]
     lon = coordinate_data["newLon"]
     return (
@@ -148,20 +148,29 @@ def get_cord_by_road(dest):
     )
 
 
+def get_road_by_cord(lat, lon):
+    url = f"https://apis.openapi.sk.com/tmap/road/nearToRoad?version=1&lat={lat}&lon={lon}"
+
+    headers = {
+        "accept": "application/json",
+        "appKey": "5JFV40Cr66417WNN05G5K1bV6AL1BNVEaymIjAbF",
+    }
+
+    response = requests.get(url, headers=headers).json()
+
+    # print(response)
+
+    # roadName 추출
+    road_name = response["resultData"]["header"]["roadName"]
+    return road_name
+
+
 def get_path(start_x, start_y, des_x, des_y):
     origin = url_encode("출발지")
     destination = url_encode("도착지")
 
     url = (
         "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&callback=function"
-    )
-
-    print(
-        " 좌표 검증 ",
-        start_x,
-        start_y,
-        des_y,
-        des_x,
     )
 
     payload = {
@@ -174,7 +183,7 @@ def get_path(start_x, start_y, des_x, des_y):
     }
     headers = {
         "accept": "application/json",
-        "appKey": "5JFV40Cr66417WNN05G5K1bV6AL1BNVEaymIjAbF",
+        "appKey": APPKEY,
         "content-type": "application/json",
     }
     try:
@@ -184,7 +193,7 @@ def get_path(start_x, start_y, des_x, des_y):
             {"status": "error", "message": f"SKT API Error: {e}"}, status=500
         )
 
-    print("\n\n final response data \n\n", response)
+    # print("\n\n final response data \n\n", response)
 
     # 모든 이동 경로를 저장할 리스트
     waypoints = []
@@ -201,6 +210,8 @@ def get_path(start_x, start_y, des_x, des_y):
             if "time" in feature["properties"]:
                 total_time += feature["properties"]["time"]
 
+    # print("좌표의 도로명은 ", get_road_by_cord(start_y, start_x))
+
     return JsonResponse(
         {
             "status": "success",
@@ -208,6 +219,7 @@ def get_path(start_x, start_y, des_x, des_y):
             "path_list": route_coordinates,
             "waypoints": waypoints,
             "time": total_time,
+            "home": get_road_by_cord(start_y, start_x),
         }
     )
 
@@ -221,7 +233,7 @@ def send_footpath_view(request):
 
     try:
         data = json.loads(request.body)
-        print(data)
+        # print(data)
     except json.JSONDecodeError:
         return JsonResponse({"status": "error", "message": "Invalid JSON."}, status=400)
 
@@ -254,7 +266,7 @@ def send_footpath_view(request):
 
     # YAML 형식과 유사하게 출력 (여기서는 JSON으로 출력)
     output_data = {"waypoints": waypoints}
-    print(json.dumps(output_data, indent=2))
+    # print(json.dumps(output_data, indent=2))
     #
 
     payload = {
@@ -263,7 +275,7 @@ def send_footpath_view(request):
         "footpath": waypoints,
     }
 
-    print("send footpath : ", payload)
+    # print("send footpath : ", payload)
     # (2) WebSocket 서버에 "login" 패킷 전송
     resp = ws_manager.send_login(payload)
 

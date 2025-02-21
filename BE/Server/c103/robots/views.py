@@ -73,7 +73,7 @@ async def get_gps_view(request):
     # TODO: footpath 가공해서 로봇에서 받을 수 있게 수정하
 
     payload = {
-        "status": "fucking get_gps",
+        "status": "sucess",
         "action": "get_gps",
         "latitude": latitude,
         "longitude": longitude,
@@ -81,7 +81,7 @@ async def get_gps_view(request):
     }
 
     try:
-        # ORM 호출을 비동기 컨텍스트에서 실행
+        # ORM 호출을 비동기 컨텍스트에서 실행xXa
         robot = await sync_to_async(Robot.objects.get)(robot_id=robot_id)
     except Robot.DoesNotExist:
         return JsonResponse(
