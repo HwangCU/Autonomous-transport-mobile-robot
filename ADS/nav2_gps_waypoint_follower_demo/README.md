@@ -1,4 +1,23 @@
-# 로봇 정보
+# Navigation GPS Localization 커스텀
+
+## 구현 내용
+1. dual_ekf_navsat_params.yaml 수정
+- 엔코더 없는 상황에 맞게 EKF 파라미터 조정
+- IMU 설정 최적화
+- GPS 관련 파라미터 설정
+
+2. real_hardware.launch.py 생성
+- 실제 하드웨어를 위한 기본 설정
+- URDF 발행
+- 센서 TF tree 설정
+
+
+3. gps_waypoint_follower.launch.py 수정
+- 시뮬레이션 코드 제거
+- 실제 하드웨어 설정 적용
+- Nav2 파라미터 설정
+---
+
 ## 실행방법
 1. 로봇 브링업(Embedded)
 ```
