@@ -1,0 +1,29 @@
+[0.769s] Invoking command in '/home/yun/colcon_ws/build/stella_navigation2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/home/yun/colcon_ws/install/nav2_gps_waypoint_follower_demo:/home/yun/test/install/turtlebot3_teleop:/home/yun/test/install/turtlebot3_example:/home/yun/test/install/road_API:/home/yun/test/install/nav2_simple_commander:/home/yun/test/install/gps_imu_publisher:/opt/ros/humble /usr/bin/cmake --build /home/yun/colcon_ws/build/stella_navigation2 -- -j20 -l20
+[1.566s] Invoked command in '/home/yun/colcon_ws/build/stella_navigation2' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/home/yun/colcon_ws/install/nav2_gps_waypoint_follower_demo:/home/yun/test/install/turtlebot3_teleop:/home/yun/test/install/turtlebot3_example:/home/yun/test/install/road_API:/home/yun/test/install/nav2_simple_commander:/home/yun/test/install/gps_imu_publisher:/opt/ros/humble /usr/bin/cmake --build /home/yun/colcon_ws/build/stella_navigation2 -- -j20 -l20
+[1.575s] Invoking command in '/home/yun/colcon_ws/build/stella_navigation2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/home/yun/colcon_ws/install/nav2_gps_waypoint_follower_demo:/home/yun/test/install/turtlebot3_teleop:/home/yun/test/install/turtlebot3_example:/home/yun/test/install/road_API:/home/yun/test/install/nav2_simple_commander:/home/yun/test/install/gps_imu_publisher:/opt/ros/humble /usr/bin/cmake --install /home/yun/colcon_ws/build/stella_navigation2
+[1.606s] -- Install configuration: ""
+[1.607s] -- Execute custom install script
+[1.608s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/launch/navigation2.launch.py
+[1.609s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/map/map.pgm
+[1.609s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/map/map.yaml
+[1.610s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/map/stella_world.pgm
+[1.610s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/map/stella_world.yaml
+[1.611s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/param/sunny_nav_param.yaml
+[1.611s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/rviz/quarantine_robot_nav2_view.rviz
+[1.613s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/rviz/stella_navigation2.rviz
+[1.613s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/ament_index/resource_index/package_run_dependencies/stella_navigation2
+[1.613s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/ament_index/resource_index/parent_prefix_path/stella_navigation2
+[1.614s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/environment/ament_prefix_path.sh
+[1.614s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/environment/ament_prefix_path.dsv
+[1.614s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/environment/path.sh
+[1.615s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/environment/path.dsv
+[1.615s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/local_setup.bash
+[1.616s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/local_setup.sh
+[1.616s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/local_setup.zsh
+[1.617s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/local_setup.dsv
+[1.618s] -- Symlinking: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/package.dsv
+[1.650s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/ament_index/resource_index/packages/stella_navigation2
+[1.651s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/cmake/stella_navigation2Config.cmake
+[1.651s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/cmake/stella_navigation2Config-version.cmake
+[1.652s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_navigation2/share/stella_navigation2/package.xml
+[1.705s] Invoked command in '/home/yun/colcon_ws/build/stella_navigation2' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/home/yun/colcon_ws/install/nav2_gps_waypoint_follower_demo:/home/yun/test/install/turtlebot3_teleop:/home/yun/test/install/turtlebot3_example:/home/yun/test/install/road_API:/home/yun/test/install/nav2_simple_commander:/home/yun/test/install/gps_imu_publisher:/opt/ros/humble /usr/bin/cmake --install /home/yun/colcon_ws/build/stella_navigation2
