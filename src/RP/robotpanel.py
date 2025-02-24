@@ -69,10 +69,10 @@ class RobotUI(QMainWindow):
         if await self.jetson.connect():
             self.jetson.message_received.connect(self.handle_jetson_message)
     
-    # Jetson으로부터 받은 메시지 처리
+    # Jetson으로부터 수신한 메시지 처리하는 메서드
     def handle_jetson_message(self, message: str) -> None:
         if message == 'emergency_stop':
-            # self.handle_emergency_stop()
+            self.handle_emergency_stop()
             self.update_ui_state(message)
         else:
             self.update_ui_state(message)
@@ -92,11 +92,10 @@ class RobotUI(QMainWindow):
             
             # 라즈베리파이 종료
             print(f"{self.logger_prefix} 라즈베리파이를 종료합니다...")
-            os.system(f'sudo {self.shutdown_script}')
+            os.system('sudo shutdown now')
             
         except Exception as e:
             print(f"{self.logger_prefix} 비상정지 처리 중 오류: {e}")
-            # 오류가 발생하더라도 강제 종료
             try:
                 # 라즈베리파이 강제 종료 시도
                 os.system(f'sudo {self.shutdown_script}')
@@ -107,16 +106,15 @@ class RobotUI(QMainWindow):
     # 비상 정지 버튼 클릭 시 실행
     def emergency_stop(self) -> None:
         try:
-            # 비상정지 신호 전송
-            asyncio.run_coroutine_threadsafe(
-                self.jetson.emergency_stop(), 
+            future = asyncio.run_coroutine_threadsafe(
+                self.jetson.emergency_stop(),
                 self.loop
             )
-            # 프로그램 종료 처리
-            # self.handle_emergency_stop()
+            if future.result():
+                self.handle_emergency_stop()
         except Exception as e:
             print(f"{self.logger_prefix} 비상정지 명령 처리 중 오류: {e}")
-            # sys.exit(1)
+            sys.exit(1)
 
     # 로봇 잠금 해제 메시지 전송
     def unlock_robot(self) -> None:
