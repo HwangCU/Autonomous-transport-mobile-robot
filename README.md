@@ -14,7 +14,7 @@
   
 ### 캐로봇(Carrobot)
 ![alt text](docs/img/image-2.png)
-![alt text](<docs/img/New Collage (4).gif>)
+![alt text](/uploads/b9181918d2f3334477951a4f1304e17d/20250218_214048-ezgif.com-speed__1_.gif)
 
 ## 주요기능
 
