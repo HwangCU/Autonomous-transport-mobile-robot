@@ -5,8 +5,8 @@ from rclpy.node import Node
 import threading
 import json
 import errno
-from hardcarry_interface.msg import RobotMode
 from hardcarry_interface.srv import EmergencyStop
+from std_msgs.msg import Int16
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 
 
@@ -27,8 +27,8 @@ class RPCommunicationNode(Node):
 
     def __init__(self):
         super().__init__('rp_communication_node')
-        # 로그 레벨 설정
         self.get_logger().set_level(rclpy.logging.LoggingSeverity.DEBUG)
+        
         self.host = '192.168.1.101'
         self.port = 8081
         self.server_socket = None
@@ -37,45 +37,36 @@ class RPCommunicationNode(Node):
         self.running = True
         self.connected = False
         
+        self.subscription = self.create_subscription(
+            Int16,
+            '/robot_mode',
+            self.robot_mode_callback,
+            10
+        )
+        self.get_logger().info('robot_mode 토픽 구독 완료')
+        
+        self.emergency_stop_client = self.create_client(EmergencyStop, 'emergency_stop')
+        if self.emergency_stop_client is None:
+            self.get_logger().error('Emergency Stop 서비스 클라이언트 생성 실패')
+        self.get_logger().info('Emergency Stop 서비스 클라이언트 생성 성공')
+        
         # 테스트 모드 설정
         self.test_modes = list(self.MODE_MESSAGES.keys())
         self.current_mode_index = 0
         self.test_mode = self.declare_parameter('test_mode', False).value
-        self.get_logger().warn(f'테스트 모드 파라미터: {self.test_mode}')  # 파라미터 값 확인
+        self.get_logger().warn(f'테스트 모드 파라미터: {self.test_mode}')
         
-        # 서버 초기화
-        if self.init_server():
-            self.get_logger().info('서버 초기화 성공')
-        else:
+        if not self.init_server():
             self.get_logger().error('서버 초기화 실패')
             return
         
-        # 테스트 타이머 설정
         if self.test_mode:
             self.get_logger().warn('테스트 모드가 활성화되었습니다')
-            # 스레드 기반 타이머 사용
             self.test_thread = threading.Thread(target=self.test_loop)
             self.test_thread.daemon = True
             self.test_thread.start()
         else:
             self.get_logger().info('테스트 모드가 비활성화되어 있습니다')
-        
-        # QoS 프로파일 설정을 시스템 기본값으로
-        self.subscription = self.create_subscription(
-            RobotMode,
-            'RobotMode',
-            self.robot_mode_callback,
-            10  # QoSProfile 대신 depth만 지정
-        )
-        self.get_logger().info('RobotMode 토픽 구독 완료')
-        
-        self.emergency_stop_client = self.create_client(EmergencyStop, 'emergency_stop')
-        
-        # Emergency Stop 서비스 대기
-        while not self.emergency_stop_client.wait_for_service(timeout_sec=1.0):
-            pass 
-        
-        self.get_logger().info('Emergency Stop 서비스가 준비되었습니다.')
 
     def init_server(self):
         try:
@@ -85,7 +76,6 @@ class RPCommunicationNode(Node):
             self.server_socket.listen(1)
             self.get_logger().info(f'서버가 {self.host}:{self.port}에서 시작되었습니다')
             
-            # 클라이언트 연결을 처리할 스레드 시작
             accept_thread = threading.Thread(target=self.accept_connections)
             accept_thread.daemon = True
             accept_thread.start()
@@ -108,7 +98,6 @@ class RPCommunicationNode(Node):
                 self.client_address = client_address
                 self.connected = True
                 
-                # 클라이언트 메시지를 처리할 스레드 시작
                 receive_thread = threading.Thread(target=self.receive_message)
                 receive_thread.daemon = True
                 receive_thread.start()
@@ -188,14 +177,14 @@ class RPCommunicationNode(Node):
             mode = int(mode)
             message = self.MODE_MESSAGES.get(mode, 'unknown')
             if message == 'unknown':
-                self.get_logger().error(f'잘못된 모드 값: {mode}')
+                self.get_logger().error(f'잘못된 모드: {mode}')
                 return False
             
             payload = self.make_payload("change_mode", mode, self.MODE_MESSAGES[mode])
             return self.send_message(payload)
             
         except ValueError:
-            self.get_logger().error(f'잘못된 모드 값: {mode}')
+            self.get_logger().error(f'잘못된 모드: {mode}')
             return False
 
     def emergency_stop(self):
@@ -208,40 +197,38 @@ class RPCommunicationNode(Node):
         try:
             response = future.result()
             if response.success:
-                self.get_logger().info('Emergency stop successful')
+                self.get_logger().warn('비상 정지 절차 시행')
+                self.cleanup()
+                self.destroy_node()
+                rclpy.shutdown()
             else:
-                self.get_logger().error('Emergency stop failed')
+                self.get_logger().error('비상 정지 실패')
         except Exception as e:
             self.get_logger().error(f'Emergency stop service call failed: {str(e)}')
 
     def robot_mode_callback(self, msg):
-        """RobotMode 토픽 콜백 함수"""
-        self.get_logger().info('--------------------')  # 구분선 추가
-        self.get_logger().info('RobotMode 콜백이 호출되었습니다')
-        self.get_logger().info(f'수신된 모드: {msg.mode}')
+        self.get_logger().info('--------------------')
+        self.get_logger().info(f'수신된 모드: {msg.data}')
         
         try:
-            self.get_logger().info(f'모드 변경 메시지 전송 시도: {msg.mode}')
-            if self.send_status_message(msg.mode):
-                self.get_logger().info(f'모드 {msg.mode} 전송 성공')
+            if self.send_status_message(msg.data):
+                self.get_logger().info(f'모드 {msg.data} 전송 성공')
             else:
-                self.get_logger().error(f'모드 {msg.mode} 전송 실패')
+                self.get_logger().error(f'모드 {msg.data} 전송 실패')
         except Exception as e:
             self.get_logger().error(f'RobotMode 콜백 처리 중 오류: {str(e)}')
             import traceback
             self.get_logger().error(traceback.format_exc())
         
-        self.get_logger().info('--------------------')  # 구분선 추가
+        self.get_logger().info('--------------------')
 
     def test_loop(self):
-        """테스트 루프 함수"""
         while self.running:
             if self.connected:
                 self.test_timer_callback()
-            time.sleep(3.0)  # 3초 대기
+            time.sleep(3.0)
 
     def test_timer_callback(self):
-        """테스트 타이머 콜백 함수"""
         self.get_logger().info('테스트 타이머 콜백 시작')
         
         if not self.connected:
