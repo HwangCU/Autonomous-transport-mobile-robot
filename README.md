@@ -22,10 +22,15 @@
 
 
 ### 캐로봇(Carrobot)
-- 아키텍처
-![alt text](docs/img/image-2.png)
-- 전체 외관
-![alt text](<docs/img/New Collage (4).gif>)
+<figure>
+    <img src="docs/img/image-2.png" alt="Alt text" />
+    <figcaption>아키텍처</figcaption>
+</figure>
+
+<figure>
+    <img src="docs/img/New Collage (4).gif" alt="Alt text" />
+    <figcaption>전체외관</figcaption>
+</figure>
 
 ## 💫주요기능
 
@@ -38,9 +43,18 @@ UWB만 있다면, 캐로봇이 어디든 따라갑니다.
 
 ### 배달 모드
 경로를 지정해주면, 캐로봇이 자율주행을 기반으로 배달을 시작합니다.
-![alt text](docs/img/gps_imu.png)
+<figure>
+    <img src="docs/img/gps_imu.png" alt="Alt text" />
+    <figcaption>GPS값을 받아와서 Mapviz띄운 화면</figcaption>
+</figure>
+
+<figure>
+    <img src="docs/img/delivery.png" alt="Alt text" />
+    <figcaption>GPS+IMU+Lidar 센서를 통합한 Mapviz(우) rviz2(좌) </figcaption>
+</figure>
+
 ### UCC
-<video controls src="docs/video/캐리봇ucc.mp4" title="Title"></video>
+[YouTube Link](https://youtu.be/uDIG6P6mnm4)
 
 ## 추가 기능
 
