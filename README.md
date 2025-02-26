@@ -7,12 +7,15 @@
 ### 😎협업 링크
 [캐로봇 노션 링크](https://www.notion.so/1736458fd4ee80b797bbe5ef825752a3)
 ### 🙌Hard Carry PJT 팀원
+![alt text](docs/img/teams.png)
+
 - 윤종민
 - 이수정
 - 전홍석
 - 조윤장
 - 허재웅
-- 황치운
+- [황치운](https://github.com/HwangCU)
+
 ### 📖명세서
 [기능 명세서](https://docs.google.com/spreadsheets/d/1jOaaYXQAYIGyNFBkYT3Phov0yCPjWvQRRFKNf4ej_8A/edit?gid=0#gid=0)\
 [Wire Frame](https://www.figma.com/design/N0g7xVEB5lCZSohKOAqKcQ/Untitled?node-id=0-1&p=f&t=V7wDdMtlvKyDEZxP-0)\
@@ -22,40 +25,98 @@
 
 
 ## 캐로봇(Carrobot)
+
+### 기술 스택
+### Robot 
+![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white) 
+![ros2foxy](https://img.shields.io/badge/ROS2-foxy-orange)
+![ros2humble](https://img.shields.io/badge/ROS2-humble-blue)
+![WebSocket](https://img.shields.io/badge/-Websocket-%23FF6600)
+![socket](https://img.shields.io/badge/-socket-black
+)
+
+ 
+![Arduino](https://img.shields.io/badge/-Arduino-00979D?style=for-the-badge&logo=Arduino&logoColor=white)
+![C++](https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white)
+![ESP32](https://img.shields.io/badge/-ESP32-black)
+![UWB](https://img.shields.io/badge/-UWB-black
+)
+
+![Raspberry Pi](https://img.shields.io/badge/-Raspberry_Pi-C51A4A?style=for-the-badge&logo=Raspberry-Pi)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Qt](https://img.shields.io/badge/Qt-%23217346.svg?style=for-the-badge&logo=Qt&logoColor=white)
+![OpenCV](https://img.shields.io/badge/opencv-%23white.svg?style=for-the-badge&logo=opencv&logoColor=white)
+![pycamera2](https://img.shields.io/badge/-picamera2-%23CD2355)
+![YOLOv5](https://img.shields.io/badge/-YOLOv5-%23111F68)
+
+![JetsonOrinNano](https://img.shields.io/badge/-Jetson%20Orin%20Nano-%2378AD18)
+![NAV2](https://img.shields.io/badge/-NAV2-%2376CFE5)
+![SLAM](https://img.shields.io/badge/-SLAM-black)
+
+
+
+### Frontend
+![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
+![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
+![Google Drive](https://img.shields.io/badge/Google%20Drive-4285F4?style=for-the-badge&logo=googledrive&logoColor=white)
+![KakaoTalk](https://img.shields.io/badge/kakaotalk-ffcd00.svg?style=for-the-badge&logo=kakaotalk&logoColor=000000)
+![Jetpack Compose](https://img.shields.io/badge/-Jetpack%20Compose-%233BD580
+)
+![OkHttp](https://img.shields.io/badge/-OkHttp-%23%2300796B
+)
+![Retrofit](https://img.shields.io/badge/-Retrofit-%2346B37F
+)
+![Tmap](https://img.shields.io/badge/-Tmap-%230187C0)
+
+### Backend
+![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
+![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Django](https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white)
+![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
+![Jenkins](https://img.shields.io/badge/jenkins-%232C5263.svg?style=for-the-badge&logo=jenkins&logoColor=white)
+
+### 아키텍쳐
 <figure>
     <img src="docs/img/image-2.png" alt="Alt text" width=640 height=480/>
-    <figcaption>아키텍처</figcaption>
 </figure>
 
+### 전체외관
 <figure>
     <img src="docs/img/New Collage (4).gif" alt="Alt text" width=640 height=480/>
-    <figcaption>전체외관</figcaption>
 </figure>
 
 ## 💫주요기능
-
-### 조이콘(컨트롤) 모드
+ 해당 프로젝트는 **조종모드**, **팔로잉모드**, **배달모드** 기능을 제공합니다. **조종모드**는 사용자가 로봇을 직접 컨트롤할 수 있습니다. **팔로잉모드**는 UWB센서를 소지한 사용자를 로봇이 팔로잉 합니다. 마지막으로 **배달모드**는 자율주행을 통해 목적지에 도달하여 물건을 전달합니다.\
+ 부가적으로 **무게측정**, **수평유지** 등의 기능을 제공합니다.\
+ 사용자가 사용할 수 있는 **Application**을 구현하여, UI를 통해 기능전환, 로봇의 정보, live카메라 등의 기능을 경험할 수 있습니다.
+### 조이콘(조종) 모드
 조이콘만 있다면, 캐로봇을 원하는대로 간단히 조작할 수 있습니다.
 
 ### 팔로잉 모드
-UWB만 있다면, 캐로봇이 어디든 따라갑니다.
+UWB만 있다면, 캐로봇이 어디든 따라갑니다. 로봇의 2개, 사용자의 1개의 UWB센서를 활용해 사용자의 거리, 각도를 계산합니다. 거리와 각도를 활용해 사용자의 정확한 위치를 알아내고 Following기능을 구현합니다.
 <figure>
     <img src="docs/img/UWB.gif" alt="Alt text" width=640 height=480/>
 </figure>
 
 ### 배달 모드
-경로를 지정해주면, 캐로봇이 자율주행을 기반으로 배달을 시작합니다.
+경로를 지정해주면, 캐로봇이 자율주행을 기반으로 배달을 시작합니다. **GPS, IMU, Lidar** 센서를 Fusion하여 로봇이 자신의 위치를 추정(**SLAM**)하고 주변의 사물을 인식합니다. \
+**Navigation2**와 같은 판단 알고리즘을 통해 경로를 생성하고 주행합니다.
+
 <figure>
-    <img src="docs/img/gps_imu.png" alt="Alt text" />
+    <img src="docs/img/gps_imu.png" alt="Alt text" width=640 height=480 />
     <figcaption>GPS값을 받아와서 Mapviz띄운 화면</figcaption>
 </figure>
 
 <figure>
-    <img src="docs/img/delivery.png" alt="Alt text" />
+    <img src="docs/img/delivery.png" alt="Alt text" width=640 height=480 />
     <figcaption>GPS+IMU+Lidar 센서를 통합한 Mapviz(좌) rviz2(우) </figcaption>
 </figure>
 
 ### UCC
+전반적인 기능이 부각된 짧은 영상상
 [YouTube Link](https://youtu.be/uDIG6P6mnm4)
 
 ## 추가 기능
@@ -69,7 +130,7 @@ UWB만 있다면, 캐로봇이 어디든 따라갑니다.
 
 ### 수평 유지
 <figure>
-    <img src="docs/img/horiz_func.gif" alt="Alt text" width=400 height=300/>
+    <img src="docs/img/test_hori.gif" alt="Alt text" width=400 height=300/>
 </figure>
 
 <figure>
@@ -77,10 +138,9 @@ UWB만 있다면, 캐로봇이 어디든 따라갑니다.
     <figcaption>보관함 내부의 수평을 유지하는 장치</figcaption>
 </figure>
 
-### 카메라 및 객체인식(YOLOv5)
+### live카메라 및 객체인식(YOLOv5)
 <figure>
     <img src="docs/img/camera.png" alt="Alt text" width=640 height=480/>
-    <figcaption>보관함 내부의 수평을 유지하는 장치</figcaption>
 </figure>
 
 ### Application UI
@@ -95,5 +155,5 @@ UWB만 있다면, 캐로봇이 어디든 따라갑니다.
     <img src="docs/img/hardware.png" alt="Alt text" width=640 height=480/>
 </figure>
 
-## 시연영상
-
+## 상세설명 및 시연영상
+[캐로봇 상세설명 영상](https://youtu.be/c5M3H99YP9Y)
