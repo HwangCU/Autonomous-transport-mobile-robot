@@ -1,0 +1,25 @@
+[0.210s] Invoking command in '/home/yun/colcon_ws/build/stella_cartographer': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/home/yun/colcon_ws/install/nav2_gps_waypoint_follower_demo:/home/yun/test/install/turtlebot3_teleop:/home/yun/test/install/turtlebot3_example:/home/yun/test/install/road_API:/home/yun/test/install/nav2_simple_commander:/home/yun/test/install/gps_imu_publisher:/opt/ros/humble /usr/bin/cmake --build /home/yun/colcon_ws/build/stella_cartographer -- -j20 -l20
+[0.413s] Invoked command in '/home/yun/colcon_ws/build/stella_cartographer' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/home/yun/colcon_ws/install/nav2_gps_waypoint_follower_demo:/home/yun/test/install/turtlebot3_teleop:/home/yun/test/install/turtlebot3_example:/home/yun/test/install/road_API:/home/yun/test/install/nav2_simple_commander:/home/yun/test/install/gps_imu_publisher:/opt/ros/humble /usr/bin/cmake --build /home/yun/colcon_ws/build/stella_cartographer -- -j20 -l20
+[0.415s] Invoking command in '/home/yun/colcon_ws/build/stella_cartographer': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/home/yun/colcon_ws/install/nav2_gps_waypoint_follower_demo:/home/yun/test/install/turtlebot3_teleop:/home/yun/test/install/turtlebot3_example:/home/yun/test/install/road_API:/home/yun/test/install/nav2_simple_commander:/home/yun/test/install/gps_imu_publisher:/opt/ros/humble /usr/bin/cmake --install /home/yun/colcon_ws/build/stella_cartographer
+[0.425s] -- Install configuration: ""
+[0.425s] -- Execute custom install script
+[0.426s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/config/stella.lua
+[0.426s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/launch/cartographer.launch.py
+[0.426s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/launch/occupancy_grid.launch.py
+[0.426s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/rviz/stella_cartographer.rviz
+[0.426s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/ament_index/resource_index/package_run_dependencies/stella_cartographer
+[0.426s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/ament_index/resource_index/parent_prefix_path/stella_cartographer
+[0.426s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/environment/ament_prefix_path.sh
+[0.426s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/environment/ament_prefix_path.dsv
+[0.427s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/environment/path.sh
+[0.427s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/environment/path.dsv
+[0.427s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/local_setup.bash
+[0.427s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/local_setup.sh
+[0.427s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/local_setup.zsh
+[0.427s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/local_setup.dsv
+[0.427s] -- Symlinking: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/package.dsv
+[0.438s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/ament_index/resource_index/packages/stella_cartographer
+[0.438s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/cmake/stella_cartographerConfig.cmake
+[0.439s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/cmake/stella_cartographerConfig-version.cmake
+[0.439s] -- Up-to-date symlink: /home/yun/colcon_ws/install/stella_cartographer/share/stella_cartographer/package.xml
+[0.451s] Invoked command in '/home/yun/colcon_ws/build/stella_cartographer' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yun/colcon_ws/install/stella_teleop:/home/yun/colcon_ws/install/nav2_gps_waypoint_follower_demo:/home/yun/test/install/turtlebot3_teleop:/home/yun/test/install/turtlebot3_example:/home/yun/test/install/road_API:/home/yun/test/install/nav2_simple_commander:/home/yun/test/install/gps_imu_publisher:/opt/ros/humble /usr/bin/cmake --install /home/yun/colcon_ws/build/stella_cartographer

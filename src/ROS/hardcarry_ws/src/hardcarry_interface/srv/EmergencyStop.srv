@@ -1,0 +1,6 @@
+#request
+bool emergency_stop
+---
+#response
+bool success
+string message
