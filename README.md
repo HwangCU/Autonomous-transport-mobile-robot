@@ -85,7 +85,7 @@
 
 ### 🈴전체외관
 <figure>
-    <img src="docs/img/New Collage (4).gif" alt="Alt text" width=640 height=480/>
+    <img src="docs/img/New Collage (4).gif" alt="Alt text"/>
 </figure>
 
 ## 💫주요기능
